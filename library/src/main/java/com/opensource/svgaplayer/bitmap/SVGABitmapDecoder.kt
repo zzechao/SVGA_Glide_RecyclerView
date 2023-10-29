@@ -3,8 +3,8 @@ package com.opensource.svgaplayer.bitmap
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
-import com.bumptech.glide.Glide
 import com.opensource.svgaplayer.utils.log.LogUtils
+import com.svga.glide.SVGAGlideEx.bitmapPool
 
 
 /**
@@ -16,13 +16,13 @@ import com.opensource.svgaplayer.utils.log.LogUtils
  */
 internal abstract class SVGABitmapDecoder<T> {
 
-    fun decodeBitmapFrom(data: T, reqWidth: Int, reqHeight: Int, glide: Glide? = null): Bitmap? {
+    fun decodeBitmapFrom(data: T, reqWidth: Int, reqHeight: Int): Bitmap? {
         return BitmapFactory.Options().run {
             // 如果期望的宽高是合法的, 则开启检测尺寸模式
             inJustDecodeBounds = (reqWidth > 0 && reqHeight > 0)
             inPreferredConfig = Bitmap.Config.RGB_565
 
-            val bitmap = onDecode(data, this, reqWidth, reqHeight, glide)
+            val bitmap = onDecode(data, this, reqWidth, reqHeight)
             if (!inJustDecodeBounds) {
                 return bitmap
             }
@@ -31,11 +31,11 @@ internal abstract class SVGABitmapDecoder<T> {
             inSampleSize = BitmapSampleSizeCalculator.calculate(this, reqWidth, reqHeight)
             // Decode bitmap with inSampleSize set
             inJustDecodeBounds = false
-            onDecode(data, this, reqWidth, reqHeight, glide)
+            onDecode(data, this, reqWidth, reqHeight)
         }
     }
 
-    fun decodeBitmapFrom(data: T, sampleSize: Int, reqWidth: Int, reqHeight: Int, glide: Glide? = null): Bitmap? =
+    fun decodeBitmapFrom(data: T, sampleSize: Int, reqWidth: Int, reqHeight: Int): Bitmap? =
         BitmapFactory.Options().run {
             // 如果期望的宽高是合法的, 则开启检测尺寸模式
             inPreferredConfig = Bitmap.Config.RGB_565
@@ -68,17 +68,17 @@ internal abstract class SVGABitmapDecoder<T> {
                 // ...
                 // 根据图片的期望尺寸到 BitmapPool 中获取一个 Bitmap 以复用
                 if (reqWidth > 0 && reqHeight > 0) {
-                    setInBitmap(this, reqWidth, reqHeight, glide)
+                    setInBitmap(this, reqWidth, reqHeight)
                 }
             }
-            return onDecode(data, this, reqWidth, reqHeight, glide)
+            return onDecode(data, this, reqWidth, reqHeight)
         }
 
     /**
      * 仿写Glide的setInBitmap
      */
-    private fun setInBitmap(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int, glide: Glide?) {
-        var bitmapPool = glide?.getBitmapPool() ?: return
+    private fun setInBitmap(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int) {
+        bitmapPool ?: return
         var expectedConfig: Bitmap.Config? = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (options.inPreferredConfig === Bitmap.Config.HARDWARE) {
@@ -90,7 +90,7 @@ internal abstract class SVGABitmapDecoder<T> {
             expectedConfig = options.inPreferredConfig
         }
         // 调用了 inBitmap
-        options.inBitmap = bitmapPool.getDirty(reqWidth, reqHeight, expectedConfig)
+        options.inBitmap = bitmapPool?.getDirty(reqWidth, reqHeight, expectedConfig)
     }
 
     private fun shouldUsePool(): Boolean {
@@ -100,7 +100,12 @@ internal abstract class SVGABitmapDecoder<T> {
         return false
     }
 
-    abstract fun onDecode(data: T, ops: BitmapFactory.Options, reqWidth: Int, reqHeight: Int, glide: Glide?): Bitmap?
+    abstract fun onDecode(
+        data: T,
+        ops: BitmapFactory.Options,
+        reqWidth: Int,
+        reqHeight: Int
+    ): Bitmap?
 
     abstract fun decodeBitmapSize(data: T, ops: BitmapFactory.Options)
 }

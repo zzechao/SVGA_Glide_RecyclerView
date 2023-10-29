@@ -1,12 +1,19 @@
 package com.svga.glide
 
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.opensource.svgaplayer.SVGAVideoEntity
 import com.opensource.svgaplayer.proto.MovieEntity
 import com.opensource.svgaplayer.utils.log.LogUtils
+import com.svga.glide.SVGAGlideEx.arrayPool
 import org.json.JSONObject
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
 import java.security.MessageDigest
 import java.util.zip.Inflater
 import java.util.zip.ZipInputStream
@@ -28,7 +35,7 @@ class GlideSVGAParser {
         cacheDir: String,
         mFrameWidth: Int,
         mFrameHeight: Int,
-        glide: Glide, tag: String
+        tag: String
     ): SVGAVideoEntity? {
         val file = File(
             cacheDir + File.separatorChar
@@ -38,24 +45,23 @@ class GlideSVGAParser {
         val path = file.absolutePath
         var svgaVideoEntity: SVGAVideoEntity? = null
         try {
-            readAsBytes(inputStream, glide)?.let { bytes ->
+            readAsBytes(inputStream)?.let { bytes ->
                 if (isZipFile(bytes)) {
                     LogUtils.debug(TAG, "decodeFromInputStream isZipFile true $tag")
                     ByteArrayInputStream(bytes).use {
-                        unzip(it, glide, path)
+                        unzip(it, path)
                     }
                     val binaryFile = File(path, movieBinary)
                     val jsonFile = File(path, movieSpec)
                     svgaVideoEntity = if (binaryFile.isFile) {
                         parseBinaryFile(
                             path, binaryFile, mFrameWidth,
-                            mFrameHeight,
-                            glide
+                            mFrameHeight
                         )
                     } else if (jsonFile.isFile) {
                         parseSpecFile(
                             path, jsonFile, mFrameWidth,
-                            mFrameHeight, glide
+                            mFrameHeight
                         )
                     } else {
                         null
@@ -63,13 +69,12 @@ class GlideSVGAParser {
                     LogUtils.debug(TAG, "decodeFromInputStream end")
                 } else {
                     LogUtils.debug(TAG, "decodeFromInputStream isZipFile false $tag")
-                    inflate(bytes, glide)?.let {
+                    inflate(bytes)?.let {
                         svgaVideoEntity = SVGAVideoEntity(
                             MovieEntity.ADAPTER.decode(it),
                             File(path),
                             mFrameWidth,
-                            mFrameHeight,
-                            glide
+                            mFrameHeight
                         )
                     }
                     LogUtils.debug(TAG, "decodeFromInputStream end")
@@ -85,8 +90,7 @@ class GlideSVGAParser {
         source: String,
         binaryFile: File,
         frameWidth: Int,
-        frameHeight: Int,
-        glide: Glide
+        frameHeight: Int
     ): SVGAVideoEntity? {
         try {
             FileInputStream(binaryFile).use {
@@ -94,8 +98,7 @@ class GlideSVGAParser {
                     MovieEntity.ADAPTER.decode(it),
                     File(source),
                     frameWidth,
-                    frameHeight,
-                    glide
+                    frameHeight
                 )
             }
         } catch (e: Exception) {
@@ -109,10 +112,9 @@ class GlideSVGAParser {
         source: String,
         jsonFile: File,
         frameWidth: Int,
-        frameHeight: Int,
-        glide: Glide
+        frameHeight: Int
     ): SVGAVideoEntity? {
-        val buffer = glide.arrayPool.get(1024, ByteArray::class.java)
+        val buffer = arrayPool.get(1024, ByteArray::class.java)
         try {
             FileInputStream(jsonFile).use { fileInputStream ->
                 ByteArrayOutputStream().use { byteArrayOutputStream ->
@@ -124,18 +126,18 @@ class GlideSVGAParser {
                         byteArrayOutputStream.write(buffer, 0, size)
                     }
                     val jsonObj = JSONObject(byteArrayOutputStream.toString())
-                    return SVGAVideoEntity(jsonObj, File(source), frameWidth, frameHeight, glide)
+                    return SVGAVideoEntity(jsonObj, File(source), frameWidth, frameHeight)
                 }
             }
         } catch (e: Exception) {
             jsonFile.delete()
             return null
         } finally {
-            glide.arrayPool.put(buffer)
+            arrayPool.put(buffer)
         }
     }
 
-    private fun unzip(inputStream: ByteArrayInputStream, glide: Glide, cacheDir: String) {
+    private fun unzip(inputStream: ByteArrayInputStream, cacheDir: String) {
         BufferedInputStream(inputStream).use {
             ZipInputStream(it).use { zipInputStream ->
                 while (true) {
@@ -152,14 +154,13 @@ class GlideSVGAParser {
                     if (!fileZip.exists() || fileZip.length() == 0L) {
                         LogUtils.debug(TAG, "fileZip:$fileZip")
                         FileOutputStream(fileZip).use { fileOutputStream ->
-                            val buffer =
-                                glide.arrayPool.get(1024, ByteArray::class.java)
+                            val buffer = arrayPool.get(1024, ByteArray::class.java)
                             while (true) {
                                 val readBytes = zipInputStream.read(buffer)
                                 if (readBytes <= 0) break
                                 fileOutputStream.write(buffer, 0, readBytes)
                             }
-                            glide.arrayPool.put(buffer)
+                            arrayPool.put(buffer)
                         }
                     } else {
                         LogUtils.debug(TAG, "fileZip:$fileZip exists")
@@ -170,31 +171,38 @@ class GlideSVGAParser {
         }
     }
 
-    private fun inflate(byteArray: ByteArray, glide: Glide): ByteArray? {
+    private fun inflate(byteArray: ByteArray): ByteArray? {
         val inflater = Inflater()
         inflater.setInput(byteArray, 0, byteArray.size)
         ByteArrayOutputStream().use { inflatedOutputStream ->
-            val buffer = glide.arrayPool.get(1024, ByteArray::class.java)
+            val buffer = arrayPool.get(1024, ByteArray::class.java)
             while (true) {
                 val count = inflater.inflate(buffer)
                 if (count <= 0) break
                 inflatedOutputStream.write(buffer, 0, count)
             }
             inflater.end()
-            glide.arrayPool.put(buffer)
+            arrayPool.put(buffer)
             return inflatedOutputStream.toByteArray()
         }
     }
 
-    private fun readAsBytes(inputStream: InputStream, glide: Glide): ByteArray? {
+    private fun readAsBytes(inputStream: InputStream): ByteArray? {
         ByteArrayOutputStream().use { byteArrayOutputStream ->
-            val buffer = glide.arrayPool.get(1024, ByteArray::class.java)
-            while (true) {
-                val cnt = inputStream.read(buffer)
-                if (cnt <= 0) break
-                byteArrayOutputStream.write(buffer, 0, cnt)
+            val buffer = arrayPool.get(1024, ByteArray::class.java)
+            try {
+                while (true) {
+                    val cnt = inputStream.read(buffer)
+                    if (cnt <= 0) break
+                    byteArrayOutputStream.write(buffer, 0, cnt)
+                }
+            } catch (_: Throwable) {
+
+            } finally {
+                arrayPool.put(buffer)
             }
-            glide.arrayPool.put(buffer)
+
+
             return byteArrayOutputStream.toByteArray()
         }
     }

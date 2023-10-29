@@ -16,6 +16,7 @@ import com.opensource.svgaplayer.proto.MovieEntity
 import com.opensource.svgaplayer.proto.MovieParams
 import com.opensource.svgaplayer.utils.SVGARect
 import com.opensource.svgaplayer.utils.log.LogUtils
+import com.svga.glide.SVGAGlideEx.bitmapPool
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -59,7 +60,7 @@ class SVGAVideoEntity {
 
     constructor(json: JSONObject, cacheDir: File) : this(json, cacheDir, 0, 0)
 
-    constructor(json: JSONObject, cacheDir: File, frameWidth: Int, frameHeight: Int, glide: Glide? = null) {
+    constructor(json: JSONObject, cacheDir: File, frameWidth: Int, frameHeight: Int) {
         mFrameWidth = frameWidth
         mFrameHeight = frameHeight
         mCacheDir = cacheDir
@@ -74,7 +75,7 @@ class SVGAVideoEntity {
             )
             isVersion2 = false
             mJson = json
-            parserImages(json, glide)
+            parserImages(json)
         } catch (e: Exception) {
             e.printStackTrace()
         } catch (e: OutOfMemoryError) {
@@ -95,7 +96,7 @@ class SVGAVideoEntity {
 
     constructor(entity: MovieEntity, cacheDir: File) : this(entity, cacheDir, 0, 0)
 
-    constructor(entity: MovieEntity, cacheDir: File, frameWidth: Int, frameHeight: Int, glide: Glide? = null) {
+    constructor(entity: MovieEntity, cacheDir: File, frameWidth: Int, frameHeight: Int) {
         this.mFrameWidth = frameWidth
         this.mFrameHeight = frameHeight
         this.mCacheDir = cacheDir
@@ -109,7 +110,7 @@ class SVGAVideoEntity {
                 mFrameHeight
             )
             isVersion2 = true
-            parserImages(entity, glide)
+            parserImages(entity)
         } catch (e: Exception) {
             e.printStackTrace()
         } catch (e: OutOfMemoryError) {
@@ -138,7 +139,7 @@ class SVGAVideoEntity {
         }
     }
 
-    private fun parserImages(json: JSONObject, glide: Glide? = null) {
+    private fun parserImages(json: JSONObject) {
         val imgJson = json.optJSONObject("images") ?: return
         imgJson.keys().forEach { imgKey ->
             val filePath = generateBitmapFilePath(imgJson[imgKey].toString(), imgKey)
@@ -146,7 +147,7 @@ class SVGAVideoEntity {
                 return
             }
             val bitmapKey = imgKey.replace(".matte", "")
-            val bitmap = createBitmap(filePath, glide)
+            val bitmap = createBitmap(filePath)
             if (bitmap != null) {
                 imageMap[bitmapKey] = bitmap
             }
@@ -166,11 +167,11 @@ class SVGAVideoEntity {
         }
     }
 
-    private fun createBitmap(filePath: String, glide: Glide? = null): Bitmap? {
-        return SVGABitmapFileDecoder.decodeBitmapFrom(filePath, imageSampleSize, mFrameWidth, mFrameHeight, glide)
+    private fun createBitmap(filePath: String): Bitmap? {
+        return SVGABitmapFileDecoder.decodeBitmapFrom(filePath, imageSampleSize, mFrameWidth, mFrameHeight)
     }
 
-    private fun parserImages(obj: MovieEntity, glide: Glide? = null) {
+    private fun parserImages(obj: MovieEntity) {
         obj.images?.entries?.forEach { entry ->
             val byteArray = entry.value.toByteArray()
             if (byteArray.count() < 4) {
@@ -181,24 +182,24 @@ class SVGAVideoEntity {
                 return@forEach
             }
             val filePath = generateBitmapFilePath(entry.value.utf8(), entry.key)
-            createBitmap(byteArray, filePath, glide)?.let { bitmap ->
+            createBitmap(byteArray, filePath)?.let { bitmap ->
                 imageMap[entry.key] = bitmap
             }
         }
     }
 
-    fun resetCreateImages(glide: Glide? = null) {
+    fun resetCreateImages() {
         if (isVersion2) {
-            movieItem?.let { parserImages(it, glide) }
+            movieItem?.let { parserImages(it) }
         } else {
-            mJson?.let { parserImages(it, glide) }
+            mJson?.let { parserImages(it) }
         }
     }
 
-    private fun createBitmap(byteArray: ByteArray, filePath: String, glide: Glide? = null): Bitmap? {
+    private fun createBitmap(byteArray: ByteArray, filePath: String): Bitmap? {
         val bitmap =
-            SVGABitmapByteArrayDecoder.decodeBitmapFrom(byteArray, imageSampleSize, mFrameWidth, mFrameHeight, glide)
-        return bitmap ?: createBitmap(filePath, glide)
+            SVGABitmapByteArrayDecoder.decodeBitmapFrom(byteArray, imageSampleSize, mFrameWidth, mFrameHeight)
+        return bitmap ?: createBitmap(filePath)
     }
 
     private fun resetSprites(json: JSONObject) {
@@ -360,7 +361,7 @@ class SVGAVideoEntity {
         }
     }
 
-    fun clear(glide: Glide? = null) {
+    fun clear() {
         audioList.forEach { audio ->
             audio.playID?.let {
                 if (SVGASoundManager.isInit()) {
@@ -377,7 +378,7 @@ class SVGAVideoEntity {
             }
             soundCallback = null
         }
-        glide?.bitmapPool?.let { pool ->
+        bitmapPool?.let { pool ->
             imageMap.forEach {
                 pool.put(it.value)
             }

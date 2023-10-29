@@ -16,8 +16,7 @@ import java.io.InputStream
  * Description:
  */
 class SVGAResourceStreamDecoder(
-    val cachePath: String,
-    val glide: Glide
+    val cachePath: String
 ) : ResourceDecoder<InputStream, SVGAResource> {
 
     private val TAG = "SVGAResourceStreamDecoder"
@@ -60,11 +59,10 @@ class SVGAResourceStreamDecoder(
                 inputStream = source,
                 cachePath,
                 requestedWidth,
-                requestedHeight,
-                glide, tag
+                requestedHeight, tag
             )
         return SVGAGlideResourceDelegate(
-            SVGAResource(svga, tag, width, height, glide)
+            SVGAResource(svga, tag, width, height)
         )
     }
 }

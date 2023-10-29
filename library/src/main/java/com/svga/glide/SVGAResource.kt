@@ -1,6 +1,5 @@
 package com.svga.glide
 
-import com.bumptech.glide.Glide
 import com.opensource.svgaplayer.SVGAVideoEntity
 
 
@@ -13,6 +12,5 @@ data class SVGAResource(
     val videoItem: SVGAVideoEntity?,
     val model: String,
     val width: Int,
-    val height: Int,
-    val glide: Glide
+    val height: Int
 )

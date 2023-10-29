@@ -449,10 +449,10 @@ class SVGAParser(context: Context?) {
                                     LogUtils.info(TAG, "spec change to entity success")
                                     this.invokeCompleteCallback(
                                             SVGAVideoEntity(
-                                                    it,
-                                                    cacheDir,
-                                                    mFrameWidth,
-                                                    mFrameHeight
+                                                it,
+                                                cacheDir,
+                                                mFrameWidth,
+                                                mFrameHeight
                                             ),
                                             callback,
                                             alias

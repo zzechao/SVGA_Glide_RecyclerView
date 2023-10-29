@@ -11,6 +11,7 @@ import com.opensource.svgaplayer.SVGACallback
 import com.opensource.svgaplayer.SVGACallback2
 import com.opensource.svgaplayer.SVGADynamicEntity
 import com.opensource.svgaplayer.utils.log.LogUtils
+import com.svga.glide.SVGAGlideEx.bitmapPool
 
 /**
  * Time:2022/11/26 16:07
@@ -105,7 +106,7 @@ class SVGAImageViewDrawableTarget(
         } ?: kotlin.run {
             LogUtils.debug(TAG, "onResourceReady new drawable ${resource.model}")
             if (resource.videoItem.imageMap.isEmpty()) {
-                resource.videoItem.resetCreateImages(resource.glide)
+                resource.videoItem.resetCreateImages()
                 unit()
             } else {
                 unit()
@@ -147,7 +148,7 @@ class SVGAImageViewDrawableTarget(
             LogUtils.debug(TAG, "onDestroy ${this.tag}")
         }?.apply {
             stop()
-            mResource?.glide?.bitmapPool?.let { pool ->
+            bitmapPool?.let { pool ->
                 this.videoItem.imageMap.forEach {
                     pool.put(it.value)
                 }

@@ -34,6 +34,6 @@ class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<S
 
     override fun recycle() {
         LogUtils.debug(TAG, "recycle ${resource.model}")
-        resource.videoItem?.clear(resource.glide)
+        resource.videoItem?.clear()
     }
 }

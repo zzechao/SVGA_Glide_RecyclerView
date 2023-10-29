@@ -5,10 +5,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.Registry
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule
-import com.svga.glide.SVGAResource
-import com.svga.glide.SVGAResourceStreamDecoder
+import com.svga.glide.SVGAGlideEx
 import java.io.File
-import java.io.InputStream
 
 /**
  * @author YvesCheung
@@ -22,11 +20,6 @@ class CustomGlideModule : AppGlideModule() {
 
         val cachePath = context.cacheDir.absolutePath + File.separatorChar + "glide-svga"
         //registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory())
-
-        registry.prepend(
-            Registry.BUCKET_ANIMATION,
-            InputStream::class.java, SVGAResource::class.java,
-            SVGAResourceStreamDecoder(cachePath, glide)
-        )
+        SVGAGlideEx.register(glide, registry, cachePath)
     }
 }

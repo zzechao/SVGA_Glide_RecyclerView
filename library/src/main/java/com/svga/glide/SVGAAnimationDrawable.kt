@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
-import com.bumptech.glide.Glide
 import com.opensource.svgaplayer.SVGACallback2
 import com.opensource.svgaplayer.SVGADynamicEntity
 import com.opensource.svgaplayer.SVGASoundManager
@@ -97,7 +96,9 @@ class SVGAAnimationDrawable(
             val getMethod = animatorClass.getDeclaredMethod("getDurationScale") ?: return scale
             scale = (getMethod.invoke(animatorClass) as Float).toDouble()
             if (scale == 0.0) {
-                val setMethod = animatorClass.getDeclaredMethod("setDurationScale", Float::class.java) ?: return scale
+                val setMethod =
+                    animatorClass.getDeclaredMethod("setDurationScale", Float::class.java)
+                        ?: return scale
                 setMethod.isAccessible = true
                 setMethod.invoke(animatorClass, 1.0f)
                 scale = 1.0
@@ -204,11 +205,7 @@ class SVGAAnimationDrawable(
         }
     }
 
-    fun recycle(glide: Glide?) {
-        clear(glide)
-    }
-
-    private fun clear(glide: Glide?) {
+    fun clear() {
         videoItem.audioList.forEach { audio ->
             audio.playID?.let {
                 if (SVGASoundManager.isInit()) {
@@ -219,7 +216,7 @@ class SVGAAnimationDrawable(
             }
             audio.playID = null
         }
-        videoItem.clear(glide)
+        videoItem.clear()
     }
 
     override fun onAnimationStart(animation: Animator?) {

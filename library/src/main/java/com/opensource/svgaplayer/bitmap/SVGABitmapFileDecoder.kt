@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.TransformationUtils
 import com.opensource.svgaplayer.utils.log.LogUtils
+import com.svga.glide.SVGAGlideEx.bitmapPool
 import java.io.IOException
 
 /**
@@ -18,10 +19,9 @@ internal object SVGABitmapFileDecoder : SVGABitmapDecoder<String>() {
         data: String,
         ops: BitmapFactory.Options,
         reqWidth: Int,
-        reqHeight: Int,
-        glide: Glide?
+        reqHeight: Int
     ): Bitmap? {
-        glide?.getBitmapPool()?.let {
+        bitmapPool?.let {
             var result: Bitmap? = null
             TransformationUtils.getBitmapDrawableLock().lock()
             try {

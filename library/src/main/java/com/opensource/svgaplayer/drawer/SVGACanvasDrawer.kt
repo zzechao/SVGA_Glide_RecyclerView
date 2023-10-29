@@ -567,7 +567,7 @@ internal class SVGACanvasDrawer(videoItem: SVGAVideoEntity, val dynamicItem: SVG
         fun buildPath(shape: SVGAVideoShapeEntity): Path {
             if (!this.cache.containsKey(shape)) {
                 val path = Path()
-                path.set(shape.shapePath)
+                shape.shapePath?.let { path.set(it) }
                 this.cache[shape] = path
             }
             return this.cache[shape]!!
