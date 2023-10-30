@@ -7,7 +7,6 @@ import android.widget.ImageView
 import com.bumptech.glide.R
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
-import com.opensource.svgaplayer.SVGACallback
 import com.opensource.svgaplayer.SVGACallback2
 import com.opensource.svgaplayer.SVGADynamicEntity
 import com.opensource.svgaplayer.utils.log.LogUtils
@@ -25,8 +24,6 @@ class SVGAImageViewDrawableTarget(
     var svgaCallback: SVGACallback2? = null,
     var detachedToStop: Boolean = true
 ) : CustomViewTarget<ImageView, SVGAResource>(imageView), View.OnAttachStateChangeListener {
-
-    private var mResource: SVGAResource? = null
 
     init {
         if (dynamicItem.dynamicHidden.isNotEmpty() ||
@@ -62,10 +59,9 @@ class SVGAImageViewDrawableTarget(
         resource: SVGAResource,
         transition: Transition<in SVGAResource>?
     ) {
-        mResource = resource
         LogUtils.debug(
             TAG, "onResourceReady ${Thread.currentThread().name} " +
-                "resource.videoItem:${resource.videoItem == null} "
+                    "resource.videoItem:${resource.videoItem == null} "
         )
         resource.videoItem ?: kotlin.run {
             svgaCallback?.onFailure()
@@ -148,12 +144,13 @@ class SVGAImageViewDrawableTarget(
             LogUtils.debug(TAG, "onDestroy ${this.tag}")
         }?.apply {
             stop()
+            this.videoItem.movieItem = null
             bitmapPool?.let { pool ->
                 this.videoItem.imageMap.forEach {
                     pool.put(it.value)
                 }
-                this.videoItem.imageMap.clear()
             }
+            this.videoItem.imageMap.clear()
         }
         view.setImageDrawable(null)
     }

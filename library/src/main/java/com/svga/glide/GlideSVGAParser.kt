@@ -5,8 +5,11 @@ import com.opensource.svgaplayer.SVGAVideoEntity
 import com.opensource.svgaplayer.proto.MovieEntity
 import com.opensource.svgaplayer.utils.log.LogUtils
 import com.svga.glide.SVGAGlideEx.arrayPool
+import okio.Buffer
+import okio.buffer
+import okio.inflate
+import okio.source
 import org.json.JSONObject
-import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -138,35 +141,33 @@ class GlideSVGAParser {
     }
 
     private fun unzip(inputStream: ByteArrayInputStream, cacheDir: String) {
-        BufferedInputStream(inputStream).use {
-            ZipInputStream(it).use { zipInputStream ->
-                while (true) {
-                    val zipItem = zipInputStream.nextEntry ?: break
-                    if (zipItem.name.contains("../")) {
-                        // 解压路径存在路径穿越问题，直接过滤
-                        continue
-                    }
-                    if (zipItem.name.contains("/")) {
-                        continue
-                    }
-                    val fileZip = File(cacheDir, zipItem.name)
-                    ensureUnzipSafety(fileZip, cacheDir)
-                    if (!fileZip.exists() || fileZip.length() == 0L) {
-                        LogUtils.debug(TAG, "fileZip:$fileZip")
-                        FileOutputStream(fileZip).use { fileOutputStream ->
-                            val buffer = arrayPool.get(1024, ByteArray::class.java)
-                            while (true) {
-                                val readBytes = zipInputStream.read(buffer)
-                                if (readBytes <= 0) break
-                                fileOutputStream.write(buffer, 0, readBytes)
-                            }
-                            arrayPool.put(buffer)
-                        }
-                    } else {
-                        LogUtils.debug(TAG, "fileZip:$fileZip exists")
-                    }
-                    zipInputStream.closeEntry()
+        ZipInputStream(inputStream).use { zipInputStream ->
+            while (true) {
+                val zipItem = zipInputStream.nextEntry ?: break
+                if (zipItem.name.contains("../")) {
+                    // 解压路径存在路径穿越问题，直接过滤
+                    continue
                 }
+                if (zipItem.name.contains("/")) {
+                    continue
+                }
+                val fileZip = File(cacheDir, zipItem.name)
+                ensureUnzipSafety(fileZip, cacheDir)
+                if (!fileZip.exists() || fileZip.length() == 0L) {
+                    LogUtils.debug(TAG, "fileZip:$fileZip")
+                    FileOutputStream(fileZip).use { fileOutputStream ->
+                        val buffer = arrayPool.get(1024, ByteArray::class.java)
+                        while (true) {
+                            val readBytes = zipInputStream.read(buffer)
+                            if (readBytes <= 0) break
+                            fileOutputStream.write(buffer, 0, readBytes)
+                        }
+                        arrayPool.put(buffer)
+                    }
+                } else {
+                    LogUtils.debug(TAG, "fileZip:$fileZip exists")
+                }
+                zipInputStream.closeEntry()
             }
         }
     }
@@ -174,36 +175,42 @@ class GlideSVGAParser {
     private fun inflate(byteArray: ByteArray): ByteArray? {
         val inflater = Inflater()
         inflater.setInput(byteArray, 0, byteArray.size)
-        ByteArrayOutputStream().use { inflatedOutputStream ->
-            val buffer = arrayPool.get(1024, ByteArray::class.java)
-            while (true) {
-                val count = inflater.inflate(buffer)
-                if (count <= 0) break
-                inflatedOutputStream.write(buffer, 0, count)
+        Buffer().use { inflatedOutputStream ->
+            Buffer().inflate(inflater).buffer().use {
+                val buffer = arrayPool.get(1024, ByteArray::class.java)
+                try {
+                    while (true) {
+                        val count = it.read(buffer)
+                        if (count <= 0) break
+                        inflatedOutputStream.write(buffer, 0, count)
+                    }
+                } catch (_: Throwable) {
+                } finally {
+                    inflater.end()
+                    arrayPool.put(buffer)
+                }
             }
-            inflater.end()
-            arrayPool.put(buffer)
-            return inflatedOutputStream.toByteArray()
+            return inflatedOutputStream.readByteArray()
         }
     }
 
     private fun readAsBytes(inputStream: InputStream): ByteArray? {
-        ByteArrayOutputStream().use { byteArrayOutputStream ->
+        Buffer().use { byteArrayOutputStream ->
             val buffer = arrayPool.get(1024, ByteArray::class.java)
             try {
-                while (true) {
-                    val cnt = inputStream.read(buffer)
-                    if (cnt <= 0) break
-                    byteArrayOutputStream.write(buffer, 0, cnt)
+                inputStream.source().buffer().use {
+                    while (true) {
+                        val cnt = it.read(buffer)
+                        if (cnt <= 0) break
+                        byteArrayOutputStream.write(buffer, 0, cnt)
+                    }
                 }
             } catch (_: Throwable) {
 
             } finally {
                 arrayPool.put(buffer)
             }
-
-
-            return byteArrayOutputStream.toByteArray()
+            return byteArrayOutputStream.readByteArray()
         }
     }
 

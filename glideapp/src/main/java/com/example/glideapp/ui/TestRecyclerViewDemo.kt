@@ -68,7 +68,7 @@ class TestRecyclerViewDemo : AppCompatActivity() {
         override fun onBindViewHolder(holder: ItemHolder, position: Int) {
             val url = urls[position % urls.size]
             (Glide.with(this@TestRecyclerViewDemo) as GlideRequests).asSVGAResource()
-                .load(url)
+                .load(url).skipMemoryCache(true)
                 .setSVGATag(url)
                 .into(
                     SVGAImageViewDrawableTarget(
