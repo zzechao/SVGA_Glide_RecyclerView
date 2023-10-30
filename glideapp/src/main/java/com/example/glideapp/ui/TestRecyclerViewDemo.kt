@@ -11,12 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.glideapp.GlideRequests
 import com.example.glideapp.R
-import com.opensource.svgaplayer.SVGADrawable
 import com.opensource.svgaplayer.SVGAImageView
 import com.opensource.svgaplayer.SVGAParser
 import com.opensource.svgaplayer.SVGAVideoEntity
 import com.svga.glide.SVGAImageViewDrawableTarget
-import java.net.URL
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_recycler
 
 /**
@@ -44,9 +42,13 @@ class TestRecyclerViewDemo : AppCompatActivity() {
         "https://oss.qingyujiaoyou.com/boss/pc_50071620_config_44hdjx13tnt0e0uts7ftdmeprfaws4kb.svga"
     )
 
+    private val svgaVersion1 =
+        "https://oss.qingyujiaoyou.com/boss/pc_50045958_config_kd6fs4mwukni0e7phpe594gkxr2tdqft.svga"
+
     private val map = mutableMapOf<String, SVGAVideoEntity>()
 
-    private val svgaUrl = "https://turnover-cn.oss-cn-hangzhou.aliyuncs.com/newfindyou/svga/360558.svga"
+    private val svgaUrl =
+        "https://turnover-cn.oss-cn-hangzhou.aliyuncs.com/newfindyou/svga/360558.svga"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
