@@ -3,7 +3,6 @@
 ```kotlin
 //自定义class继承AppGlideModule中添加SVGA的Glide解码模块，cachePath是缓存路径，是针对SVGA 1.0版本的文件缓存路径：
 @GlideModule
-@GlideModule
 class CustomGlideModule : AppGlideModule() {
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
         super.registerComponents(context, glide, registry)
@@ -27,15 +26,15 @@ class CustomGlideModule : AppGlideModule() {
 SVGAImageViewDrawableTarget提供6个参数：
 ```kotlin
 /**
- * repeatCount是重复次数，显示1次就设置0
+ * times 显示次数
  * repeatMode是显示模式
  * dynamicItem是SVGA的原有的填充模块，替换头像或者文案
  * svgaCallback是原有的SVGA的回调
  * detachedToStop是否移出屏幕就停止SVGA动画，默认是开启，如果repeatCount是ValueAnimator.INFINITE，就会重新返回屏幕后重新恢复SVGA动画
  */
-SVGAImageViewDrawableTarget(
-    imageView: ImageView, 
-    var repeatCount: Int = ValueAnimator.INFINITE,
+class SVGAImageViewDrawableTarget(
+    val imageView: ImageView, 
+    var times: Int = 1,
     var repeatMode: Int = ValueAnimator.RESTART,
     var dynamicItem: SVGADynamicEntity = SVGADynamicEntity(),
     var svgaCallback: SVGACallback? = null,
