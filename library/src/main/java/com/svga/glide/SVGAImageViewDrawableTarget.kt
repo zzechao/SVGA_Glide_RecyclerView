@@ -18,7 +18,7 @@ import com.svga.glide.SVGAGlideEx.bitmapPool
  * Description:
  */
 class SVGAImageViewDrawableTarget(
-    imageView: ImageView, var repeatCount: Int = ValueAnimator.INFINITE,
+    imageView: ImageView, var times: Int = 1,
     var repeatMode: Int = ValueAnimator.RESTART,
     val dynamicItem: SVGADynamicEntity = SVGADynamicEntity(),
     var svgaCallback: SVGACallback2? = null,
@@ -71,7 +71,7 @@ class SVGAImageViewDrawableTarget(
         val unit = {
             LogUtils.debug(TAG, "onResourceReady unit")
             val drawable =
-                SVGAAnimationDrawable(resource.videoItem, repeatCount, repeatMode, dynamicItem)
+                SVGAAnimationDrawable(resource.videoItem, times - 1, repeatMode, dynamicItem)
             drawable.tag = resource.model
             drawable.svgaCallback = svgaCallback
             drawable.scaleType = view.scaleType
@@ -84,7 +84,7 @@ class SVGAImageViewDrawableTarget(
 
         val drawableCur = view.drawable as? SVGAAnimationDrawable
         drawableCur?.let {
-            if (it.repeatCount == repeatCount &&
+            if (it.repeatCount == times - 1 &&
                 it.repeatMode == repeatMode &&
                 resource.videoItem == it.videoItem
             ) {
@@ -156,7 +156,7 @@ class SVGAImageViewDrawableTarget(
     }
 
     override fun onViewAttachedToWindow(v: View?) {
-        if (repeatCount == ValueAnimator.INFINITE) {
+        if (times - 1 == ValueAnimator.INFINITE) {
             (view.drawable as? SVGAAnimationDrawable)?.start()
         }
     }
