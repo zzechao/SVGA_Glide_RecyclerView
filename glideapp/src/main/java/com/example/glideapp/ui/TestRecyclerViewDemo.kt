@@ -16,6 +16,8 @@ import com.opensource.svgaplayer.SVGAParser
 import com.opensource.svgaplayer.SVGAVideoEntity
 import com.svga.glide.SVGAImageViewDrawableTarget
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_recycler
+import kotlinx.android.synthetic.main.activity_test_recyclerview.head_tool
+import kotlinx.android.synthetic.main.activity_test_recyclerview.left
 
 /**
  * Time:2022/11/25 18:23
@@ -55,6 +57,12 @@ class TestRecyclerViewDemo : AppCompatActivity() {
         setContentView(R.layout.activity_test_recyclerview)
         head_recycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         head_recycler.adapter = PopupListAdapter()
+        left?.setOnClickListener {
+            (Glide.with(this@TestRecyclerViewDemo) as GlideRequests).asSVGAResource()
+                .load(svgaVersion1).skipMemoryCache(true)
+                .setSVGATag(svgaVersion1)
+                .into(SVGAImageViewDrawableTarget(head_tool))
+        }
         //        (Glide.with(this@TestRecyclerViewDemo) as GlideRequests).asSVGA().load(svgaUrl)
         //            .setSVGATag(svgaUrl)
         //            .into(SVGAImageViewDrawableTarget(head_tool))

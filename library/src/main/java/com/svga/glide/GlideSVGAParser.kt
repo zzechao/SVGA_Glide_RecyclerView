@@ -8,6 +8,7 @@ import com.svga.glide.SVGAGlideEx.arrayPool
 import okio.Buffer
 import okio.buffer
 import okio.inflate
+import okio.sink
 import okio.source
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
@@ -17,6 +18,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.util.zip.Inflater
 import java.util.zip.ZipInputStream
@@ -95,6 +97,7 @@ class GlideSVGAParser {
         frameWidth: Int,
         frameHeight: Int
     ): SVGAVideoEntity? {
+        LogUtils.info(TAG, "parseSpecFile")
         try {
             FileInputStream(binaryFile).use {
                 return SVGAVideoEntity(
@@ -117,10 +120,11 @@ class GlideSVGAParser {
         frameWidth: Int,
         frameHeight: Int
     ): SVGAVideoEntity? {
+        LogUtils.info(TAG, "parseSpecFile")
         val buffer = arrayPool.get(1024, ByteArray::class.java)
         try {
-            FileInputStream(jsonFile).use { fileInputStream ->
-                ByteArrayOutputStream().use { byteArrayOutputStream ->
+            jsonFile.source().buffer().use { fileInputStream ->
+                Buffer().use { byteArrayOutputStream ->
                     while (true) {
                         val size = fileInputStream.read(buffer)
                         if (size == -1) {
@@ -128,7 +132,7 @@ class GlideSVGAParser {
                         }
                         byteArrayOutputStream.write(buffer, 0, size)
                     }
-                    val jsonObj = JSONObject(byteArrayOutputStream.toString())
+                    val jsonObj = JSONObject(byteArrayOutputStream.readString(Charsets.UTF_8))
                     return SVGAVideoEntity(jsonObj, File(source), frameWidth, frameHeight)
                 }
             }
@@ -153,22 +157,28 @@ class GlideSVGAParser {
                 }
                 val fileZip = File(cacheDir, zipItem.name)
                 ensureUnzipSafety(fileZip, cacheDir)
-                if (!fileZip.exists() || fileZip.length() == 0L) {
-                    LogUtils.debug(TAG, "fileZip:$fileZip")
-                    FileOutputStream(fileZip).use { fileOutputStream ->
-                        val buffer = arrayPool.get(1024, ByteArray::class.java)
-                        while (true) {
-                            val readBytes = zipInputStream.read(buffer)
-                            if (readBytes <= 0) break
-                            fileOutputStream.write(buffer, 0, readBytes)
+                val reader = zipInputStream.source().buffer()
+                val buffer = arrayPool.get(1024, ByteArray::class.java)
+                try {
+                    if (!fileZip.exists() || fileZip.length() == 0L) {
+                        LogUtils.debug(TAG, "fileZip:$fileZip")
+                        fileZip.sink().buffer().use { fileOutputStream ->
+                            while (true) {
+                                val readBytes = reader.read(buffer)
+                                if (readBytes <= 0) break
+                                fileOutputStream.write(buffer, 0, readBytes)
+                            }
+                            arrayPool.put(buffer)
                         }
-                        arrayPool.put(buffer)
+                    } else {
+                        LogUtils.debug(TAG, "fileZip:$fileZip exists")
                     }
-                } else {
-                    LogUtils.debug(TAG, "fileZip:$fileZip exists")
+                } catch (_: Throwable) {
+                } finally {
+                    arrayPool.put(buffer)
                 }
-                zipInputStream.closeEntry()
             }
+            zipInputStream.closeEntry()
         }
     }
 
