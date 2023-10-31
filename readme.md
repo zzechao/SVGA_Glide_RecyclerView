@@ -1,11 +1,11 @@
 ### Glide加载模式（Glide版本是4.13.2以后，并添加compiler模块）
 
-## 采用glide对svga的加载进行优化
-# 1、对内部的图片采用glide.bitmappool进行复用优化（inBitmap复用内存空间），防止内存抖动
-# 2、图片的采样率优化（CustomViewTarget监听布局ViewTreeObserver.OnDrawListener后回调到解析器进行解析）
-# 3、SVGAVideoEntity复用优化，对于相同svga资源公用同个解析对象，过度解析
-# 4、普通imageview加载svga的构造（SVGAImageViewDrawableTarget，并对imageview的相同drawable进行复用，以及恢复暂停清除的生命周期控制）
-# 5、采用okio重写解析器SVGAParser，减少io多次Array.copy的内存抖动
+ 采用glide对svga的加载进行优化  
+ 1、对内部的图片采用glide.bitmappool进行复用优化（inBitmap复用内存空间），防止内存抖动  
+ 2、图片的采样率优化（CustomViewTarget监听布局ViewTreeObserver.OnDrawListener后回调到解析器进行解析）  
+ 3、SVGAVideoEntity复用优化，对于相同svga资源公用同个解析对象，过度解析  
+ 4、普通imageview加载svga的构造（SVGAImageViewDrawableTarget，并对imageview的相同drawable进行复用，以及恢复暂停清除的生命周期控制）  
+ 5、采用okio重写解析器SVGAParser，减少io多次Array.copy的内存抖动  
 
 ```kotlin
 //自定义class继承AppGlideModule中添加SVGA的Glide解码模块，cachePath是缓存路径，是针对SVGA 1.0版本的文件缓存路径：
