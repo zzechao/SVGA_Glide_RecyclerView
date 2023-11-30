@@ -144,13 +144,6 @@ class SVGAImageViewDrawableTarget(
             LogUtils.debug(TAG, "onDestroy ${this.tag}")
         }?.apply {
             stop()
-            this.videoItem.movieItem = null
-            bitmapPool?.let { pool ->
-                this.videoItem.imageMap.forEach {
-                    pool.put(it.value)
-                }
-            }
-            this.videoItem.imageMap.clear()
         }
         view.setImageDrawable(null)
     }
