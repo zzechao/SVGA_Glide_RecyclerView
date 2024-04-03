@@ -12,4 +12,12 @@ interface SVGACallback2 : SVGACallback {
 
     // 只有Glide方法加载才有回调
     fun onFailure() {}
+
+    override fun onPause() {}
+
+    override fun onFinished() {}
+
+    override fun onRepeat() {}
+
+    override fun onStep(frame: Int, percentage: Double) {}
 }
