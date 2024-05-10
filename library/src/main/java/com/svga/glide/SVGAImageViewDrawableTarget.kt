@@ -17,7 +17,7 @@ import com.svga.glide.SVGAGlideEx.bitmapPool
  * Author: zhouzechao
  * Description:
  */
-class SVGAImageViewDrawableTarget(
+open class SVGAImageViewDrawableTarget(
     imageView: ImageView, var times: Int = 0,
     var repeatMode: Int = ValueAnimator.RESTART,
     val dynamicItem: SVGADynamicEntity = SVGADynamicEntity(),
