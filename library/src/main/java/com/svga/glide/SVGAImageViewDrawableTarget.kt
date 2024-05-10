@@ -10,7 +10,6 @@ import com.bumptech.glide.request.transition.Transition
 import com.opensource.svgaplayer.SVGACallback2
 import com.opensource.svgaplayer.SVGADynamicEntity
 import com.opensource.svgaplayer.utils.log.LogUtils
-import com.svga.glide.SVGAGlideEx.bitmapPool
 
 /**
  * Time:2022/11/26 16:07
@@ -23,7 +22,9 @@ open class SVGAImageViewDrawableTarget(
     val dynamicItem: SVGADynamicEntity = SVGADynamicEntity(),
     var svgaCallback: SVGACallback2? = null,
     var detachedToStop: Boolean = true
-) : CustomViewTarget<ImageView, SVGAResource>(imageView), View.OnAttachStateChangeListener {
+) : CustomViewTarget<ImageView, SVGAResource>(imageView) {
+
+    private var attachStateChangeListener: View.OnAttachStateChangeListener? = null
 
     init {
         if (dynamicItem.dynamicHidden.isNotEmpty() ||
@@ -77,7 +78,20 @@ open class SVGAImageViewDrawableTarget(
             drawable.scaleType = view.scaleType
             view.setImageDrawable(drawable)
             if (detachedToStop) {
-                view.addOnAttachStateChangeListener(this)
+                if (attachStateChangeListener == null) {
+                    attachStateChangeListener = object : View.OnAttachStateChangeListener {
+                        override fun onViewAttachedToWindow(v: View?) {
+                            if (times - 1 == ValueAnimator.INFINITE) {
+                                (view.drawable as? SVGAAnimationDrawable)?.start()
+                            }
+                        }
+
+                        override fun onViewDetachedFromWindow(v: View?) {
+                            (view.drawable as? SVGAAnimationDrawable)?.stop()
+                        }
+                    }
+                }
+                view.addOnAttachStateChangeListener(attachStateChangeListener)
             }
             drawable.start()
         }
@@ -137,8 +151,8 @@ open class SVGAImageViewDrawableTarget(
 
     override fun onDestroy() {
         super.onDestroy()
-        if (detachedToStop) {
-            view.removeOnAttachStateChangeListener(this)
+        attachStateChangeListener?.let {
+            view.removeOnAttachStateChangeListener(attachStateChangeListener)
         }
         (view.drawable as? SVGAAnimationDrawable)?.apply {
             LogUtils.debug(TAG, "onDestroy ${this.tag}")
@@ -146,15 +160,5 @@ open class SVGAImageViewDrawableTarget(
             stop()
         }
         view.setImageDrawable(null)
-    }
-
-    override fun onViewAttachedToWindow(v: View?) {
-        if (times - 1 == ValueAnimator.INFINITE) {
-            (view.drawable as? SVGAAnimationDrawable)?.start()
-        }
-    }
-
-    override fun onViewDetachedFromWindow(v: View?) {
-        (view.drawable as? SVGAAnimationDrawable)?.stop()
     }
 }
