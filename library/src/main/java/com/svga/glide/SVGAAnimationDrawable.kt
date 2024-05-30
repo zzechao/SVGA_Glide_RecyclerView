@@ -42,6 +42,8 @@ class SVGAAnimationDrawable(
     //一共有多少帧
     private var totalFrame = 0
 
+    private var isInitiativePause = false
+
     private var drawer = SVGACanvasDrawer(videoItem, dynamicItem).apply {
         scaleBySelf = false
     }
@@ -169,8 +171,11 @@ class SVGAAnimationDrawable(
         }
     }
 
-    fun pause() {
+    fun pause(isInitiative: Boolean = false) {
         if (mAnimator?.isStarted == true && mAnimator?.isPaused == false) {
+            if (isInitiative) {
+                isInitiativePause = true
+            }
             LogUtils.debug(TAG, "pause $tag")
             mAnimator?.pause()
             svgaCallback?.onPause()
@@ -187,7 +192,11 @@ class SVGAAnimationDrawable(
         }
     }
 
-    fun resume() {
+    fun resume(isInitiative: Boolean = false) {
+        if (this.isInitiativePause && !isInitiative) {
+            return
+        }
+        isInitiativePause = false
         if (mAnimator?.isStarted == true && mAnimator?.isPaused == true) {
             mAnimator?.resume()
             svgaCallback?.onResume()

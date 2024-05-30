@@ -9,12 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.transition.Transition
 import com.example.glideapp.GlideRequests
 import com.example.glideapp.R
 import com.opensource.svgaplayer.SVGAImageView
 import com.opensource.svgaplayer.SVGAParser
 import com.opensource.svgaplayer.SVGAVideoEntity
 import com.svga.glide.SVGAImageViewDrawableTarget
+import com.svga.glide.SVGAResource
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_recycler
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_tool
 import kotlinx.android.synthetic.main.activity_test_recyclerview.left
@@ -61,7 +63,11 @@ class TestRecyclerViewDemo : AppCompatActivity() {
             (Glide.with(this@TestRecyclerViewDemo) as GlideRequests).asSVGAResource()
                 .load(svgaVersion1).skipMemoryCache(true)
                 .setSVGATag(svgaVersion1)
-                .into(SVGAImageViewDrawableTarget(head_tool))
+                .into(object : SVGAImageViewDrawableTarget(head_tool) {
+                    override fun onResourceReady(resource: SVGAResource, transition: Transition<in SVGAResource>?) {
+                        super.onResourceReady(resource, transition)
+                    }
+                })
         }
         //        (Glide.with(this@TestRecyclerViewDemo) as GlideRequests).asSVGA().load(svgaUrl)
         //            .setSVGATag(svgaUrl)
@@ -86,6 +92,10 @@ class TestRecyclerViewDemo : AppCompatActivity() {
                     )
                 )
             holder.headsvga.visibility = View.GONE
+        }
+
+        override fun onBindViewHolder(holder: ItemHolder, position: Int, payloads: MutableList<Any>) {
+            super.onBindViewHolder(holder, position, payloads)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ItemHolder {
