@@ -40,7 +40,7 @@ internal object SVGABitmapByteArrayDecoder : SVGABitmapDecoder<ByteArray>() {
                         LogUtils.debug("SVGABitmapByteArrayDecoder", "onDecode 4")
                         result = BitmapFactory.decodeByteArray(data, 0, data.count(), ops)
                     } catch (resetException: IOException) {
-                        LogUtils.debug("SVGABitmapByteArrayDecoder", "onDecode 5")
+                        LogUtils.error("SVGABitmapByteArrayDecoder", "onDecode 5")
                     }
                 }
             } finally {

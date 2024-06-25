@@ -5,7 +5,6 @@ import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Build
-import com.bumptech.glide.Glide
 import com.opensource.svgaplayer.bitmap.BitmapSampleSizeCalculator
 import com.opensource.svgaplayer.bitmap.SVGABitmapByteArrayDecoder
 import com.opensource.svgaplayer.bitmap.SVGABitmapFileDecoder
@@ -17,10 +16,10 @@ import com.opensource.svgaplayer.proto.MovieParams
 import com.opensource.svgaplayer.utils.SVGARect
 import com.opensource.svgaplayer.utils.log.LogUtils
 import com.svga.glide.SVGAGlideEx.bitmapPool
+import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import org.json.JSONObject
 
 /**
  * Created by PonyCui on 16/6/18.
@@ -51,11 +50,12 @@ class SVGAVideoEntity {
     private var mCacheDir: File
     private var mFrameHeight = 0
     private var mFrameWidth = 0
+
     /**
      * 图片采样率
      * */
     private var imageSampleSize = 1
-    private var mPlayCallback: SVGAParser.PlayCallback?=null
+    private var mPlayCallback: SVGAParser.PlayCallback? = null
     private lateinit var mCallback: () -> Unit
 
     constructor(json: JSONObject, cacheDir: File) : this(json, cacheDir, 0, 0)
@@ -168,7 +168,13 @@ class SVGAVideoEntity {
     }
 
     private fun createBitmap(filePath: String): Bitmap? {
-        return SVGABitmapFileDecoder.decodeBitmapFrom(filePath, imageSampleSize, mFrameWidth, mFrameHeight)
+        var width = videoSize.width.toInt()
+        var height = videoSize.height.toInt()
+        if (imageSampleSize > 1) {
+            width = mFrameWidth
+            height = mFrameHeight
+        }
+        return SVGABitmapFileDecoder.decodeBitmapFrom(filePath, imageSampleSize, width, height)
     }
 
     private fun parserImages(obj: MovieEntity) {
@@ -197,8 +203,14 @@ class SVGAVideoEntity {
     }
 
     private fun createBitmap(byteArray: ByteArray, filePath: String): Bitmap? {
+        var width = videoSize.width.toInt()
+        var height = videoSize.height.toInt()
+        if (imageSampleSize > 1) {
+            width = mFrameWidth
+            height = mFrameHeight
+        }
         val bitmap =
-            SVGABitmapByteArrayDecoder.decodeBitmapFrom(byteArray, imageSampleSize, mFrameWidth, mFrameHeight)
+            SVGABitmapByteArrayDecoder.decodeBitmapFrom(byteArray, imageSampleSize, width, height)
         return bitmap ?: createBitmap(filePath)
     }
 
@@ -262,11 +274,13 @@ class SVGAVideoEntity {
                 val length = it.available().toDouble()
                 val offset = ((startTime / totalTime) * length).toLong()
                 if (SVGASoundManager.isInit()) {
-                    item.soundID = SVGASoundManager.load(soundCallback,
-                            it.fd,
-                            offset,
-                            length.toLong(),
-                            1)
+                    item.soundID = SVGASoundManager.load(
+                        soundCallback,
+                        it.fd,
+                        offset,
+                        length.toLong(),
+                        1
+                    )
                 } else {
                     item.soundID = soundPool?.load(it.fd, offset, length.toLong(), 1)
                 }
@@ -288,10 +302,10 @@ class SVGAVideoEntity {
             audiosDataMap.forEach {
                 val audioCache = SVGACache.buildAudioFile(it.key)
                 audiosFileMap[it.key] =
-                        audioCache.takeIf { file -> file.exists() } ?: generateAudioFile(
-                                audioCache,
-                                it.value
-                        )
+                    audioCache.takeIf { file -> file.exists() } ?: generateAudioFile(
+                        audioCache,
+                        it.value
+                    )
             }
         }
         return audiosFileMap
@@ -308,7 +322,7 @@ class SVGAVideoEntity {
             val fileTag = byteArray.slice(IntRange(0, 3))
             if (fileTag[0].toInt() == 73 && fileTag[1].toInt() == 68 && fileTag[2].toInt() == 51) {
                 audiosDataMap[imageKey] = byteArray
-            }else if(fileTag[0].toInt() == -1 && fileTag[1].toInt() == -5 && fileTag[2].toInt() == -108){
+            } else if (fileTag[0].toInt() == -1 && fileTag[1].toInt() == -5 && fileTag[2].toInt() == -108) {
                 audiosDataMap[imageKey] = byteArray
             }
         }
@@ -347,11 +361,11 @@ class SVGAVideoEntity {
         return try {
             if (Build.VERSION.SDK_INT >= 21) {
                 val attributes = AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .build()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
                 SoundPool.Builder().setAudioAttributes(attributes)
-                        .setMaxStreams(12.coerceAtMost(entity.audios.count()))
-                        .build()
+                    .setMaxStreams(12.coerceAtMost(entity.audios.count()))
+                    .build()
             } else {
                 SoundPool(12.coerceAtMost(entity.audios.count()), AudioManager.STREAM_MUSIC, 0)
             }
