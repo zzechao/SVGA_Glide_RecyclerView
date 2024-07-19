@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Build
+import android.util.Log
 import com.opensource.svgaplayer.bitmap.BitmapSampleSizeCalculator
 import com.opensource.svgaplayer.bitmap.SVGABitmapByteArrayDecoder
 import com.opensource.svgaplayer.bitmap.SVGABitmapFileDecoder
@@ -55,8 +56,10 @@ class SVGAVideoEntity {
      * 图片采样率
      * */
     private var imageSampleSize = 1
+    private var isAudioInit = false
+
     private var mPlayCallback: SVGAParser.PlayCallback? = null
-    private lateinit var mCallback: () -> Unit
+    private var mCallback: (() -> Unit)? = null
 
     constructor(json: JSONObject, cacheDir: File) : this(json, cacheDir, 0, 0)
 
@@ -131,10 +134,10 @@ class SVGAVideoEntity {
         mCallback = callback
         mPlayCallback = playCallback
         if (movieItem == null) {
-            mCallback()
+            mCallback?.invoke()
         } else {
             setupAudios(movieItem!!) {
-                mCallback()
+                mCallback?.invoke()
             }
         }
     }
@@ -233,20 +236,27 @@ class SVGAVideoEntity {
     }
 
     private fun setupAudios(entity: MovieEntity, completionBlock: () -> Unit) {
-        if (entity.audios == null || entity.audios.isEmpty()) {
-            run(completionBlock)
+        if (entity.audios == null || entity.audios.isEmpty() || isAudioInit) {
+            completionBlock()
             return
         }
-        setupSoundPool(entity, completionBlock)
-        val audiosFileMap = generateAudioFileMap(entity)
-        //repair when audioEntity error can not callback
-        //如果audiosFileMap为空 soundPool?.load 不会走 导致 setOnLoadCompleteListener 不会回调 导致外层prepare不回调卡住
-        if (audiosFileMap.size == 0) {
-            run(completionBlock)
-            return
-        }
-        this.audioList = entity.audios.map { audio ->
-            return@map createSvgaAudioEntity(audio, audiosFileMap)
+        synchronized(this) {
+            if (isAudioInit) {
+                completionBlock()
+                return
+            }
+            isAudioInit = true
+            setupSoundPool(entity, completionBlock)
+            val audiosFileMap = generateAudioFileMap(entity)
+            //repair when audioEntity error can not callback
+            //如果audiosFileMap为空 soundPool?.load 不会走 导致 setOnLoadCompleteListener 不会回调 导致外层prepare不回调卡住
+            if (audiosFileMap.size == 0) {
+                run(completionBlock)
+                return
+            }
+            this.audioList = entity.audios.map { audio ->
+                return@map createSvgaAudioEntity(audio, audiosFileMap)
+            }
         }
     }
 
@@ -265,7 +275,7 @@ class SVGAVideoEntity {
                 fileList.add(entity.value)
             }
             it.onPlay(fileList)
-            mCallback()
+            mCallback?.invoke()
             return item
         }
 

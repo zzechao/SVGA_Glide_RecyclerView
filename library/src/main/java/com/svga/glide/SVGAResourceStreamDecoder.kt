@@ -60,7 +60,6 @@ class SVGAResourceStreamDecoder(
                 requestedWidth,
                 requestedHeight, tag
             )
-        svga?.prepare({}, null)
         return SVGAGlideResourceDelegate(
             SVGAResource(svga, tag, width, height)
         )

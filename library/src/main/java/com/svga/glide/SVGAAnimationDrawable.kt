@@ -25,7 +25,8 @@ class SVGAAnimationDrawable(
     val videoItem: SVGAVideoEntity,
     val repeatCount: Int,
     val repeatMode: Int,
-    val dynamicItem: SVGADynamicEntity
+    val dynamicItem: SVGADynamicEntity,
+    var showLastFrame: Boolean = false
 ) : Animatable, Drawable(),
     ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 
@@ -234,8 +235,10 @@ class SVGAAnimationDrawable(
 
     override fun onAnimationEnd(animation: Animator?) {
         svgaCallback?.onFinished()
-        currentFrame = -1
-        invalidateSelf()
+        if (!showLastFrame) {
+            currentFrame = -1
+            invalidateSelf()
+        }
     }
 
     override fun onAnimationCancel(animation: Animator?) {
