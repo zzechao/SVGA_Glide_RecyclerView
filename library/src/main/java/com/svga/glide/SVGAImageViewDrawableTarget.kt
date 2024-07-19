@@ -7,7 +7,6 @@ import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.opensource.svgaplayer.SVGACallback2
 import com.opensource.svgaplayer.SVGADynamicEntity
-import com.opensource.svgaplayer.SVGAParser
 import com.opensource.svgaplayer.utils.log.LogUtils
 
 /**

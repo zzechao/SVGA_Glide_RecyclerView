@@ -37,7 +37,7 @@ class CustomGlideModule : AppGlideModule() {
  * repeatMode是显示模式
  * dynamicItem是SVGA的原有的填充模块，替换头像或者文案
  * svgaCallback是原有的SVGA的回调
- * detachedToStop是否移出屏幕就停止SVGA动画，默认是开启，如果repeatCount是ValueAnimator.INFINITE，就会重新返回屏幕后重新恢复SVGA动画
+ * showLastFrame 播放结束后，是否显示最后一帧， false 不显示， true 显示
  */
 class SVGAImageViewDrawableTarget(
     val imageView: ImageView, 
@@ -45,7 +45,7 @@ class SVGAImageViewDrawableTarget(
     var repeatMode: Int = ValueAnimator.RESTART,
     var dynamicItem: SVGADynamicEntity = SVGADynamicEntity(),
     var svgaCallback: SVGACallback? = null,
-    var detachedToStop: Boolean = true
+    var showLastFrame: Boolean = false
     )
 
 /**
