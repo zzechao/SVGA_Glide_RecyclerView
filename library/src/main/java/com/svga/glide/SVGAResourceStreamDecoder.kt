@@ -1,6 +1,5 @@
 package com.svga.glide
 
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.Option
 import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.ResourceDecoder
@@ -42,7 +41,7 @@ class SVGAResourceStreamDecoder(
         }
         LogUtils.debug(
             TAG, "decode source:$source " +
-                "width:$width height:$height options:$tag"
+                    "width:$width height:$height options:$tag"
         )
         val requestedWidth = if (width == SIZE_ORIGINAL) {
             0
@@ -61,6 +60,7 @@ class SVGAResourceStreamDecoder(
                 requestedWidth,
                 requestedHeight, tag
             )
+        svga?.prepare({}, null)
         return SVGAGlideResourceDelegate(
             SVGAResource(svga, tag, width, height)
         )

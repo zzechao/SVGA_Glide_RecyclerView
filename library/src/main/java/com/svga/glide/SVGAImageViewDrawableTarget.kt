@@ -9,7 +9,9 @@ import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.opensource.svgaplayer.SVGACallback2
 import com.opensource.svgaplayer.SVGADynamicEntity
+import com.opensource.svgaplayer.SVGAParser
 import com.opensource.svgaplayer.utils.log.LogUtils
+import java.lang.ref.WeakReference
 
 /**
  * Time:2022/11/26 16:07
@@ -45,7 +47,7 @@ open class SVGAImageViewDrawableTarget(
     private val TAG = "SVGAImageViewDrawableTarget"
 
     override fun onLoadFailed(errorDrawable: Drawable?) {
-        clearDrawable()
+        clearDrawable("onLoadFailed")
         svgaCallback?.onFailure()
     }
 
@@ -105,6 +107,7 @@ open class SVGAImageViewDrawableTarget(
                 LogUtils.debug(TAG, "onResourceReady same drawable ${drawableCur.tag}")
                 it.scaleType = view.scaleType
                 it.resetDynamicEntity(dynamicItem)
+                it.svgaCallback = svgaCallback
                 it.stop()
                 it.start()
             } else {
@@ -125,12 +128,12 @@ open class SVGAImageViewDrawableTarget(
     }
 
     override fun onResourceCleared(placeholder: Drawable?) {
-        clearDrawable()
+        clearDrawable("onResourceCleared")
     }
 
-    private fun clearDrawable() {
+    private fun clearDrawable(reason: String) {
         (view.drawable as? SVGAAnimationDrawable)?.apply {
-            LogUtils.debug(TAG, "clearDrawable ${this.tag}")
+            LogUtils.debug(TAG, "clearDrawable $reason ${this.tag}")
         }?.apply {
             stop()
         }
@@ -154,11 +157,6 @@ open class SVGAImageViewDrawableTarget(
         attachStateChangeListener?.let {
             view.removeOnAttachStateChangeListener(attachStateChangeListener)
         }
-        (view.drawable as? SVGAAnimationDrawable)?.apply {
-            LogUtils.debug(TAG, "onDestroy ${this.tag}")
-        }?.apply {
-            stop()
-        }
-        view.setImageDrawable(null)
+        clearDrawable("onDestroy")
     }
 }

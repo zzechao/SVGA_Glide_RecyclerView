@@ -13,11 +13,11 @@ import com.opensource.svgaplayer.SVGAParser
 import com.opensource.svgaplayer.SVGAVideoEntity
 import com.svga.glide.SVGAImageViewDrawableTarget
 import com.svga.glide.setSvgaClickMapListener
-import java.net.URL
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_tool
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_tool_svga
 import kotlinx.android.synthetic.main.activity_test_recyclerview.left
 import kotlinx.android.synthetic.main.activity_test_recyclerview.right
+import java.net.URL
 
 /**
  * Time:2022/11/25 18:23
@@ -50,7 +50,7 @@ class TestRecyclerViewDemo3 : AppCompatActivity() {
             .skipMemoryCache(true)
             .preload()
         left.setOnClickListener {
-            parse.decodeFromURL(URL(svgaUrl), object : SVGAParser.ParseCompletion {
+            parse.decodeFromAssets("test.svga", object : SVGAParser.ParseCompletion {
                 override fun onComplete(videoItem: SVGAVideoEntity) {
                     list.add(videoItem)
                     val drawable = SVGADrawable(videoItem)
@@ -66,10 +66,10 @@ class TestRecyclerViewDemo3 : AppCompatActivity() {
         right.setOnClickListener {
             (Glide.with(this@TestRecyclerViewDemo3) as GlideRequests)
                 .asSVGAResource()
-                .load(svgaUrl)
+                .load("file:///android_asset/test.svga")
                 .setSVGATag(svgaUrl)
                 .into(SVGAImageViewDrawableTarget(head_tool).apply {
-                    setSvgaClickMapListener(listOf("touxiang1", "touxiang2")){
+                    setSvgaClickMapListener(listOf("touxiang1", "touxiang2")) {
                         Log.i("TestRecyclerViewDemo3", "click $it")
                     }
                 })
