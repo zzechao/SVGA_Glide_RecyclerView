@@ -8,7 +8,7 @@
  5、采用okio重写解析器SVGAParser，减少io多次Array.copy的内存抖动  
 
 ### 流程图
-![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/process.jpg)
+![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/process.png)
 
 ```kotlin
 //自定义class继承AppGlideModule中添加SVGA的Glide解码模块，cachePath是缓存路径，是针对SVGA 1.0版本的文件缓存路径：
