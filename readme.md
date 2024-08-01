@@ -7,7 +7,7 @@
  4、普通imageview加载svga的构造（SVGAImageViewDrawableTarget，并对imageview的相同drawable进行复用，以及恢复暂停清除的生命周期控制）  
  5、采用okio重写解析器SVGAParser，减少io多次Array.copy的内存抖动  
 
-### 流程图
+### 思路架构图
 ![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/process.png)
 
 ```kotlin
