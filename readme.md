@@ -7,6 +7,9 @@
  4、普通imageview加载svga的构造（SVGAImageViewDrawableTarget，并对imageview的相同drawable进行复用，以及恢复暂停清除的生命周期控制）  
  5、采用okio重写解析器SVGAParser，减少io多次Array.copy的内存抖动  
 
+### 流程图
+![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/process.jpg)
+
 ```kotlin
 //自定义class继承AppGlideModule中添加SVGA的Glide解码模块，cachePath是缓存路径，是针对SVGA 1.0版本的文件缓存路径：
 @GlideModule
