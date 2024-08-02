@@ -1,0 +1,18 @@
+[versions]
+asmCommons = "9.6"
+commonsCompress = "1.21"
+gradle = "8.1.4"
+gradleApi = "8.0.2"
+kotlinGradlePlugin = "1.3.72"
+svgaplayerAndroid = "2.6.1"
+
+[libraries]
+asm-commons = { module = "org.ow2.asm:asm-commons", version.ref = "asmCommons" }
+asm-tree = { module = "org.ow2.asm:asm-tree", version.ref = "asmCommons" }
+commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commonsCompress" }
+gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+gradle-api = { module = "com.android.tools.build:gradle-api", version.ref = "gradleApi" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
+svgaplayer-android = { module = "com.github.yyued:SVGAPlayer-Android", version.ref = "svgaplayerAndroid" }
+
+[plugins]

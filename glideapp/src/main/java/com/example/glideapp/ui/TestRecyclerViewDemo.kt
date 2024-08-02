@@ -84,13 +84,9 @@ class TestRecyclerViewDemo : AppCompatActivity() {
         override fun onBindViewHolder(holder: ItemHolder, position: Int) {
             val url = urls[position % urls.size]
             (Glide.with(this@TestRecyclerViewDemo) as GlideRequests).asSVGAResource()
-                .load(url).skipMemoryCache(true)
+                .load(url)
                 .setSVGATag(url)
-                .into(
-                    SVGAImageViewDrawableTarget(
-                        holder.head
-                    )
-                )
+                .into(SVGAImageViewDrawableTarget(holder.head))
             holder.headsvga.visibility = View.GONE
         }
 

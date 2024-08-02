@@ -1,2 +1,6 @@
 include ':app', ':library'
 include ':glideapp'
+include ':originlib'
+include ':compiler:glidesvga'
+//include ':glidesvga_compiler'
+include ':compiler:svgaglide_compiler'

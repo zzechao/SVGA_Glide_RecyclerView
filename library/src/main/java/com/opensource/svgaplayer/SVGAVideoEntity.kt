@@ -59,7 +59,7 @@ class SVGAVideoEntity {
     private var isAudioInit = false
 
     private var mPlayCallback: SVGAParser.PlayCallback? = null
-    private var mCallback: (() -> Unit)? = null
+    private lateinit var mCallback: () -> Unit
 
     constructor(json: JSONObject, cacheDir: File) : this(json, cacheDir, 0, 0)
 
@@ -134,10 +134,10 @@ class SVGAVideoEntity {
         mCallback = callback
         mPlayCallback = playCallback
         if (movieItem == null) {
-            mCallback?.invoke()
+            mCallback()
         } else {
             setupAudios(movieItem!!) {
-                mCallback?.invoke()
+                mCallback()
             }
         }
     }
@@ -275,7 +275,7 @@ class SVGAVideoEntity {
                 fileList.add(entity.value)
             }
             it.onPlay(fileList)
-            mCallback?.invoke()
+            mCallback()
             return item
         }
 
@@ -284,13 +284,11 @@ class SVGAVideoEntity {
                 val length = it.available().toDouble()
                 val offset = ((startTime / totalTime) * length).toLong()
                 if (SVGASoundManager.isInit()) {
-                    item.soundID = SVGASoundManager.load(
-                        soundCallback,
-                        it.fd,
-                        offset,
-                        length.toLong(),
-                        1
-                    )
+                    item.soundID = SVGASoundManager.load(soundCallback,
+                            it.fd,
+                            offset,
+                            length.toLong(),
+                            1)
                 } else {
                     item.soundID = soundPool?.load(it.fd, offset, length.toLong(), 1)
                 }
@@ -312,10 +310,10 @@ class SVGAVideoEntity {
             audiosDataMap.forEach {
                 val audioCache = SVGACache.buildAudioFile(it.key)
                 audiosFileMap[it.key] =
-                    audioCache.takeIf { file -> file.exists() } ?: generateAudioFile(
-                        audioCache,
-                        it.value
-                    )
+                        audioCache.takeIf { file -> file.exists() } ?: generateAudioFile(
+                                audioCache,
+                                it.value
+                        )
             }
         }
         return audiosFileMap

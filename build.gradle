@@ -5,10 +5,10 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven { url "https://artifact.bytedance.com/repository/byteX/" }
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.3'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "net.researchgate:gradle-release:2.8.1"
         classpath "com.novoda:bintray-release:0.8.1"
@@ -22,6 +22,8 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
     configurations.all {
         // check for updates every build

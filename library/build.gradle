@@ -8,10 +8,10 @@ apply plugin: 'signing'
 apply plugin: 'net.researchgate.release'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 28
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 31
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
@@ -61,67 +61,3 @@ release {
     //buildTasks = ['publish'] ////定义发布时该执行哪个task
     versionPropertyFile = '../gradle.properties'
 }
-
-def isReleaseBuild() {
-    return version.contains("SNAPSHOT") == false
-}
-
-def getReleaseRepositoryUrl() {
-    return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
-            : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-}
-
-def getSnapshotRepositoryUrl() {
-    return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
-            : "https://oss.sonatype.org/content/repositories/snapshots/"
-}
-
-def getRepositoryUsername() {
-    return hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ""
-}
-
-def getRepositoryPassword() {
-    return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
-}
-
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier "sources"
-}
-
-//publishing {
-//    publications {
-//        mavenAar(MavenPublication) {
-//            groupId 'com.duowan.mobile'
-//            artifactId 'SVGAPlayer-Android'
-//            version "$version"
-//            from components.android
-//            artifact sourcesJar
-//            sourceSets {
-//                main {
-//                    java {
-//                        include '**/*.java'
-//                        include '**/*.kt'
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//publishing {
-//    repositories {
-//        maven {
-//            credentials {
-//                username = getRepositoryUsername()
-//                password = getRepositoryPassword()
-//            }
-//
-//            if(isReleaseBuild()) {
-//                url getReleaseRepositoryUrl()
-//            } else {
-//                url getSnapshotRepositoryUrl()
-//            }
-//        }
-//    }
-//}

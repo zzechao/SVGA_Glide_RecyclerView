@@ -1,16 +1,6 @@
 package com.opensource.svgaplayer.drawer
 
-import android.graphics.Bitmap
-import android.graphics.BitmapShader
-import android.graphics.Canvas
-import android.graphics.DashPathEffect
-import android.graphics.Matrix
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
-import android.graphics.Rect
-import android.graphics.Shader
+import android.graphics.*
 import android.os.Build
 import android.text.StaticLayout
 import android.text.TextUtils
@@ -275,7 +265,7 @@ internal class SVGACanvasDrawer(videoItem: SVGAVideoEntity, val dynamicItem: SVG
                 } ?: kotlin.run {
                     textBitmap = Bitmap.createBitmap(drawingBitmap.width, drawingBitmap.height, Bitmap.Config.ARGB_8888)
                     val drawRect = Rect(0, 0, drawingBitmap.width, drawingBitmap.height)
-                    val textCanvas = Canvas(textBitmap!!)
+                    val textCanvas = Canvas(textBitmap)
                     drawingTextPaint.isAntiAlias = true
                     val fontMetrics = drawingTextPaint.getFontMetrics();
                     val top = fontMetrics.top
@@ -294,7 +284,7 @@ internal class SVGACanvasDrawer(videoItem: SVGAVideoEntity, val dynamicItem: SVG
                 it.paint.isAntiAlias = true
 
                 textBitmap = Bitmap.createBitmap(drawingBitmap.width, drawingBitmap.height, Bitmap.Config.ARGB_8888)
-                val textCanvas = Canvas(textBitmap!!)
+                val textCanvas = Canvas(textBitmap)
                 textCanvas.translate(0f, ((drawingBitmap.height - it.height) / 2).toFloat())
                 it.draw(textCanvas)
                 drawTextCache.put(imageKey, textBitmap as Bitmap)
@@ -546,7 +536,7 @@ internal class SVGACanvasDrawer(videoItem: SVGAVideoEntity, val dynamicItem: SVG
 //            val matteCanvas = shareMatteCanvas as Canvas
 //            matteCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 //            return matteCanvas
-            return Canvas(sharedMatteBitmap!!)
+            return Canvas(sharedMatteBitmap)
         }
     }
 
@@ -567,7 +557,7 @@ internal class SVGACanvasDrawer(videoItem: SVGAVideoEntity, val dynamicItem: SVG
         fun buildPath(shape: SVGAVideoShapeEntity): Path {
             if (!this.cache.containsKey(shape)) {
                 val path = Path()
-                shape.shapePath?.let { path.set(it) }
+                path.set(shape.shapePath)
                 this.cache[shape] = path
             }
             return this.cache[shape]!!
