@@ -1,17 +1,17 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
 }
-apply {
-    plugin("kotlin-kapt")
-}
+//apply(plugin = "com.zhouz.plugin.ARouterAGP8Plugin")
+//apply(plugin = "com.zhouz.plugin.SVGAGlidePlugin")
 
 android {
     namespace = "com.zhouz.glidesvga"
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 16
+        minSdk = 14
     }
 
     buildTypes {
@@ -21,14 +21,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_6
-        targetCompatibility = JavaVersion.VERSION_1_6
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.6"
+        jvmTarget = "1.8"
     }
 }
 
 dependencies {
     implementation(libs.svgaplayer.android)
+    implementation(libs.glide)
+    implementation(libs.wire.runtime)
+    kapt(libs.glide.compiler)
 }

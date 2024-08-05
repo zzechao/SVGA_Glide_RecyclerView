@@ -3,8 +3,8 @@ package com.zhouz.glidesvga
 import com.bumptech.glide.load.model.GlideUrl
 import com.opensource.svgaplayer.SVGAVideoEntity
 import com.opensource.svgaplayer.proto.MovieEntity
-import com.opensource.svgaplayer.utils.log.LogUtils
-import com.svga.glide.SVGAGlideEx.arrayPool
+import com.opensource.svgaplayer.utils.SVGARect
+import com.zhouz.glidesvga.SVGAGlideEx.arrayPool
 import okio.Buffer
 import okio.buffer
 import okio.inflate
@@ -12,13 +12,10 @@ import okio.sink
 import okio.source
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.util.zip.Inflater
 import java.util.zip.ZipInputStream
@@ -52,7 +49,6 @@ class GlideSVGAParser {
         try {
             readAsBytes(inputStream)?.let { bytes ->
                 if (isZipFile(bytes)) {
-                    LogUtils.debug(TAG, "decodeFromInputStream isZipFile true $tag")
                     ByteArrayInputStream(bytes).use {
                         unzip(it, path)
                     }
@@ -71,22 +67,21 @@ class GlideSVGAParser {
                     } else {
                         null
                     }
-                    LogUtils.debug(TAG, "decodeFromInputStream end")
                 } else {
-                    LogUtils.debug(TAG, "decodeFromInputStream isZipFile false $tag")
                     inflate(bytes)?.let {
+                        val videoEntity = MovieEntity.ADAPTER.decode(it)
+                        val width = minOf(mFrameWidth, videoEntity.params.viewBoxWidth.toInt())
+                        val height = minOf(mFrameHeight, videoEntity.params.viewBoxHeight.toInt())
                         svgaVideoEntity = SVGAVideoEntity(
-                            MovieEntity.ADAPTER.decode(it),
+                            videoEntity,
                             File(path),
-                            mFrameWidth,
-                            mFrameHeight
+                            width,
+                            height
                         )
                     }
-                    LogUtils.debug(TAG, "decodeFromInputStream end")
                 }
             }
         } catch (e: Throwable) {
-            LogUtils.error(TAG, "decodeFromInputStream error", e)
         }
         return svgaVideoEntity
     }
@@ -97,14 +92,17 @@ class GlideSVGAParser {
         frameWidth: Int,
         frameHeight: Int
     ): SVGAVideoEntity? {
-        LogUtils.info(TAG, "parseSpecFile")
+
         try {
             FileInputStream(binaryFile).use {
+                val videoEntity = MovieEntity.ADAPTER.decode(it)
+                val width = minOf(frameWidth, videoEntity.params.viewBoxWidth.toInt())
+                val height = minOf(frameHeight, videoEntity.params.viewBoxHeight.toInt())
                 return SVGAVideoEntity(
-                    MovieEntity.ADAPTER.decode(it),
+                    videoEntity,
                     File(source),
-                    frameWidth,
-                    frameHeight
+                    width,
+                    height
                 )
             }
         } catch (e: Exception) {
@@ -120,7 +118,6 @@ class GlideSVGAParser {
         frameWidth: Int,
         frameHeight: Int
     ): SVGAVideoEntity? {
-        LogUtils.info(TAG, "parseSpecFile")
         val buffer = arrayPool.get(1024, ByteArray::class.java)
         try {
             jsonFile.source().buffer().use { fileInputStream ->
@@ -133,7 +130,13 @@ class GlideSVGAParser {
                         byteArrayOutputStream.write(buffer, 0, size)
                     }
                     val jsonObj = JSONObject(byteArrayOutputStream.readString(Charsets.UTF_8))
-                    return SVGAVideoEntity(jsonObj, File(source), frameWidth, frameHeight)
+                    var width = frameWidth
+                    var height = frameHeight
+                    jsonObj.setupByJson()?.let {
+                        width = minOf(it.width.toInt(), frameWidth)
+                        height = minOf(it.height.toInt(), frameHeight)
+                    }
+                    return SVGAVideoEntity(jsonObj, File(source), width, height)
                 }
             }
         } catch (e: Exception) {
@@ -161,7 +164,6 @@ class GlideSVGAParser {
                 val buffer = arrayPool.get(1024, ByteArray::class.java)
                 try {
                     if (!fileZip.exists() || fileZip.length() == 0L) {
-                        LogUtils.debug(TAG, "fileZip:$fileZip")
                         fileZip.sink().buffer().use { fileOutputStream ->
                             while (true) {
                                 val readBytes = reader.read(buffer)
@@ -170,8 +172,6 @@ class GlideSVGAParser {
                             }
                             arrayPool.put(buffer)
                         }
-                    } else {
-                        LogUtils.debug(TAG, "fileZip:$fileZip exists")
                     }
                 } catch (_: Throwable) {
                 } finally {
@@ -247,5 +247,14 @@ class GlideSVGAParser {
             sb += String.format("%02x", b)
         }
         return sb
+    }
+
+    // 获取
+    private fun JSONObject.setupByJson(): SVGARect? {
+        return optJSONObject("viewBox")?.let { viewBoxObject ->
+            val width = viewBoxObject.optDouble("width", 0.0)
+            val height = viewBoxObject.optDouble("height", 0.0)
+            SVGARect(0.0, 0.0, width, height)
+        }
     }
 }

@@ -8,7 +8,7 @@ import com.opensource.svgaplayer.SVGACallback
  * @date: 2024/8/2 18:47
  * description：针对glide 加载
  */
-class SVGACallback2 : SVGACallback {
+interface SVGACallback2 : SVGACallback {
 
     fun onStart() {}
 

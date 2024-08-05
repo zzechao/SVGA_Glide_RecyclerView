@@ -1,4 +1,4 @@
-package com.zhouz.svgaglide_compiler
+package com.zhouz.plugin
 
 import org.gradle.api.Project
 

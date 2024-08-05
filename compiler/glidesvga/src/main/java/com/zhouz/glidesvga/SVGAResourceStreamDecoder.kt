@@ -6,7 +6,7 @@ import com.bumptech.glide.load.ResourceDecoder
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
 import com.opensource.svgaplayer.SVGAVideoEntity
-import com.opensource.svgaplayer.utils.log.LogUtils
+import com.zhouz.glidesvga.SVGAGlideEx.log
 import java.io.InputStream
 
 /**
@@ -39,7 +39,7 @@ class SVGAResourceStreamDecoder(
         } else {
             "${System.currentTimeMillis()}"
         }
-        LogUtils.debug(
+        log.d(
             TAG, "decode source:$source " +
                     "width:$width height:$height options:$tag"
         )

@@ -1,9 +1,9 @@
-package com.zhouz.svgaglide_compiler
+package com.zhouz.plugin
 
 import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ScopedArtifacts
-import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.register
@@ -16,7 +16,9 @@ import org.gradle.kotlin.dsl.register
  */
 class SVGAGlidePlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        project.plugins.withType(AppPlugin::class.java) {
+        Logger.make(project)
+        Logger.i("SVGAGlidePlugin apply")
+        project.plugins.withType(LibraryPlugin::class.java) {
             val androidComponents =
                 project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
             androidComponents.onVariants { variant ->
