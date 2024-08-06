@@ -13,4 +13,6 @@ object HookParams {
     const val ENTITY_SVGA_CLASS = "com/opensource/svgaplayer/SVGAVideoEntity.class"
 
     const val ENTITY_SVGA_CLASS_METHOD = "prepare\$com_opensource_svgaplayer"
+
+    const val ENTITY_SVGA_CLASS_METHOD_NEW = "prepare"
 }

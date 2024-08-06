@@ -4,7 +4,6 @@ plugins {
     id("kotlin-kapt")
 }
 //apply(plugin = "com.zhouz.plugin.ARouterAGP8Plugin")
-//apply(plugin = "com.zhouz.plugin.SVGAGlidePlugin")
 
 android {
     namespace = "com.zhouz.glidesvga"

@@ -45,11 +45,11 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
 
             // allJars
             allJars.get().forEachIndexed { index, file ->
-                Logger.i("handling " + file.asFile.absolutePath)
                 val jarFile = JarFile(file.asFile)
                 jarFile.use {
                     it.entries().iterator().forEach { jarEntry ->
                         val entryName = jarEntry.name
+                        Logger.i("allJars handling entryName:$entryName")
                         if (!jarEntry.isDirectory && entryName.isNotEmpty()) {
                             //println("Adding from jar ${jarEntry.name} ${entryName.startsWith(ScanSetting.ROUTER_CLASS_PACKAGE_NAME) && shouldProcessPreDexJar(entryName)}")
                             if (HookParams.ENTITY_SVGA_CLASS == entryName) {

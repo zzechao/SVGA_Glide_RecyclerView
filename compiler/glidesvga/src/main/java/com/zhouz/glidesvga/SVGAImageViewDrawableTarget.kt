@@ -47,9 +47,9 @@ open class SVGAImageViewDrawableTarget(
         drawable.svgaCallback = svgaCallback
         drawable.scaleType = view.scaleType
         view.setImageDrawable(drawable)
-
+        drawable.start()
 //        resource.videoItem.prepare({
-//            drawable.start()
+//
 //        }, null)
     }
 

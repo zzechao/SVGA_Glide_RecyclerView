@@ -38,14 +38,14 @@ gradlePlugin {
 }
 
 group = "com.zhouz.plugin"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.0"
 
 publishing {
     publications {
         create<MavenPublication>("SVGAGlidePlugin") {
             groupId = "com.zhouz.plugin"
             artifactId = "SVGAGlidePlugin"
-            version = "1.0.0-SNAPSHOT"
+            version = "1.0.0"
         }
     }
     repositories {
