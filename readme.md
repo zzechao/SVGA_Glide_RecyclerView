@@ -7,6 +7,12 @@
  4、普通imageview加载svga的构造（SVGAImageViewDrawableTarget，并对imageview的相同drawable进行复用，以及恢复暂停清除的生命周期控制）  
  5、采用okio重写解析器SVGAParser，减少io多次Array.copy的内存抖动  
 
+### 用法
+1、master分支自动导出aar，原因 SVGA library 中核心方法和类用了很多internal字段修饰，要glide做到上述加载优化，侵入性很强，所以不构建远程版本仓库，自行aar。
+
+#### 正在改造
+2、glide_svga_transfer_plugin分支，运用plugin的toTransfer去修改svga的library的核心库修饰符，从而支持glide的版本svga发布。
+
 ### 思路架构图
 ![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/process.png)
 
