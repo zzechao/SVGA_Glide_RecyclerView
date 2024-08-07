@@ -14,5 +14,6 @@ object HookParams {
 
     const val ENTITY_SVGA_CLASS_METHOD = "prepare\$com_opensource_svgaplayer"
 
-    const val ENTITY_SVGA_CLASS_METHOD_NEW = "prepare"
+    const val ENTITY_SVGA_TARGET_CLASS_PREPARE_2 =
+        "com/svga/glide/SVGAImageViewDrawableTarget\$onResourceReady\$2.class"
 }

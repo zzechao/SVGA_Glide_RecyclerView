@@ -21,7 +21,7 @@ import java.util.jar.JarOutputStream
 /**
  * @author:zhouz
  * @date: 2024/8/2 18:33
- * description：TODO
+ * description：transfer
  */
 abstract class SVGAGlideTransferTask : DefaultTask() {
     @get:InputFiles
@@ -69,7 +69,8 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
             allDirectories.get().forEach { directory ->
                 directory.asFile.walk().forEach { file ->
                     if (file.isFile) {
-                        val relativePath = directory.asFile.toURI().relativize(file.toURI()).getPath()
+                        val relativePath =
+                            directory.asFile.toURI().relativize(file.toURI()).getPath()
                         val entryName = if (leftSlash) {
                             relativePath
                         } else {
@@ -81,6 +82,12 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                     }
                 }
             }
+
+            // prepare$com_opensource_svgaplayer匿名内部类的构建
+            jarOutput.writeEntity(
+                HookParams.ENTITY_SVGA_TARGET_CLASS_PREPARE_2,
+                SVGAImageViewDrawableTargetClassWriter().writer()
+            )
 
             // fileContainsFileDo
             if (entitySVGAFileContainsIndex >= 0) {

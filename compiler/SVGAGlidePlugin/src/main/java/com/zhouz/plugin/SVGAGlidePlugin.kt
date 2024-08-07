@@ -3,6 +3,7 @@ package com.zhouz.plugin
 
 import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.gradle.AppPlugin
 import org.gradle.api.Plugin
@@ -22,7 +23,7 @@ class SVGAGlidePlugin : Plugin<Project> {
         project.plugins.withType(AppPlugin::class.java) {
 
             val androidComponents =
-                project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
+                project.extensions.getByType(LibraryAndroidComponentsExtension::class.java)
 
 
             androidComponents.onVariants { variant ->

@@ -12,15 +12,20 @@ import java.io.InputStream
 /**
  * @author:zhouz
  * @date: 2024/8/5 17:24
- * description：修改SVGAVideoEntity的 prepare方法
+ * description：修改SVGAVideoEntity的 prepare方法为 public
  */
 class SVGAEntityClassVisitor(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv) {
-    override fun visitMethod(access: Int, name: String?, descriptor: String?, signature: String?, exceptions: Array<out String>?): MethodVisitor {
+    override fun visitMethod(
+        access: Int,
+        name: String?,
+        descriptor: String?,
+        signature: String?,
+        exceptions: Array<out String>?
+    ): MethodVisitor {
         Logger.i("SVGAEntityClassVisitor visitMethod name:${name}")
         return if (name == HookParams.ENTITY_SVGA_CLASS_METHOD) {
             super.visitMethod(
-                Opcodes.ACC_PUBLIC,
-                HookParams.ENTITY_SVGA_CLASS_METHOD_NEW, descriptor, signature, exceptions
+                Opcodes.ACC_PUBLIC, name, descriptor, signature, exceptions
             )
         } else {
             super.visitMethod(access, name, descriptor, signature, exceptions)
