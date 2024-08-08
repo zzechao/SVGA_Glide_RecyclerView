@@ -39,7 +39,13 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
     @TaskAction
     fun taskRun() {
         val leftSlash: Boolean = File.separator == "/"
+
+        // SVGAVideoEntity.class的位置
         var entitySVGAFileContainsIndex = -1
+
+        // SVGAImageViewDrawableTarget.class 的位置
+        var imageViewDrawableTargetIndex = -1
+
         val jarOutput = JarOutputStream(BufferedOutputStream(FileOutputStream(output.get().asFile)))
         jarOutput.use {
 
@@ -55,6 +61,8 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                             if (HookParams.ENTITY_SVGA_CLASS == entryName) {
                                 //Logger.i("Directory CLASS_FILE_NAME entry name $entryName in arouter pool in jar")
                                 entitySVGAFileContainsIndex = index
+                            } else if (HookParams.ENTITY_SVGA_TARGET_CLASS == entryName) {
+                                imageViewDrawableTargetIndex = index
                             } else {
                                 jarFile.getInputStream(jarEntry).use {
                                     jarOutput.writeEntity(jarEntry.name, it)
@@ -83,13 +91,7 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                 }
             }
 
-            // prepare$com_opensource_svgaplayer匿名内部类的构建
-            jarOutput.writeEntity(
-                HookParams.ENTITY_SVGA_TARGET_CLASS_PREPARE_2,
-                SVGAImageViewDrawableTargetClassWriter().writer()
-            )
-
-            // fileContainsFileDo
+            // SVGAVideoEntity的修改
             if (entitySVGAFileContainsIndex >= 0) {
                 allJars.get().getOrNull(entitySVGAFileContainsIndex)?.let {
                     val jarFile = JarFile(it.asFile)
@@ -103,11 +105,36 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                                     jarOutput.writeEntity(HookParams.ENTITY_SVGA_CLASS, it)
                                 }
                             }
-                            Logger.i("fileContains write success")
+                            Logger.i("SVGAVideoEntity write success")
                         }
                     }
                 }
             }
+
+            if (imageViewDrawableTargetIndex > 0) {
+                allJars.get().getOrNull(imageViewDrawableTargetIndex)?.let {
+                    val jarFile = JarFile(it.asFile)
+                    jarFile.use {
+                        jarFile.getJarEntry(HookParams.ENTITY_SVGA_TARGET_CLASS)?.let {
+                            jarFile.getInputStream(it).use {
+                                val bytes = it.referHackTarget()
+                                if (bytes.isNotEmpty()) {
+                                    jarOutput.writeEntity(HookParams.ENTITY_SVGA_TARGET_CLASS, bytes)
+                                } else {
+                                    jarOutput.writeEntity(HookParams.ENTITY_SVGA_TARGET_CLASS, it)
+                                }
+                            }
+                            Logger.i("SVGAImageViewDrawableTarget write success")
+                        }
+                    }
+                }
+            }
+
+            // prepare$com_opensource_svgaplayer匿名内部类的构建
+            jarOutput.writeEntity(
+                HookParams.ENTITY_SVGA_TARGET_CLASS_PREPARE_2_CLASS,
+                SVGAImageViewDrawableTargetClassWriter().writer()
+            )
         }
     }
 

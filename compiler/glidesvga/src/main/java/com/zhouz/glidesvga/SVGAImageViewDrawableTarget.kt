@@ -48,9 +48,6 @@ open class SVGAImageViewDrawableTarget(
         drawable.scaleType = view.scaleType
         view.setImageDrawable(drawable)
         drawable.start()
-//        resource.videoItem.prepare({
-//
-//        }, null)
     }
 
     override fun onResourceCleared(placeholder: Drawable?) {

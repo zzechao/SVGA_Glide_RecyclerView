@@ -1,5 +1,8 @@
 package com.zhouz.plugin
 
+import com.zhouz.plugin.HookParams.ENTITY_SVGA_ANIMATION_DRAWABLE_NAME
+import com.zhouz.plugin.HookParams.ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME
+import com.zhouz.plugin.HookParams.ENTITY_SVGA_TARGET_NAME
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.FieldVisitor
@@ -20,16 +23,16 @@ class SVGAImageViewDrawableTargetClassWriter : ClassWriter(0) {
         visit(
             Opcodes.V1_8,
             Opcodes.ACC_FINAL or Opcodes.ACC_SUPER,
-            "com/svga/glide/SVGAImageViewDrawableTarget\$onResourceReady$2",
+            ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME,
             "Lkotlin/jvm/internal/Lambda;Lkotlin/jvm/functions/Function0<Lkotlin/Unit;>;",
             "kotlin/jvm/internal/Lambda",
             arrayOf("kotlin/jvm/functions/Function0")
         )
 
         visitOuterClass(
-            "com/svga/glide/SVGAImageViewDrawableTarget",
+            ENTITY_SVGA_TARGET_NAME,
             "onResourceReady",
-            "(Lcom/svga/glide/SVGAResource;Lcom/bumptech/glide/request/transition/Transition;)V"
+            "(Lcom/zhouz/glidesvga/SVGAResource;Lcom/bumptech/glide/request/transition/Transition;)V"
         )
 
         annotationVisitor0 = visitAnnotation("Lkotlin/Metadata;", true)
@@ -53,7 +56,7 @@ class SVGAImageViewDrawableTargetClassWriter : ClassWriter(0) {
         annotationVisitor0?.visitEnd()
 
         visitInnerClass(
-            "com/svga/glide/SVGAImageViewDrawableTarget\$onResourceReady$2",
+            ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME,
             null,
             null,
             Opcodes.ACC_FINAL or Opcodes.ACC_STATIC
@@ -62,22 +65,22 @@ class SVGAImageViewDrawableTargetClassWriter : ClassWriter(0) {
         fieldVisitor = visitField(
             Opcodes.ACC_FINAL or Opcodes.ACC_SYNTHETIC,
             "\$drawable",
-            "Lcom/svga/glide/SVGAAnimationDrawable;",
+            "L$ENTITY_SVGA_ANIMATION_DRAWABLE_NAME;",
             null,
             null
         )
         fieldVisitor?.visitEnd()
 
         methodVisitor =
-            visitMethod(0, "<init>", "(Lcom/svga/glide/SVGAAnimationDrawable;)V", null, null)
+            visitMethod(0, "<init>", "(L$ENTITY_SVGA_ANIMATION_DRAWABLE_NAME;)V", null, null)
         methodVisitor?.visitCode()
         methodVisitor?.visitVarInsn(Opcodes.ALOAD, 0)
         methodVisitor?.visitVarInsn(Opcodes.ALOAD, 1)
         methodVisitor?.visitFieldInsn(
             Opcodes.PUTFIELD,
-            "com/svga/glide/SVGAImageViewDrawableTarget\$onResourceReady$2",
+            ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME,
             "\$drawable",
-            "Lcom/svga/glide/SVGAAnimationDrawable;"
+            "L$ENTITY_SVGA_ANIMATION_DRAWABLE_NAME;"
         )
         methodVisitor?.visitVarInsn(Opcodes.ALOAD, 0)
         methodVisitor?.visitInsn(Opcodes.ICONST_0)
@@ -94,13 +97,13 @@ class SVGAImageViewDrawableTargetClassWriter : ClassWriter(0) {
         methodVisitor?.visitVarInsn(Opcodes.ALOAD, 0)
         methodVisitor?.visitFieldInsn(
             Opcodes.GETFIELD,
-            "com/svga/glide/SVGAImageViewDrawableTarget\$onResourceReady$2",
+            ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME,
             "\$drawable",
-            "Lcom/svga/glide/SVGAAnimationDrawable;"
+            "L$ENTITY_SVGA_ANIMATION_DRAWABLE_NAME;"
         )
         methodVisitor?.visitMethodInsn(
             Opcodes.INVOKEVIRTUAL,
-            "com/svga/glide/SVGAAnimationDrawable",
+            ENTITY_SVGA_ANIMATION_DRAWABLE_NAME,
             "start",
             "()V",
             false
@@ -120,7 +123,7 @@ class SVGAImageViewDrawableTargetClassWriter : ClassWriter(0) {
         methodVisitor?.visitVarInsn(Opcodes.ALOAD, 0)
         methodVisitor?.visitMethodInsn(
             Opcodes.INVOKEVIRTUAL,
-            "com/svga/glide/SVGAImageViewDrawableTarget\$onResourceReady$2",
+            ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME,
             "invoke",
             "()V",
             false

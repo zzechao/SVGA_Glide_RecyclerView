@@ -23,7 +23,7 @@ class SVGAGlidePlugin : Plugin<Project> {
         project.plugins.withType(AppPlugin::class.java) {
 
             val androidComponents =
-                project.extensions.getByType(LibraryAndroidComponentsExtension::class.java)
+                project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
 
 
             androidComponents.onVariants { variant ->

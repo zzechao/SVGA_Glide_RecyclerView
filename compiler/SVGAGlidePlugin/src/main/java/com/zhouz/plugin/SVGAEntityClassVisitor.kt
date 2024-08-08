@@ -22,10 +22,10 @@ class SVGAEntityClassVisitor(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv)
         signature: String?,
         exceptions: Array<out String>?
     ): MethodVisitor {
-        Logger.i("SVGAEntityClassVisitor visitMethod name:${name}")
         return if (name == HookParams.ENTITY_SVGA_CLASS_METHOD) {
+            Logger.i("SVGAEntityClassVisitor visitMethod name:${name}")
             super.visitMethod(
-                Opcodes.ACC_PUBLIC, name, descriptor, signature, exceptions
+                Opcodes.ACC_PUBLIC, HookParams.ENTITY_SVGA_CLASS_METHOD_NEW, descriptor, signature, exceptions
             )
         } else {
             super.visitMethod(access, name, descriptor, signature, exceptions)
@@ -33,6 +33,9 @@ class SVGAEntityClassVisitor(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv)
     }
 }
 
+/**
+ *
+ */
 fun InputStream.referHackSVGAEntity(): ByteArray {
     try {
         val cr = ClassReader(this)
