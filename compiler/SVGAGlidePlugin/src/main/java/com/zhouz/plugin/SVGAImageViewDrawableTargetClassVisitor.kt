@@ -4,14 +4,10 @@ import com.zhouz.plugin.HookParams.ENTITY_SVGA_ANIMATION_DRAWABLE_NAME
 import com.zhouz.plugin.HookParams.ENTITY_SVGA_CLASS_METHOD_NEW
 import com.zhouz.plugin.HookParams.ENTITY_SVGA_NAME
 import com.zhouz.plugin.HookParams.ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME
-import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.ClassWriter.COMPUTE_FRAMES
 import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
-import java.io.InputStream
 
 /**
  * @author:zhouz
@@ -60,20 +56,4 @@ class SVGAImageViewDrawableTargetClassVisitor(api: Int, cv: ClassVisitor) : Clas
             }
         }
     }
-}
-
-/**
- *
- */
-fun InputStream.referHackTarget(): ByteArray {
-    try {
-        val cr = ClassReader(this)
-        val cw = ClassWriter(cr, COMPUTE_FRAMES)
-        val cv = SVGAImageViewDrawableTargetClassVisitor(Opcodes.ASM9, cw)
-        cr.accept(cv, ClassReader.EXPAND_FRAMES)
-        return cw.toByteArray() ?: ByteArray(0)
-    } catch (ex: Throwable) {
-        Logger.e("ex:${ex.message}")
-    }
-    return ByteArray(0)
 }

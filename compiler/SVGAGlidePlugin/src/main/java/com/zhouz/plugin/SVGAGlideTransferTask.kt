@@ -9,6 +9,10 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.ClassWriter.COMPUTE_FRAMES
+import org.objectweb.asm.Opcodes
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -95,38 +99,14 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
             if (entitySVGAFileContainsIndex >= 0) {
                 allJars.get().getOrNull(entitySVGAFileContainsIndex)?.let {
                     val jarFile = JarFile(it.asFile)
-                    jarFile.use {
-                        jarFile.getJarEntry(HookParams.ENTITY_SVGA_CLASS)?.let {
-                            jarFile.getInputStream(it).use {
-                                val bytes = it.referHackSVGAEntity()
-                                if (bytes.isNotEmpty()) {
-                                    jarOutput.writeEntity(HookParams.ENTITY_SVGA_CLASS, bytes)
-                                } else {
-                                    jarOutput.writeEntity(HookParams.ENTITY_SVGA_CLASS, it)
-                                }
-                            }
-                            Logger.i("SVGAVideoEntity write success")
-                        }
-                    }
+                    jarFile.referHack(HookParams.ENTITY_SVGA_CLASS, jarOutput)
                 }
             }
 
             if (imageViewDrawableTargetIndex > 0) {
                 allJars.get().getOrNull(imageViewDrawableTargetIndex)?.let {
                     val jarFile = JarFile(it.asFile)
-                    jarFile.use {
-                        jarFile.getJarEntry(HookParams.ENTITY_SVGA_TARGET_CLASS)?.let {
-                            jarFile.getInputStream(it).use {
-                                val bytes = it.referHackTarget()
-                                if (bytes.isNotEmpty()) {
-                                    jarOutput.writeEntity(HookParams.ENTITY_SVGA_TARGET_CLASS, bytes)
-                                } else {
-                                    jarOutput.writeEntity(HookParams.ENTITY_SVGA_TARGET_CLASS, it)
-                                }
-                            }
-                            Logger.i("SVGAImageViewDrawableTarget write success")
-                        }
-                    }
+                    jarFile.referHack(HookParams.ENTITY_SVGA_TARGET_CLASS, jarOutput)
                 }
             }
 
@@ -164,4 +144,36 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
 
     private fun printDuplicatedMessage(name: String) =
         Logger.e("Cannot add ${name}, because output Jar already has file with the same name.")
+
+    /**
+     * hook的 class
+     */
+    private fun JarFile.referHack(clazzName: String, jarOutput: JarOutputStream) {
+        use {
+            getJarEntry(clazzName)?.let {
+                this.getInputStream(it).use {
+                    val cr = ClassReader(it)
+                    val cw = ClassWriter(cr, COMPUTE_FRAMES)
+                    when (clazzName) {
+                        HookParams.ENTITY_SVGA_TARGET_CLASS -> {
+                            val cv = SVGAImageViewDrawableTargetClassVisitor(Opcodes.ASM9, cw)
+                            cr.accept(cv, ClassReader.EXPAND_FRAMES)
+                        }
+
+                        HookParams.ENTITY_SVGA_CLASS -> {
+                            val cv = SVGAEntityClassVisitor(Opcodes.ASM9, cw)
+                            cr.accept(cv, ClassReader.EXPAND_FRAMES)
+                        }
+                    }
+                    val bytes = cw.toByteArray() ?: ByteArray(0)
+                    if (bytes.isNotEmpty()) {
+                        jarOutput.writeEntity(clazzName, bytes)
+                    } else {
+                        jarOutput.writeEntity(clazzName, it)
+                    }
+                }
+                Logger.i("$clazzName write success")
+            }
+        }
+    }
 }

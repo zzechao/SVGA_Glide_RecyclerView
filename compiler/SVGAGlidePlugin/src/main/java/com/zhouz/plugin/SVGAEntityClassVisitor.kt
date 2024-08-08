@@ -1,12 +1,8 @@
 package com.zhouz.plugin
 
-import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.ClassWriter.COMPUTE_FRAMES
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
-import java.io.InputStream
 
 
 /**
@@ -31,20 +27,4 @@ class SVGAEntityClassVisitor(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv)
             super.visitMethod(access, name, descriptor, signature, exceptions)
         }
     }
-}
-
-/**
- *
- */
-fun InputStream.referHackSVGAEntity(): ByteArray {
-    try {
-        val cr = ClassReader(this)
-        val cw = ClassWriter(cr, COMPUTE_FRAMES)
-        val cv = SVGAEntityClassVisitor(Opcodes.ASM9, cw)
-        cr.accept(cv, ClassReader.EXPAND_FRAMES)
-        return cw.toByteArray() ?: ByteArray(0)
-    } catch (ex: Throwable) {
-        Logger.e("ex:${ex.message}")
-    }
-    return ByteArray(0)
 }
