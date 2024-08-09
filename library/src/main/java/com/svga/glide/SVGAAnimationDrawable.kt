@@ -10,12 +10,11 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
+import androidx.annotation.RequiresApi
 import com.opensource.svgaplayer.SVGACallback2
+import com.opensource.svgaplayer.SVGADrawable
 import com.opensource.svgaplayer.SVGADynamicEntity
-import com.opensource.svgaplayer.SVGASoundManager
 import com.opensource.svgaplayer.SVGAVideoEntity
-import com.opensource.svgaplayer.drawer.SVGACanvasDrawer
-import com.opensource.svgaplayer.utils.log.LogUtils
 
 /**
  * 当同一个SVGA图片被加载的时候 如果此时svga动画在运行中他们会共享同样的动画效果
@@ -27,8 +26,7 @@ class SVGAAnimationDrawable(
     val repeatMode: Int,
     val dynamicItem: SVGADynamicEntity,
     var showLastFrame: Boolean = false
-) : Animatable, Drawable(),
-    ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
+) : Animatable, Drawable(), ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 
     private val TAG = "SVGAAnimationDrawable"
 
@@ -45,33 +43,21 @@ class SVGAAnimationDrawable(
 
     private var isInitiativePause = false
 
-    private var drawer = SVGACanvasDrawer(videoItem, dynamicItem).apply {
-        scaleBySelf = false
-    }
+    private var drawer = SVGADrawable(videoItem, dynamicItem)
 
     var scaleType = ImageView.ScaleType.MATRIX
     var isStop: Boolean = false
 
     fun resetDynamicEntity(dynamicItem: SVGADynamicEntity) {
-        drawer = SVGACanvasDrawer(videoItem, dynamicItem).apply {
-            scaleBySelf = false
-        }
-    }
-
-    override fun getIntrinsicWidth(): Int {
-        return videoItem.videoSize.width.toInt()
-    }
-
-    override fun getIntrinsicHeight(): Int {
-        return videoItem.videoSize.height.toInt()
+        drawer = SVGADrawable(videoItem, dynamicItem)
     }
 
     override fun start() {
         if (mAnimator == null || mAnimator?.isRunning == false) {
-            LogUtils.debug(TAG, "start start $tag")
             val startFrame = 0
             val endFrame = videoItem.frames - 1
             totalFrame = (endFrame - startFrame + 1)
+            drawer.cleared = false
             mAnimator?.cancel()
             mAnimator = null
             mAnimator = ValueAnimator.ofInt(startFrame, endFrame)
@@ -83,7 +69,6 @@ class SVGAAnimationDrawable(
             mAnimator?.addListener(this)
             mAnimator?.start()
         } else {
-            LogUtils.debug(TAG, "start resume $tag")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 mAnimator?.resume()
             } else {
@@ -119,22 +104,13 @@ class SVGAAnimationDrawable(
 
     override fun stop() {
         if (mAnimator != null) {
-            LogUtils.debug(TAG, "stop $tag")
+
             isStop = true
             mAnimator?.cancel()
             mAnimator?.removeAllListeners()
             mAnimator?.removeAllUpdateListeners()
             mAnimator = null
-
-            videoItem.audioList.forEach { audio ->
-                audio.playID?.let {
-                    if (SVGASoundManager.isInit()) {
-                        SVGASoundManager.stop(it)
-                    } else {
-                        videoItem.soundPool?.stop(it)
-                    }
-                }
-            }
+            drawer.stop()
         }
     }
 
@@ -144,7 +120,7 @@ class SVGAAnimationDrawable(
 
     override fun draw(canvas: Canvas) {
         if (currentFrame > -1) {
-            drawer.drawFrame(canvas, currentFrame, scaleType)
+            drawer.draw(canvas)
         }
     }
 
@@ -162,37 +138,30 @@ class SVGAAnimationDrawable(
         return PixelFormat.TRANSPARENT
     }
 
-    override fun onAnimationUpdate(animation: ValueAnimator?) {
-        val frame = animation?.animatedValue as Int
+    override fun onAnimationUpdate(animation: ValueAnimator) {
+        val frame = animation.animatedValue as Int
         if (currentFrame != frame) {
             currentFrame = frame
+            drawer.currentFrame = currentFrame
             invalidateSelf()
             val percentage = (currentFrame + 1).toDouble() / videoItem.frames.toDouble()
             svgaCallback?.onStep(currentFrame, percentage)
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun pause(isInitiative: Boolean = false) {
         if (mAnimator?.isStarted == true && mAnimator?.isPaused == false) {
             if (isInitiative) {
                 isInitiativePause = true
             }
-            LogUtils.debug(TAG, "pause $tag")
             mAnimator?.pause()
             svgaCallback?.onPause()
-            videoItem.audioList.forEach { audio ->
-                audio.playID?.let {
-                    if (SVGASoundManager.isInit()) {
-                        SVGASoundManager.pause(it)
-                    } else {
-                        videoItem.soundPool?.pause(it)
-                    }
-                }
-                audio.playID = null
-            }
+            drawer.pause()
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun resume(isInitiative: Boolean = false) {
         if (this.isInitiativePause && !isInitiative) {
             return
@@ -201,39 +170,19 @@ class SVGAAnimationDrawable(
         if (mAnimator?.isStarted == true && mAnimator?.isPaused == true) {
             mAnimator?.resume()
             svgaCallback?.onResume()
-            LogUtils.debug(TAG, "resume $tag")
-            videoItem.audioList.forEach { audio ->
-                audio.playID?.let {
-                    if (SVGASoundManager.isInit()) {
-                        SVGASoundManager.resume(it)
-                    } else {
-                        videoItem.soundPool?.resume(it)
-                    }
-                }
-                audio.playID = null
-            }
+            drawer.resume()
         }
     }
 
     fun clear() {
-        videoItem.audioList.forEach { audio ->
-            audio.playID?.let {
-                if (SVGASoundManager.isInit()) {
-                    SVGASoundManager.stop(it)
-                } else {
-                    videoItem.soundPool?.stop(it)
-                }
-            }
-            audio.playID = null
-        }
-        videoItem.clear()
+        drawer.clear()
     }
 
-    override fun onAnimationStart(animation: Animator?) {
+    override fun onAnimationStart(animation: Animator) {
         svgaCallback?.onStart()
     }
 
-    override fun onAnimationEnd(animation: Animator?) {
+    override fun onAnimationEnd(animation: Animator) {
         svgaCallback?.onFinished()
         if (!showLastFrame) {
             currentFrame = -1
@@ -241,12 +190,12 @@ class SVGAAnimationDrawable(
         }
     }
 
-    override fun onAnimationCancel(animation: Animator?) {
+    override fun onAnimationCancel(animation: Animator) {
         currentFrame = -1
         invalidateSelf()
     }
 
-    override fun onAnimationRepeat(animation: Animator?) {
+    override fun onAnimationRepeat(animation: Animator) {
         svgaCallback?.onRepeat()
     }
 }

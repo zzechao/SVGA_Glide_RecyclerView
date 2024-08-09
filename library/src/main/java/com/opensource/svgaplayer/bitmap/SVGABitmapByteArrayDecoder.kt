@@ -2,7 +2,6 @@ package com.opensource.svgaplayer.bitmap
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.TransformationUtils
 import com.opensource.svgaplayer.utils.log.LogUtils
 import com.svga.glide.SVGAGlideEx.bitmapPool
@@ -22,7 +21,7 @@ internal object SVGABitmapByteArrayDecoder : SVGABitmapDecoder<ByteArray>() {
         reqWidth: Int,
         reqHeight: Int
     ): Bitmap? {
-        bitmapPool?.let {
+        if (::bitmapPool.isLateinit) {
             var result: Bitmap? = null
             TransformationUtils.getBitmapDrawableLock().lock()
             try {
@@ -33,7 +32,7 @@ internal object SVGABitmapByteArrayDecoder : SVGABitmapDecoder<ByteArray>() {
                 if (ops.inBitmap != null) {
                     try {
                         // 输入流重置
-                        it.put(ops.inBitmap)
+                        bitmapPool.put(ops.inBitmap)
                         // 清理掉 inBitmap 并进行第二次加载
                         ops.inBitmap = null
                         // 再次调用进行加载
@@ -47,7 +46,7 @@ internal object SVGABitmapByteArrayDecoder : SVGABitmapDecoder<ByteArray>() {
                 TransformationUtils.getBitmapDrawableLock().unlock()
             }
             return result
-        } ?: kotlin.run {
+        } else {
             LogUtils.debug("SVGABitmapByteArrayDecoder", "onDecode 7")
             return BitmapFactory.decodeByteArray(data, 0, data.count(), ops)
         }

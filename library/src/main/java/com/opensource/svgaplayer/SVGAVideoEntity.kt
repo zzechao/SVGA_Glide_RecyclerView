@@ -64,6 +64,7 @@ class SVGAVideoEntity {
     constructor(json: JSONObject, cacheDir: File) : this(json, cacheDir, 0, 0)
 
     constructor(json: JSONObject, cacheDir: File, frameWidth: Int, frameHeight: Int) {
+        Log.i("zzzc","constructor frameWidth:$frameWidth frameHeight:$frameHeight")
         mFrameWidth = frameWidth
         mFrameHeight = frameHeight
         mCacheDir = cacheDir
@@ -100,6 +101,7 @@ class SVGAVideoEntity {
     constructor(entity: MovieEntity, cacheDir: File) : this(entity, cacheDir, 0, 0)
 
     constructor(entity: MovieEntity, cacheDir: File, frameWidth: Int, frameHeight: Int) {
+        Log.i("zzzc","constructor frameWidth:$frameWidth frameHeight:$frameHeight")
         this.mFrameWidth = frameWidth
         this.mFrameHeight = frameHeight
         this.mCacheDir = cacheDir

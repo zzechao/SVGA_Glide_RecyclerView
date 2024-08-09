@@ -95,10 +95,7 @@ internal abstract class SVGABitmapDecoder<T> {
     }
 
     private fun shouldUsePool(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return true
-        }
-        return false
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
     }
 
     abstract fun onDecode(

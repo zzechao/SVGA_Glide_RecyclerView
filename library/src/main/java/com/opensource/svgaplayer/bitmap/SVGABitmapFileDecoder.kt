@@ -20,7 +20,7 @@ internal object SVGABitmapFileDecoder : SVGABitmapDecoder<String>() {
         reqWidth: Int,
         reqHeight: Int
     ): Bitmap? {
-        bitmapPool?.let {
+        if (::bitmapPool.isLateinit) {
             var result: Bitmap? = null
             TransformationUtils.getBitmapDrawableLock().lock()
             try {
@@ -31,7 +31,7 @@ internal object SVGABitmapFileDecoder : SVGABitmapDecoder<String>() {
                 if (ops.inBitmap != null) {
                     try {
                         // 输入流重置
-                        it.put(ops.inBitmap)
+                        bitmapPool.put(ops.inBitmap)
                         // 清理掉 inBitmap 并进行第二次加载
                         ops.inBitmap = null
                         // 再次调用进行加载
@@ -45,7 +45,7 @@ internal object SVGABitmapFileDecoder : SVGABitmapDecoder<String>() {
                 TransformationUtils.getBitmapDrawableLock().unlock()
             }
             return result
-        } ?: kotlin.run {
+        } else {
             LogUtils.debug("SVGABitmapFileDecoder", "onDecode 7")
             return BitmapFactory.decodeFile(data, ops)
         }

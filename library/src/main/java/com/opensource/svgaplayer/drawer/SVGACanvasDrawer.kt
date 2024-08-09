@@ -22,18 +22,9 @@ internal class SVGACanvasDrawer(videoItem: SVGAVideoEntity, val dynamicItem: SVG
 
     private var beginIndexList: Array<Boolean>? = null
     private var endIndexList: Array<Boolean>? = null
-    /**
-     * 自己实现Drawable缩放 false 原样绘制
-     * 因为 SVGADrawable 没有实际大小 导致ImageView 缩放失效 因此需要兼容
-     * */
-    var scaleBySelf = true
 
     override fun drawFrame(canvas: Canvas, frameIndex: Int, scaleType: ImageView.ScaleType) {
-        if (scaleBySelf ||
-            scaleType == ImageView.ScaleType.FIT_XY ||
-            scaleType == ImageView.ScaleType.MATRIX) {
-            super.drawFrame(canvas, frameIndex, scaleType)
-        }
+        super.drawFrame(canvas, frameIndex, scaleType)
         playAudio(frameIndex)
         this.pathCache.onSizeChanged(canvas)
         val sprites = requestFrameSprites(frameIndex)
@@ -214,7 +205,7 @@ internal class SVGACanvasDrawer(videoItem: SVGAVideoEntity, val dynamicItem: SVG
         }
         val bitmapKey = if (imageKey.endsWith(".matte")) imageKey.substring(0, imageKey.length - 6) else imageKey
         val drawingBitmap = (dynamicItem.dynamicImage[bitmapKey] ?: videoItem.imageMap[bitmapKey])
-                ?: return
+            ?: return
         val frameMatrix = shareFrameMatrix(sprite.frameEntity.transform)
         val paint = this.sharedValues.sharedPaint()
         paint.isAntiAlias = videoItem.antiAlias
@@ -243,9 +234,9 @@ internal class SVGACanvasDrawer(videoItem: SVGAVideoEntity, val dynamicItem: SVG
                 val matrixArray = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
                 frameMatrix.getValues(matrixArray)
                 listener.onResponseArea(imageKey, matrixArray[2].toInt()
-                        , matrixArray[5].toInt()
-                        , (drawingBitmap.width * matrixArray[0] + matrixArray[2]).toInt()
-                        , (drawingBitmap.height * matrixArray[4] + matrixArray[5]).toInt())
+                    , matrixArray[5].toInt()
+                    , (drawingBitmap.width * matrixArray[0] + matrixArray[2]).toInt()
+                    , (drawingBitmap.height * matrixArray[4] + matrixArray[5]).toInt())
             }
         }
         drawTextOnBitmap(canvas, drawingBitmap, sprite, frameMatrix)
@@ -305,16 +296,16 @@ internal class SVGACanvasDrawer(videoItem: SVGAVideoEntity, val dynamicItem: SVG
                         Int.MAX_VALUE
                     }
                     StaticLayout.Builder
-                            .obtain(it.text, 0, it.text.length, it.paint, drawingBitmap.width)
-                            .setAlignment(it.alignment)
-                            .setMaxLines(lineMax)
-                            .setEllipsize(TextUtils.TruncateAt.END)
-                            .build()
+                        .obtain(it.text, 0, it.text.length, it.paint, drawingBitmap.width)
+                        .setAlignment(it.alignment)
+                        .setMaxLines(lineMax)
+                        .setEllipsize(TextUtils.TruncateAt.END)
+                        .build()
                 } else {
                     StaticLayout(it.text, 0, it.text.length, it.paint, drawingBitmap.width, it.alignment, it.spacingMultiplier, it.spacingAdd, false)
                 }
                 textBitmap = Bitmap.createBitmap(drawingBitmap.width, drawingBitmap.height, Bitmap.Config.ARGB_8888)
-                val textCanvas = Canvas(textBitmap!!)
+                val textCanvas = Canvas(textBitmap)
                 textCanvas.translate(0f, ((drawingBitmap.height - layout.height) / 2).toFloat())
                 layout.draw(textCanvas)
                 drawTextCache.put(imageKey, textBitmap as Bitmap)
@@ -415,8 +406,8 @@ internal class SVGACanvasDrawer(videoItem: SVGAVideoEntity, val dynamicItem: SVG
                         shape.styles?.lineDash?.let {
                             if (it.size == 3 && (it[0] > 0 || it[1] > 0)) {
                                 paint.pathEffect = DashPathEffect(floatArrayOf(
-                                        (if (it[0] < 1.0f) 1.0f else it[0]) * scale,
-                                        (if (it[1] < 0.1f) 0.1f else it[1]) * scale
+                                    (if (it[0] < 1.0f) 1.0f else it[0]) * scale,
+                                    (if (it[1] < 0.1f) 0.1f else it[1]) * scale
                                 ), it[2] * scale)
                             }
                         }
