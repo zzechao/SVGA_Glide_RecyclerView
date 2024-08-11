@@ -5,8 +5,6 @@ import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Build
-import android.util.Log
-import com.opensource.svgaplayer.bitmap.BitmapSampleSizeCalculator
 import com.opensource.svgaplayer.bitmap.SVGABitmapByteArrayDecoder
 import com.opensource.svgaplayer.bitmap.SVGABitmapFileDecoder
 import com.opensource.svgaplayer.entities.SVGAAudioEntity
@@ -16,11 +14,12 @@ import com.opensource.svgaplayer.proto.MovieEntity
 import com.opensource.svgaplayer.proto.MovieParams
 import com.opensource.svgaplayer.utils.SVGARect
 import com.opensource.svgaplayer.utils.log.LogUtils
-import com.svga.glide.SVGAGlideEx.bitmapPool
 import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by PonyCui on 16/6/18.
@@ -31,8 +30,6 @@ class SVGAVideoEntity {
 
     var antiAlias = true
     var movieItem: MovieEntity? = null
-    private var mJson: JSONObject? = null
-    private var isVersion2 = false
 
     var videoSize = SVGARect(0.0, 0.0, 0.0, 0.0)
         private set
@@ -51,34 +48,18 @@ class SVGAVideoEntity {
     private var mCacheDir: File
     private var mFrameHeight = 0
     private var mFrameWidth = 0
-
-    /**
-     * 图片采样率
-     * */
-    private var imageSampleSize = 1
-    private var isAudioInit = false
-
-    private var mPlayCallback: SVGAParser.PlayCallback? = null
+    private var mPlayCallback: SVGAParser.PlayCallback?=null
     private lateinit var mCallback: () -> Unit
 
     constructor(json: JSONObject, cacheDir: File) : this(json, cacheDir, 0, 0)
 
     constructor(json: JSONObject, cacheDir: File, frameWidth: Int, frameHeight: Int) {
-        Log.i("zzzc","constructor frameWidth:$frameWidth frameHeight:$frameHeight")
         mFrameWidth = frameWidth
         mFrameHeight = frameHeight
         mCacheDir = cacheDir
         val movieJsonObject = json.optJSONObject("movie") ?: return
         setupByJson(movieJsonObject)
         try {
-            imageSampleSize = BitmapSampleSizeCalculator.calculate(
-                videoSize.height.toInt(),
-                videoSize.width.toInt(),
-                mFrameWidth,
-                mFrameHeight
-            )
-            isVersion2 = false
-            mJson = json
             parserImages(json)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -101,20 +82,12 @@ class SVGAVideoEntity {
     constructor(entity: MovieEntity, cacheDir: File) : this(entity, cacheDir, 0, 0)
 
     constructor(entity: MovieEntity, cacheDir: File, frameWidth: Int, frameHeight: Int) {
-        Log.i("zzzc","constructor frameWidth:$frameWidth frameHeight:$frameHeight")
         this.mFrameWidth = frameWidth
         this.mFrameHeight = frameHeight
         this.mCacheDir = cacheDir
         this.movieItem = entity
         entity.params?.let(this::setupByMovie)
         try {
-            imageSampleSize = BitmapSampleSizeCalculator.calculate(
-                videoSize.height.toInt(),
-                videoSize.width.toInt(),
-                mFrameWidth,
-                mFrameHeight
-            )
-            isVersion2 = true
             parserImages(entity)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -173,13 +146,7 @@ class SVGAVideoEntity {
     }
 
     private fun createBitmap(filePath: String): Bitmap? {
-        var width = videoSize.width.toInt()
-        var height = videoSize.height.toInt()
-        if (imageSampleSize > 1) {
-            width = mFrameWidth
-            height = mFrameHeight
-        }
-        return SVGABitmapFileDecoder.decodeBitmapFrom(filePath, imageSampleSize, width, height)
+        return SVGABitmapFileDecoder.decodeBitmapFrom(filePath, mFrameWidth, mFrameHeight)
     }
 
     private fun parserImages(obj: MovieEntity) {
@@ -199,23 +166,8 @@ class SVGAVideoEntity {
         }
     }
 
-    fun resetCreateImages() {
-        if (isVersion2) {
-            movieItem?.let { parserImages(it) }
-        } else {
-            mJson?.let { parserImages(it) }
-        }
-    }
-
     private fun createBitmap(byteArray: ByteArray, filePath: String): Bitmap? {
-        var width = videoSize.width.toInt()
-        var height = videoSize.height.toInt()
-        if (imageSampleSize > 1) {
-            width = mFrameWidth
-            height = mFrameHeight
-        }
-        val bitmap =
-            SVGABitmapByteArrayDecoder.decodeBitmapFrom(byteArray, imageSampleSize, width, height)
+        val bitmap = SVGABitmapByteArrayDecoder.decodeBitmapFrom(byteArray, mFrameWidth, mFrameHeight)
         return bitmap ?: createBitmap(filePath)
     }
 
@@ -238,27 +190,20 @@ class SVGAVideoEntity {
     }
 
     private fun setupAudios(entity: MovieEntity, completionBlock: () -> Unit) {
-        if (entity.audios == null || entity.audios.isEmpty() || isAudioInit) {
-            completionBlock()
+        if (entity.audios == null || entity.audios.isEmpty()) {
+            run(completionBlock)
             return
         }
-        synchronized(this) {
-            if (isAudioInit) {
-                completionBlock()
-                return
-            }
-            isAudioInit = true
-            setupSoundPool(entity, completionBlock)
-            val audiosFileMap = generateAudioFileMap(entity)
-            //repair when audioEntity error can not callback
-            //如果audiosFileMap为空 soundPool?.load 不会走 导致 setOnLoadCompleteListener 不会回调 导致外层prepare不回调卡住
-            if (audiosFileMap.size == 0) {
-                run(completionBlock)
-                return
-            }
-            this.audioList = entity.audios.map { audio ->
-                return@map createSvgaAudioEntity(audio, audiosFileMap)
-            }
+        setupSoundPool(entity, completionBlock)
+        val audiosFileMap = generateAudioFileMap(entity)
+        //repair when audioEntity error can not callback
+        //如果audiosFileMap为空 soundPool?.load 不会走 导致 setOnLoadCompleteListener 不会回调 导致外层prepare不回调卡住
+        if (audiosFileMap.size == 0) {
+            run(completionBlock)
+            return
+        }
+        this.audioList = entity.audios.map { audio ->
+            return@map createSvgaAudioEntity(audio, audiosFileMap)
         }
     }
 
@@ -287,10 +232,10 @@ class SVGAVideoEntity {
                 val offset = ((startTime / totalTime) * length).toLong()
                 if (SVGASoundManager.isInit()) {
                     item.soundID = SVGASoundManager.load(soundCallback,
-                            it.fd,
-                            offset,
-                            length.toLong(),
-                            1)
+                        it.fd,
+                        offset,
+                        length.toLong(),
+                        1)
                 } else {
                     item.soundID = soundPool?.load(it.fd, offset, length.toLong(), 1)
                 }
@@ -312,10 +257,10 @@ class SVGAVideoEntity {
             audiosDataMap.forEach {
                 val audioCache = SVGACache.buildAudioFile(it.key)
                 audiosFileMap[it.key] =
-                        audioCache.takeIf { file -> file.exists() } ?: generateAudioFile(
-                                audioCache,
-                                it.value
-                        )
+                    audioCache.takeIf { file -> file.exists() } ?: generateAudioFile(
+                        audioCache,
+                        it.value
+                    )
             }
         }
         return audiosFileMap
@@ -332,7 +277,7 @@ class SVGAVideoEntity {
             val fileTag = byteArray.slice(IntRange(0, 3))
             if (fileTag[0].toInt() == 73 && fileTag[1].toInt() == 68 && fileTag[2].toInt() == 51) {
                 audiosDataMap[imageKey] = byteArray
-            } else if (fileTag[0].toInt() == -1 && fileTag[1].toInt() == -5 && fileTag[2].toInt() == -108) {
+            }else if(fileTag[0].toInt() == -1 && fileTag[1].toInt() == -5 && fileTag[2].toInt() == -108){
                 audiosDataMap[imageKey] = byteArray
             }
         }
@@ -386,26 +331,11 @@ class SVGAVideoEntity {
     }
 
     fun clear() {
-        audioList.forEach { audio ->
-            audio.playID?.let {
-                if (SVGASoundManager.isInit()) {
-                    SVGASoundManager.stop(it)
-                } else {
-                    soundPool?.stop(it)
-                }
-            }
-            audio.playID = null
-        }
         if (SVGASoundManager.isInit()) {
             this.audioList.forEach {
                 it.soundID?.let { id -> SVGASoundManager.unload(id) }
             }
             soundCallback = null
-        }
-        bitmapPool?.let { pool ->
-            imageMap.forEach {
-                pool.put(it.value)
-            }
         }
         soundPool?.release()
         soundPool = null

@@ -11,14 +11,6 @@ internal object BitmapSampleSizeCalculator {
     fun calculate(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
         // Raw height and width of image
         val (height: Int, width: Int) = options.run { outHeight to outWidth }
-        return calculate(height, width, reqWidth, reqHeight)
-    }
-
-    /**
-     * https://developer.android.com/topic/performance/graphics/load-bitmap
-     * 采用率计算方法
-     */
-    fun calculate(height: Int, width: Int, reqWidth: Int, reqHeight: Int): Int {
         var inSampleSize = 1
 
         if (reqHeight <= 0 || reqWidth <= 0) {

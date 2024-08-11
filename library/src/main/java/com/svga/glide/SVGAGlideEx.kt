@@ -11,6 +11,7 @@ object SVGAGlideEx {
     lateinit var bitmapPool: BitmapPool
     lateinit var arrayPool: ArrayPool
     lateinit var parsers: List<ImageHeaderParser>
+    var fixBitmapToRequestedDimensions = false
 
     fun register(glide: Glide, registry: Registry, cachePath: String) {
         arrayPool = glide.arrayPool
