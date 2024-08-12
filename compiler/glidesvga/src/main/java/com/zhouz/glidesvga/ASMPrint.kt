@@ -1,4 +1,4 @@
-package com.svga.glide
+package com.zhouz.glidesvga
 
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.util.ASMifier
@@ -13,7 +13,7 @@ import java.io.PrintWriter
  * description：输出ASM转化
  */
 fun main(args: Array<String>) {
-    val clazzName = "com.svga.glide.SVGAGlideResourceDelegate"
+    val clazzName = "com.zhouz.glidesvga.SVGAGlideResourceDelegate"
     val parsingOption = ClassReader.SKIP_FRAMES or ClassReader.SKIP_DEBUG
     val asmCode = true
 

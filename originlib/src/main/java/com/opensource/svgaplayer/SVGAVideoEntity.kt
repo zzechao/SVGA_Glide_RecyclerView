@@ -44,7 +44,7 @@ class SVGAVideoEntity {
     internal var audioList: List<SVGAAudioEntity> = emptyList()
     internal var soundPool: SoundPool? = null
     private var soundCallback: SVGASoundManager.SVGASoundCallBack? = null
-    internal var imageMap = HashMap<String, Bitmap>()
+    var imageMap = HashMap<String, Bitmap>()
     private var mCacheDir: File
     private var mFrameHeight = 0
     private var mFrameWidth = 0

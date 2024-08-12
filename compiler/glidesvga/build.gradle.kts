@@ -29,8 +29,15 @@ android {
 }
 
 dependencies {
-    implementation(libs.svgaplayer.android)
+    //implementation(libs.svgaplayer.android)
     implementation(libs.glide)
     implementation(libs.wire.runtime)
+    implementation(project(":originlib"))
     kapt(libs.glide.compiler)
+
+    implementation("org.ow2.asm:asm-commons:9.6")
+    implementation("org.ow2.asm:asm-tree:9.6")
+    implementation("org.ow2.asm:asm-util:9.6")
+    implementation("org.ow2.asm:asm-analysis:9.6")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.20")
 }

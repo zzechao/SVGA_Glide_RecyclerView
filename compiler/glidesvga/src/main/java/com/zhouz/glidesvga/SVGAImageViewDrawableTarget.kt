@@ -24,6 +24,7 @@ open class SVGAImageViewDrawableTarget(
     private val TAG = "SVGAImageViewDrawableTarget"
 
     init {
+        request?.clear()
         request = null
     }
 

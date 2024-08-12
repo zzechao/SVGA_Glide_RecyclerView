@@ -4,6 +4,7 @@ import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.util.Util
 import com.zhouz.glidesvga.SVGAGlideEx.bitmapPool
 import com.zhouz.glidesvga.SVGAGlideEx.log
+import com.zhouz.glidesvga.util.ReflectUtils
 
 /**
  * Time:2022/11/26 22:38
@@ -23,24 +24,13 @@ class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<S
     }
 
     override fun getSize(): Int {
-        var cnt = 0L
-//        resource.videoItem?.imageMap?.values?.forEach {
-//            cnt += Util.getBitmapByteSize(it)
-//        }
-        return cnt.toInt().apply {
-            log.d(TAG, "getSize ${resource.model} size:$this")
-        }
+        var cnt = 0
+        return cnt
     }
 
     override fun recycle() {
         log.d(TAG, "recycle ${resource.model}")
         resource.videoItem?.movieItem = null
-//        bitmapPool?.let { pool ->
-//            resource.videoItem?.imageMap?.forEach {
-//                pool.put(it.value)
-//            }
-//        }
-//        resource.videoItem?.imageMap?.clear()
         resource.videoItem?.clear()
     }
 }

@@ -31,4 +31,8 @@ object HookParams {
     const val ENTITY_SVGA_ANIMATION_DRAWABLE_NAME = "com/zhouz/glidesvga/SVGAAnimationDrawable"
 
     const val ENTITY_SVGA_RESOURCE_NAME = "com/zhouz/glidesvga/SVGAResource"
+
+    const val SVGA_GLIDE_RESOURCE_DELEGATE_NAME = "com/zhouz/glidesvga/SVGAGlideResourceDelegate"
+
+    const val SVGA_GLIDE_RESOURCE_DELEGATE_CLASS = "$SVGA_GLIDE_RESOURCE_DELEGATE_NAME.class"
 }

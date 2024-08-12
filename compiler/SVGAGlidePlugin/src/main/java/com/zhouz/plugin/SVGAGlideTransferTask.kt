@@ -50,6 +50,9 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
         // SVGAImageViewDrawableTarget.class 的位置
         var imageViewDrawableTargetIndex = -1
 
+        //
+        var mSVGAGlideResourceDelegateIndex = -1
+
         val jarOutput = JarOutputStream(BufferedOutputStream(FileOutputStream(output.get().asFile)))
         jarOutput.use {
 
@@ -67,6 +70,8 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                                 entitySVGAFileContainsIndex = index
                             } else if (HookParams.ENTITY_SVGA_TARGET_CLASS == entryName) {
                                 imageViewDrawableTargetIndex = index
+                            } else if (HookParams.SVGA_GLIDE_RESOURCE_DELEGATE_CLASS == entryName) {
+                                mSVGAGlideResourceDelegateIndex = index
                             } else {
                                 jarFile.getInputStream(jarEntry).use {
                                     jarOutput.writeEntity(jarEntry.name, it)

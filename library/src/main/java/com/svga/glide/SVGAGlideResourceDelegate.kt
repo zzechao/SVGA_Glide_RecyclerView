@@ -2,7 +2,6 @@ package com.svga.glide
 
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.util.Util
-import com.opensource.svgaplayer.utils.log.LogUtils
 import com.svga.glide.SVGAGlideEx.bitmapPool
 
 /**
@@ -11,8 +10,6 @@ import com.svga.glide.SVGAGlideEx.bitmapPool
  * Description:
  */
 class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<SVGAResource> {
-
-    private val TAG = "SVGAGlideResourceDelegate"
 
     override fun getResourceClass(): Class<SVGAResource> {
         return SVGAResource::class.java
@@ -23,23 +20,18 @@ class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<S
     }
 
     override fun getSize(): Int {
-        var cnt = 0L
+        var cnt = 0
         resource.videoItem?.imageMap?.values?.forEach {
             cnt += Util.getBitmapByteSize(it)
         }
-        return cnt.toInt().apply {
-            LogUtils.debug(TAG, "getSize ${resource.model} size:$this")
-        }
+        return cnt
     }
 
     override fun recycle() {
-        LogUtils.debug(TAG, "recycle ${resource.model}")
         resource.videoItem?.movieItem = null
-        if (::bitmapPool.isLateinit) {
-            bitmapPool.let { pool ->
-                resource.videoItem?.imageMap?.forEach {
-                    pool.put(it.value)
-                }
+        bitmapPool.let { pool ->
+            resource.videoItem?.imageMap?.forEach {
+                pool.put(it.value)
             }
         }
         resource.videoItem?.imageMap?.clear()
