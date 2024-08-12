@@ -20,7 +20,6 @@ object SVGAGlideEx {
 
     fun register(glide: Glide, registry: Registry, cachePath: String) {
         arrayPool = glide.arrayPool
-        bitmapPool = glide.bitmapPool
         registry.prepend(
             Registry.BUCKET_ANIMATION,
             InputStream::class.java, SVGAResource::class.java,
