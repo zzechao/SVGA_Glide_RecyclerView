@@ -16,6 +16,8 @@ object HookParams {
 
     const val ENTITY_SVGA_CLASS_METHOD = "prepare\$com_opensource_svgaplayer"
 
+    const val ENTITY_SVGA_CLASS_METHOD2 = "getImageMap\$com_opensource_svgaplayer"
+
     const val ENTITY_SVGA_CLASS_METHOD_NEW = ENTITY_SVGA_CLASS_METHOD
 
     const val ENTITY_SVGA_TARGET_METHOD = "onResourceReady"

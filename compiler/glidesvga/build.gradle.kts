@@ -29,10 +29,10 @@ android {
 }
 
 dependencies {
-    //implementation(libs.svgaplayer.android)
+    implementation(libs.svgaplayer.android)
     implementation(libs.glide)
     implementation(libs.wire.runtime)
-    implementation(project(":originlib"))
+    //implementation(project(":originlib"))
     kapt(libs.glide.compiler)
 
     implementation("org.ow2.asm:asm-commons:9.6")

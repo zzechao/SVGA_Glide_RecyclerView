@@ -115,6 +115,13 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                 }
             }
 
+            if (mSVGAGlideResourceDelegateIndex > 0) {
+                allJars.get().getOrNull(mSVGAGlideResourceDelegateIndex)?.let {
+                    val jarFile = JarFile(it.asFile)
+                    jarFile.referHack(HookParams.SVGA_GLIDE_RESOURCE_DELEGATE_CLASS, jarOutput)
+                }
+            }
+
             // prepare$com_opensource_svgaplayer匿名内部类的构建
             jarOutput.writeEntity(
                 HookParams.ENTITY_SVGA_TARGET_CLASS_PREPARE_2_CLASS,
@@ -167,6 +174,11 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
 
                         HookParams.ENTITY_SVGA_CLASS -> {
                             val cv = SVGAEntityClassVisitor(Opcodes.ASM9, cw)
+                            cr.accept(cv, ClassReader.EXPAND_FRAMES)
+                        }
+
+                        HookParams.SVGA_GLIDE_RESOURCE_DELEGATE_CLASS -> {
+                            val cv = SVGAGlideResourceDelegateClassVisitor(Opcodes.ASM9, cw)
                             cr.accept(cv, ClassReader.EXPAND_FRAMES)
                         }
                     }
