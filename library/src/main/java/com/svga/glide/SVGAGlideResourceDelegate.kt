@@ -36,9 +36,11 @@ class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<S
     override fun recycle() {
         LogUtils.debug(TAG, "recycle ${resource.model}")
         resource.videoItem?.movieItem = null
-        bitmapPool?.let { pool ->
-            resource.videoItem?.imageMap?.forEach {
-                pool.put(it.value)
+        if (::bitmapPool.isLateinit) {
+            bitmapPool.let { pool ->
+                resource.videoItem?.imageMap?.forEach {
+                    pool.put(it.value)
+                }
             }
         }
         resource.videoItem?.imageMap?.clear()

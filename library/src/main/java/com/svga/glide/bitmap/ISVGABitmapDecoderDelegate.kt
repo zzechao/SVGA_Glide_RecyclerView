@@ -48,6 +48,9 @@ interface ISVGABitmapDecoderDelegate<T> {
 
             var userInBitmap = false
 
+            /**
+             * com.bumptech.glide.load.resource.bitmap.Downsampler.decodeFromWrappedStreams
+             */
             val isKitKatOrGreater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
             var expectedWidth = 0
             var expectedHeight = 0
@@ -155,6 +158,7 @@ interface ISVGABitmapDecoderDelegate<T> {
 
         return inSampleSize
     }
+
 
     /**
      * com.bumptech.glide.load.resource.bitmap.Downsampler.shouldUsePool
