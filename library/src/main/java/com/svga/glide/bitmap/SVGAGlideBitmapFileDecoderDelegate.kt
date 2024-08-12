@@ -9,8 +9,6 @@ import com.svga.glide.SVGAGlideEx
 import com.svga.glide.SVGAGlideEx.parsers
 import java.io.File
 import java.io.FileInputStream
-import java.io.IOException
-import java.io.InputStream
 
 /**
  * 通过文件解码 Bitmap
@@ -19,8 +17,8 @@ import java.io.InputStream
  */
 object SVGAGlideBitmapFileDecoderDelegate : ISVGABitmapDecoderDelegate<String> {
 
-    override fun onDecode(data: String, ops: BitmapFactory.Options): Bitmap? {
-        return BitmapFactory.decodeFile(data, ops)
+    override fun onDecode(data: String, options: BitmapFactory.Options): Bitmap? {
+        return BitmapFactory.decodeFile(data, options)
     }
 
     override fun getImageType(data: String): ImageHeaderParser.ImageType {

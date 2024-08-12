@@ -5,8 +5,6 @@ import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Build
-import com.opensource.svgaplayer.bitmap.SVGABitmapByteArrayDecoder
-import com.opensource.svgaplayer.bitmap.SVGABitmapFileDecoder
 import com.opensource.svgaplayer.entities.SVGAAudioEntity
 import com.opensource.svgaplayer.entities.SVGAVideoSpriteEntity
 import com.opensource.svgaplayer.proto.AudioEntity
@@ -14,12 +12,12 @@ import com.opensource.svgaplayer.proto.MovieEntity
 import com.opensource.svgaplayer.proto.MovieParams
 import com.opensource.svgaplayer.utils.SVGARect
 import com.opensource.svgaplayer.utils.log.LogUtils
+import com.svga.glide.bitmap.SVGAGlideBitmapByteDecoderDelegate
+import com.svga.glide.bitmap.SVGAGlideBitmapFileDecoderDelegate
 import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * Created by PonyCui on 16/6/18.
@@ -48,7 +46,7 @@ class SVGAVideoEntity {
     private var mCacheDir: File
     private var mFrameHeight = 0
     private var mFrameWidth = 0
-    private var mPlayCallback: SVGAParser.PlayCallback?=null
+    private var mPlayCallback: SVGAParser.PlayCallback? = null
     private lateinit var mCallback: () -> Unit
 
     constructor(json: JSONObject, cacheDir: File) : this(json, cacheDir, 0, 0)
@@ -146,7 +144,7 @@ class SVGAVideoEntity {
     }
 
     private fun createBitmap(filePath: String): Bitmap? {
-        return SVGABitmapFileDecoder.decodeBitmapFrom(filePath, mFrameWidth, mFrameHeight)
+        return SVGAGlideBitmapFileDecoderDelegate.decodeBitmapFrom(filePath, mFrameWidth, mFrameHeight)
     }
 
     private fun parserImages(obj: MovieEntity) {
@@ -167,7 +165,7 @@ class SVGAVideoEntity {
     }
 
     private fun createBitmap(byteArray: ByteArray, filePath: String): Bitmap? {
-        val bitmap = SVGABitmapByteArrayDecoder.decodeBitmapFrom(byteArray, mFrameWidth, mFrameHeight)
+        val bitmap = SVGAGlideBitmapByteDecoderDelegate.decodeBitmapFrom(byteArray, mFrameWidth, mFrameHeight)
         return bitmap ?: createBitmap(filePath)
     }
 
@@ -231,11 +229,13 @@ class SVGAVideoEntity {
                 val length = it.available().toDouble()
                 val offset = ((startTime / totalTime) * length).toLong()
                 if (SVGASoundManager.isInit()) {
-                    item.soundID = SVGASoundManager.load(soundCallback,
+                    item.soundID = SVGASoundManager.load(
+                        soundCallback,
                         it.fd,
                         offset,
                         length.toLong(),
-                        1)
+                        1
+                    )
                 } else {
                     item.soundID = soundPool?.load(it.fd, offset, length.toLong(), 1)
                 }
@@ -277,7 +277,7 @@ class SVGAVideoEntity {
             val fileTag = byteArray.slice(IntRange(0, 3))
             if (fileTag[0].toInt() == 73 && fileTag[1].toInt() == 68 && fileTag[2].toInt() == 51) {
                 audiosDataMap[imageKey] = byteArray
-            }else if(fileTag[0].toInt() == -1 && fileTag[1].toInt() == -5 && fileTag[2].toInt() == -108){
+            } else if (fileTag[0].toInt() == -1 && fileTag[1].toInt() == -5 && fileTag[2].toInt() == -108) {
                 audiosDataMap[imageKey] = byteArray
             }
         }
