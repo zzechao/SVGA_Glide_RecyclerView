@@ -1,6 +1,5 @@
 package com.svga.glide
 
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.util.Util
 import com.opensource.svgaplayer.utils.log.LogUtils
