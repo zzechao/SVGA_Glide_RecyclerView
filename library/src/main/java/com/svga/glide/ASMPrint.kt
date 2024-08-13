@@ -13,7 +13,7 @@ import java.io.PrintWriter
  * description：输出ASM转化
  */
 fun main(args: Array<String>) {
-    val clazzName = "com.opensource.svgaplayer.SVGAVideoEntity"
+    val clazzName = "com.svga.glide.SVGAGlideResourceDelegate"
     val parsingOption = ClassReader.SKIP_FRAMES or ClassReader.SKIP_DEBUG
     val asmCode = true
 

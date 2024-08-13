@@ -5,9 +5,13 @@ import com.bumptech.glide.Registry
 import com.bumptech.glide.load.ImageHeaderParser
 import com.bumptech.glide.load.engine.bitmap_recycle.ArrayPool
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
+import com.svga.glide.log.DefaultLog
+import com.svga.glide.log.ILog
 import java.io.InputStream
 
 object SVGAGlideEx {
+    var log: ILog = DefaultLog()
+
     lateinit var bitmapPool: BitmapPool
     lateinit var arrayPool: ArrayPool
     lateinit var parsers: List<ImageHeaderParser>
