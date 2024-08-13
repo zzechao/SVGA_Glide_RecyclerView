@@ -165,7 +165,7 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                         }
 
                         HookParams.ENTITY_SVGA_CLASS -> {
-                            val cv = SVGAEntityClassVisitor(Opcodes.ASM9, cw)
+                            val cv = SVGAEntityClassVisitor2(Opcodes.ASM9, cw)
                             cr.accept(cv, ClassReader.EXPAND_FRAMES)
                         }
                     }
