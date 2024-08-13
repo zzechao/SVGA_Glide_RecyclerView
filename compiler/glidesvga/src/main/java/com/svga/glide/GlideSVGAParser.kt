@@ -1,10 +1,10 @@
-package com.zhouz.glidesvga
+package com.svga.glide
 
 import com.bumptech.glide.load.model.GlideUrl
 import com.opensource.svgaplayer.SVGAVideoEntity
 import com.opensource.svgaplayer.proto.MovieEntity
 import com.opensource.svgaplayer.utils.SVGARect
-import com.zhouz.glidesvga.SVGAGlideEx.arrayPool
+import com.svga.glide.SVGAGlideEx.arrayPool
 import okio.Buffer
 import okio.buffer
 import okio.inflate

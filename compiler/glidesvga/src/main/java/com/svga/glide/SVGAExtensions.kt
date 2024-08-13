@@ -1,4 +1,4 @@
-package com.zhouz.glidesvga
+package com.svga.glide
 
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.annotation.GlideExtension

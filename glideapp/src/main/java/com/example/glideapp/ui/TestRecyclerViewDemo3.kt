@@ -11,9 +11,9 @@ import com.example.glideapp.R
 import com.opensource.svgaplayer.SVGADrawable
 import com.opensource.svgaplayer.SVGAParser
 import com.opensource.svgaplayer.SVGAVideoEntity
-import com.zhouz.glidesvga.SVGACallback2
-import com.zhouz.glidesvga.SVGAImageViewDrawableTarget
-import com.zhouz.glidesvga.setSvgaClickMapListener
+import com.svga.glide.SVGACallback2
+import com.svga.glide.SVGAImageViewDrawableTarget
+import com.svga.glide.setSvgaClickMapListener
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_tool
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_tool_svga
 import kotlinx.android.synthetic.main.activity_test_recyclerview.left

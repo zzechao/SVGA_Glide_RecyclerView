@@ -1,4 +1,4 @@
-package com.zhouz.glidesvga
+package com.svga.glide
 
 import android.animation.ValueAnimator
 import android.graphics.drawable.Drawable

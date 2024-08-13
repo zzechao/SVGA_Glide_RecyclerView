@@ -1,4 +1,4 @@
-package com.zhouz.glidesvga
+package com.svga.glide
 
 import com.bumptech.glide.load.Option
 import com.bumptech.glide.load.Options
@@ -6,7 +6,7 @@ import com.bumptech.glide.load.ResourceDecoder
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
 import com.opensource.svgaplayer.SVGAVideoEntity
-import com.zhouz.glidesvga.SVGAGlideEx.log
+import com.svga.glide.SVGAGlideEx.log
 import java.io.InputStream
 
 /**

@@ -1,4 +1,4 @@
-package com.zhouz.glidesvga.log
+package com.svga.glide.log
 
 import android.util.Log
 
@@ -21,12 +21,15 @@ open class DefaultLog : ILog {
     }
 
     override fun d(tag: String, message: () -> Any?) {
+        message?.toString()?.let { Log.d(tag, it) }
     }
 
     override fun d(tag: String, format: String, vararg args: Any?) {
+        Log.d(tag, format.format(args))
     }
 
     override fun d(tag: String, message: String) {
+        Log.d(tag, message)
     }
 
     override fun i(tag: String, message: () -> Any?) {

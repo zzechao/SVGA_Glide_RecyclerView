@@ -1,4 +1,4 @@
-package com.zhouz.glidesvga
+package com.svga.glide
 
 import android.animation.Animator
 import android.animation.ValueAnimator
@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import com.opensource.svgaplayer.SVGADrawable
 import com.opensource.svgaplayer.SVGADynamicEntity
 import com.opensource.svgaplayer.SVGAVideoEntity
-import com.zhouz.glidesvga.util.ReflectUtils
 import java.lang.reflect.Field
 
 /**
@@ -48,8 +47,8 @@ class SVGAAnimationDrawable(
     private var currentFrameField: Field? = null
 
     private var drawer = SVGADrawable(videoItem, dynamicItem).apply {
-        clearedField = ReflectUtils.reflect(this).getField("cleared")
-        currentFrameField = ReflectUtils.reflect(this).getField("currentFrame")
+        clearedField = com.svga.glide.util.ReflectUtils.reflect(this).getField("cleared")
+        currentFrameField = com.svga.glide.util.ReflectUtils.reflect(this).getField("currentFrame")
     }
 
     var scaleType = ImageView.ScaleType.MATRIX
@@ -57,8 +56,8 @@ class SVGAAnimationDrawable(
 
     fun resetDynamicEntity(dynamicItem: SVGADynamicEntity) {
         drawer = SVGADrawable(videoItem, dynamicItem).apply {
-            clearedField = ReflectUtils.reflect(this).getField("cleared")
-            currentFrameField = ReflectUtils.reflect(this).getField("currentFrame")
+            clearedField = com.svga.glide.util.ReflectUtils.reflect(this).getField("cleared")
+            currentFrameField = com.svga.glide.util.ReflectUtils.reflect(this).getField("currentFrame")
         }
     }
 

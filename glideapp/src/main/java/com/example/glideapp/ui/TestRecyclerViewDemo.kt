@@ -15,8 +15,8 @@ import com.example.glideapp.R
 import com.opensource.svgaplayer.SVGAImageView
 import com.opensource.svgaplayer.SVGAParser
 import com.opensource.svgaplayer.SVGAVideoEntity
-import com.zhouz.glidesvga.SVGAImageViewDrawableTarget
-import com.zhouz.glidesvga.SVGAResource
+import com.svga.glide.SVGAImageViewDrawableTarget
+import com.svga.glide.SVGAResource
 
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_recycler
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_tool
@@ -85,6 +85,7 @@ class TestRecyclerViewDemo : AppCompatActivity() {
         override fun onBindViewHolder(holder: ItemHolder, position: Int) {
             val url = urls[position % urls.size]
             (Glide.with(this@TestRecyclerViewDemo) as GlideRequests).asSVGAResource()
+                .skipMemoryCache(true)
                 .load(url)
                 .setSVGATag(url)
                 .into(SVGAImageViewDrawableTarget(holder.head))

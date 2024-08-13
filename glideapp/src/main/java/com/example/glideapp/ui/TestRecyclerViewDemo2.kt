@@ -14,7 +14,7 @@ import com.example.glideapp.R
 import com.opensource.svgaplayer.SVGAImageView
 import com.opensource.svgaplayer.SVGAParser
 import com.opensource.svgaplayer.SVGAVideoEntity
-import com.zhouz.glidesvga.SVGAImageViewDrawableTarget
+import com.svga.glide.SVGAImageViewDrawableTarget
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_recycler
 
 /**

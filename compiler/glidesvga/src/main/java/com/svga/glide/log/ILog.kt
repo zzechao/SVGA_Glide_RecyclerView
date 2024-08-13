@@ -1,4 +1,4 @@
-package com.zhouz.glidesvga.log
+package com.svga.glide.log
 
 /**
  * @author:zhouzechao

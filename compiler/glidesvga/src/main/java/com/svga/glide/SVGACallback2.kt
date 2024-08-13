@@ -1,4 +1,4 @@
-package com.zhouz.glidesvga
+package com.svga.glide
 
 import com.opensource.svgaplayer.SVGACallback
 

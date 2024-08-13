@@ -1,7 +1,4 @@
-package com.zhouz.glidesvga
-
-import android.view.MotionEvent
-import com.zhouz.glidesvga.SVGAGlideEx.log
+package com.svga.glide
 
 /**
  * Time:2023/3/17 12:02

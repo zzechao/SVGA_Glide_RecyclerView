@@ -1,4 +1,4 @@
-package com.zhouz.glidesvga.util;
+package com.svga.glide.util;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
