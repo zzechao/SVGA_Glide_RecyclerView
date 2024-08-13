@@ -44,11 +44,12 @@ class SVGAVideoEntity {
     internal var audioList: List<SVGAAudioEntity> = emptyList()
     internal var soundPool: SoundPool? = null
     private var soundCallback: SVGASoundManager.SVGASoundCallBack? = null
-    var imageMap = HashMap<String, Bitmap>()
+    internal var imageMap = HashMap<String, Bitmap>()
     private var mCacheDir: File
     private var mFrameHeight = 0
     private var mFrameWidth = 0
-    private var mPlayCallback: SVGAParser.PlayCallback?=null
+    private var mPlayCallback: SVGAParser.PlayCallback? = null
+
     private lateinit var mCallback: () -> Unit
 
     constructor(json: JSONObject, cacheDir: File) : this(json, cacheDir, 0, 0)

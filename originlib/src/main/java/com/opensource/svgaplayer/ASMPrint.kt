@@ -1,4 +1,4 @@
-package com.svga.glide
+package com.opensource.svgaplayer
 
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.util.ASMifier

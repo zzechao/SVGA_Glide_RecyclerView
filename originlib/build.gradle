@@ -34,4 +34,10 @@ android {
 
 dependencies {
     implementation 'com.squareup.wire:wire-runtime:4.4.1'
+
+    implementation("org.ow2.asm:asm-commons:9.6")
+    implementation("org.ow2.asm:asm-tree:9.6")
+    implementation("org.ow2.asm:asm-util:9.6")
+    implementation("org.ow2.asm:asm-analysis:9.6")
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.20"
 }

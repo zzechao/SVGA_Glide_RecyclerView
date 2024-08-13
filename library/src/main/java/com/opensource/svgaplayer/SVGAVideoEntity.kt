@@ -55,10 +55,11 @@ class SVGAVideoEntity {
 
     constructor(json: JSONObject, cacheDir: File) : this(json, cacheDir, 0, 0)
 
-    constructor(json: JSONObject, cacheDir: File, frameWidth: Int, frameHeight: Int) {
+    constructor(json: JSONObject, cacheDir: File, frameWidth: Int, frameHeight: Int, glide: Boolean = false) {
         mFrameWidth = frameWidth
         mFrameHeight = frameHeight
         mCacheDir = cacheDir
+        isGlide = glide
         val movieJsonObject = json.optJSONObject("movie") ?: return
         setupByJson(movieJsonObject)
         try {
@@ -83,11 +84,12 @@ class SVGAVideoEntity {
 
     constructor(entity: MovieEntity, cacheDir: File) : this(entity, cacheDir, 0, 0)
 
-    constructor(entity: MovieEntity, cacheDir: File, frameWidth: Int, frameHeight: Int) {
+    constructor(entity: MovieEntity, cacheDir: File, frameWidth: Int, frameHeight: Int, glide: Boolean = false) {
         this.mFrameWidth = frameWidth
         this.mFrameHeight = frameHeight
         this.mCacheDir = cacheDir
         this.movieItem = entity
+        isGlide = glide
         entity.params?.let(this::setupByMovie)
         try {
             parserImages(entity)
@@ -148,7 +150,10 @@ class SVGAVideoEntity {
     }
 
     private fun createBitmap(filePath: String): Bitmap? {
-        return SVGAGlideBitmapFileDecoderDelegate.decodeBitmapFrom(filePath, mFrameWidth, mFrameHeight)
+        return if (isGlide)
+            SVGAGlideBitmapFileDecoderDelegate.decodeBitmapFrom(filePath, mFrameWidth, mFrameHeight)
+        else
+            SVGABitmapFileDecoder.decodeBitmapFrom(filePath, mFrameWidth, mFrameHeight)
     }
 
     private fun parserImages(obj: MovieEntity) {
@@ -169,7 +174,10 @@ class SVGAVideoEntity {
     }
 
     private fun createBitmap(byteArray: ByteArray, filePath: String): Bitmap? {
-        val bitmap = SVGAGlideBitmapByteDecoderDelegate.decodeBitmapFrom(byteArray, mFrameWidth, mFrameHeight)
+        val bitmap = if (isGlide)
+            SVGAGlideBitmapByteDecoderDelegate.decodeBitmapFrom(byteArray, mFrameWidth, mFrameHeight)
+        else
+            SVGABitmapByteArrayDecoder.decodeBitmapFrom(byteArray, mFrameWidth, mFrameHeight)
         return bitmap ?: createBitmap(filePath)
     }
 
@@ -345,5 +353,6 @@ class SVGAVideoEntity {
         spriteList = emptyList()
         imageMap.clear()
     }
+    private var isGlide = false
 }
 
