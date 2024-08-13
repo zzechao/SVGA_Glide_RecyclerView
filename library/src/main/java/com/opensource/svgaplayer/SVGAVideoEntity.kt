@@ -352,7 +352,7 @@ class SVGAVideoEntity {
         spriteList = emptyList()
         imageMap.clear()
     }
-    private var isGlide = false
+    private var isGlide = true
     constructor(json: JSONObject, cacheDir: File, frameWidth: Int, frameHeight: Int, glide: Boolean) {
         isGlide = glide
         mFrameWidth = frameWidth

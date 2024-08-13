@@ -1,5 +1,6 @@
 package com.zhouz.plugin
 
+import com.zhouz.plugin.HookParams.ENTITY_SVGA_NAME
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.Label
@@ -53,18 +54,21 @@ class SVGAEntityClassVisitor2(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv
             }
 
             HookParams.ENTITY_SVGA_CLASS_METHOD2 -> {
+                Logger.i("SVGAEntityClassVisitor visitMethod name:${name}")
                 super.visitMethod(
                     ACC_PUBLIC, HookParams.ENTITY_SVGA_CLASS_METHOD2, descriptor, signature, exceptions
                 )
             }
 
             "getAntiAlias" -> {
+                Logger.i("SVGAEntityClassVisitor visitMethod name:${name}")
                 val fieldVisitor = cv.visitField(Opcodes.ACC_PRIVATE, "isGlide", "Z", null, null)
                 fieldVisitor.visitEnd()
                 super.visitMethod(access, name, descriptor, signature, exceptions)
             }
 
             "clear" -> {
+                Logger.i("SVGAEntityClassVisitor visitMethod name:${name}")
                 val init1 = {
                     val methodVisitor = cv.visitMethod(ACC_PUBLIC, "<init>", "(Lorg/json/JSONObject;Ljava/io/File;IIZ)V", null, null)
                     methodVisitor.visitAnnotableParameterCount(5, false)
@@ -89,10 +93,10 @@ class SVGAEntityClassVisitor2(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv
                     methodVisitor.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false)
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitLdcInsn("SVGAVideoEntity")
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "TAG", "Ljava/lang/String;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "TAG", "Ljava/lang/String;")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitInsn(ICONST_1)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "antiAlias", "Z")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "antiAlias", "Z")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitTypeInsn(NEW, "com/opensource/svgaplayer/utils/SVGARect")
                     methodVisitor.visitInsn(DUP)
@@ -101,33 +105,33 @@ class SVGAEntityClassVisitor2(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv
                     methodVisitor.visitInsn(DCONST_0)
                     methodVisitor.visitInsn(DCONST_0)
                     methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/opensource/svgaplayer/utils/SVGARect", "<init>", "(DDDD)V", false)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "videoSize", "Lcom/opensource/svgaplayer/utils/SVGARect;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "videoSize", "Lcom/opensource/svgaplayer/utils/SVGARect;")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitIntInsn(BIPUSH, 15)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "FPS", "I")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "FPS", "I")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitMethodInsn(INVOKESTATIC, "kotlin/collections/CollectionsKt", "emptyList", "()Ljava/util/List;", false)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "spriteList", "Ljava/util/List;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "spriteList", "Ljava/util/List;")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitMethodInsn(INVOKESTATIC, "kotlin/collections/CollectionsKt", "emptyList", "()Ljava/util/List;", false)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "audioList", "Ljava/util/List;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "audioList", "Ljava/util/List;")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitTypeInsn(NEW, "java/util/HashMap")
                     methodVisitor.visitInsn(DUP)
                     methodVisitor.visitMethodInsn(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "imageMap", "Ljava/util/HashMap;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "imageMap", "Ljava/util/HashMap;")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ILOAD, 5)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "isGlide", "Z")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "isGlide", "Z")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ILOAD, 3)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "mFrameWidth", "I")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "mFrameWidth", "I")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ILOAD, 4)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "mFrameHeight", "I")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "mFrameHeight", "I")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ALOAD, 2)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "mCacheDir", "Ljava/io/File;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "mCacheDir", "Ljava/io/File;")
                     methodVisitor.visitVarInsn(ALOAD, 1)
                     methodVisitor.visitLdcInsn("movie")
                     methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "org/json/JSONObject", "optJSONObject", "(Ljava/lang/String;)Lorg/json/JSONObject;", false)
@@ -140,12 +144,12 @@ class SVGAEntityClassVisitor2(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv
                     methodVisitor.visitVarInsn(ASTORE, 6)
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ALOAD, 6)
-                    methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/opensource/svgaplayer/SVGAVideoEntity", "setupByJson", "(Lorg/json/JSONObject;)V", false)
+                    methodVisitor.visitMethodInsn(INVOKESPECIAL, ENTITY_SVGA_NAME, "setupByJson", "(Lorg/json/JSONObject;)V", false)
                     methodVisitor.visitLabel(label0)
                     methodVisitor.visitInsn(NOP)
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ALOAD, 1)
-                    methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/opensource/svgaplayer/SVGAVideoEntity", "parserImages", "(Lorg/json/JSONObject;)V", false)
+                    methodVisitor.visitMethodInsn(INVOKESPECIAL, ENTITY_SVGA_NAME, "parserImages", "(Lorg/json/JSONObject;)V", false)
                     methodVisitor.visitLabel(label1)
                     val label5 = Label()
                     methodVisitor.visitJumpInsn(GOTO, label5)
@@ -161,7 +165,7 @@ class SVGAEntityClassVisitor2(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv
                     methodVisitor.visitLabel(label5)
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ALOAD, 1)
-                    methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/opensource/svgaplayer/SVGAVideoEntity", "resetSprites", "(Lorg/json/JSONObject;)V", false)
+                    methodVisitor.visitMethodInsn(INVOKESPECIAL, ENTITY_SVGA_NAME, "resetSprites", "(Lorg/json/JSONObject;)V", false)
                     methodVisitor.visitInsn(RETURN)
                     methodVisitor.visitMaxs(11, 8)
                     methodVisitor.visitEnd()
@@ -191,10 +195,10 @@ class SVGAEntityClassVisitor2(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv
                     methodVisitor.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false)
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitLdcInsn("SVGAVideoEntity")
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "TAG", "Ljava/lang/String;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "TAG", "Ljava/lang/String;")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitInsn(ICONST_1)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "antiAlias", "Z")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "antiAlias", "Z")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitTypeInsn(NEW, "com/opensource/svgaplayer/utils/SVGARect")
                     methodVisitor.visitInsn(DUP)
@@ -203,36 +207,36 @@ class SVGAEntityClassVisitor2(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv
                     methodVisitor.visitInsn(DCONST_0)
                     methodVisitor.visitInsn(DCONST_0)
                     methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/opensource/svgaplayer/utils/SVGARect", "<init>", "(DDDD)V", false)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "videoSize", "Lcom/opensource/svgaplayer/utils/SVGARect;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "videoSize", "Lcom/opensource/svgaplayer/utils/SVGARect;")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitIntInsn(BIPUSH, 15)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "FPS", "I")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "FPS", "I")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitMethodInsn(INVOKESTATIC, "kotlin/collections/CollectionsKt", "emptyList", "()Ljava/util/List;", false)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "spriteList", "Ljava/util/List;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "spriteList", "Ljava/util/List;")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitMethodInsn(INVOKESTATIC, "kotlin/collections/CollectionsKt", "emptyList", "()Ljava/util/List;", false)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "audioList", "Ljava/util/List;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "audioList", "Ljava/util/List;")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitTypeInsn(NEW, "java/util/HashMap")
                     methodVisitor.visitInsn(DUP)
                     methodVisitor.visitMethodInsn(INVOKESPECIAL, "java/util/HashMap", "<init>", "()V", false)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "imageMap", "Ljava/util/HashMap;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "imageMap", "Ljava/util/HashMap;")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ILOAD, 5)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "isGlide", "Z")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "isGlide", "Z")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ILOAD, 3)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "mFrameWidth", "I")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "mFrameWidth", "I")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ILOAD, 4)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "mFrameHeight", "I")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "mFrameHeight", "I")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ALOAD, 2)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "mCacheDir", "Ljava/io/File;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "mCacheDir", "Ljava/io/File;")
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ALOAD, 1)
-                    methodVisitor.visitFieldInsn(PUTFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "movieItem", "Lcom/opensource/svgaplayer/proto/MovieEntity;")
+                    methodVisitor.visitFieldInsn(PUTFIELD, ENTITY_SVGA_NAME, "movieItem", "Lcom/opensource/svgaplayer/proto/MovieEntity;")
                     methodVisitor.visitVarInsn(ALOAD, 1)
                     methodVisitor.visitFieldInsn(GETFIELD, "com/opensource/svgaplayer/proto/MovieEntity", "params", "Lcom/opensource/svgaplayer/proto/MovieParams;")
                     methodVisitor.visitInsn(DUP)
@@ -243,7 +247,7 @@ class SVGAEntityClassVisitor2(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv
                     methodVisitor.visitVarInsn(ISTORE, 8)
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ALOAD, 7)
-                    methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/opensource/svgaplayer/SVGAVideoEntity", "setupByMovie", "(Lcom/opensource/svgaplayer/proto/MovieParams;)V", false)
+                    methodVisitor.visitMethodInsn(INVOKESPECIAL, ENTITY_SVGA_NAME, "setupByMovie", "(Lcom/opensource/svgaplayer/proto/MovieParams;)V", false)
                     methodVisitor.visitJumpInsn(GOTO, label0)
                     methodVisitor.visitLabel(label4)
                     methodVisitor.visitInsn(POP)
@@ -252,7 +256,7 @@ class SVGAEntityClassVisitor2(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv
                     methodVisitor.visitInsn(NOP)
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ALOAD, 1)
-                    methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/opensource/svgaplayer/SVGAVideoEntity", "parserImages", "(Lcom/opensource/svgaplayer/proto/MovieEntity;)V", false)
+                    methodVisitor.visitMethodInsn(INVOKESPECIAL, ENTITY_SVGA_NAME, "parserImages", "(Lcom/opensource/svgaplayer/proto/MovieEntity;)V", false)
                     methodVisitor.visitLabel(label1)
                     val label5 = Label()
                     methodVisitor.visitJumpInsn(GOTO, label5)
@@ -268,7 +272,7 @@ class SVGAEntityClassVisitor2(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv
                     methodVisitor.visitLabel(label5)
                     methodVisitor.visitVarInsn(ALOAD, 0)
                     methodVisitor.visitVarInsn(ALOAD, 1)
-                    methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/opensource/svgaplayer/SVGAVideoEntity", "resetSprites", "(Lcom/opensource/svgaplayer/proto/MovieEntity;)V", false)
+                    methodVisitor.visitMethodInsn(INVOKESPECIAL, ENTITY_SVGA_NAME, "resetSprites", "(Lcom/opensource/svgaplayer/proto/MovieEntity;)V", false)
                     methodVisitor.visitInsn(RETURN)
                     methodVisitor.visitMaxs(11, 9)
                     methodVisitor.visitEnd()
@@ -281,67 +285,71 @@ class SVGAEntityClassVisitor2(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv
             }
 
             "createBitmap" -> {
-                if (descriptor == "(Ljava/lang/String;)Landroid/graphics/Bitmap;") {
-                    object : MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, descriptor, signature, exceptions)) {
-                        private var label1: Label? = null
-                        override fun visitCode() {
-                            super.visitCode()
-                            mv.visitVarInsn(ALOAD, 0)
-                            mv.visitFieldInsn(GETFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "isGlide", "Z")
-                            val label0 = Label()
-                            mv.visitJumpInsn(Opcodes.IFEQ, label0)
-                            mv.visitFieldInsn(Opcodes.GETSTATIC, "com/svga/glide/bitmap/SVGAGlideBitmapFileDecoderDelegate", "INSTANCE", "Lcom/svga/glide/bitmap/SVGAGlideBitmapFileDecoderDelegate;")
-                            mv.visitVarInsn(ALOAD, 1)
-                            mv.visitVarInsn(ALOAD, 0)
-                            mv.visitFieldInsn(GETFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "mFrameWidth", "I")
-                            mv.visitVarInsn(ALOAD, 0)
-                            mv.visitFieldInsn(GETFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "mFrameHeight", "I")
-                            mv.visitMethodInsn(INVOKEVIRTUAL, "com/svga/glide/bitmap/SVGAGlideBitmapFileDecoderDelegate", "decodeBitmapFrom", "(Ljava/lang/Object;II)Landroid/graphics/Bitmap;", false)
-                            label1 = Label()
-                            mv.visitJumpInsn(GOTO, label1)
-                            mv.visitLabel(label0)
-                        }
-
-                        override fun visitInsn(opcode: Int) {
-                            if (Opcodes.ARETURN == opcode) {
-                                mv.visitLabel(label1)
+                Logger.i("SVGAEntityClassVisitor visitMethod name:${name}")
+                when (descriptor) {
+                    "(Ljava/lang/String;)Landroid/graphics/Bitmap;" -> {
+                        object : MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, descriptor, signature, exceptions)) {
+                            private var label1: Label? = null
+                            override fun visitCode() {
+                                super.visitCode()
+                                mv.visitVarInsn(ALOAD, 0)
+                                mv.visitFieldInsn(GETFIELD, ENTITY_SVGA_NAME, "isGlide", "Z")
+                                val label0 = Label()
+                                mv.visitJumpInsn(Opcodes.IFEQ, label0)
+                                mv.visitFieldInsn(Opcodes.GETSTATIC, "com/svga/glide/bitmap/SVGAGlideBitmapFileDecoderDelegate", "INSTANCE", "Lcom/svga/glide/bitmap/SVGAGlideBitmapFileDecoderDelegate;")
+                                mv.visitVarInsn(ALOAD, 1)
+                                mv.visitVarInsn(ALOAD, 0)
+                                mv.visitFieldInsn(GETFIELD, ENTITY_SVGA_NAME, "mFrameWidth", "I")
+                                mv.visitVarInsn(ALOAD, 0)
+                                mv.visitFieldInsn(GETFIELD, ENTITY_SVGA_NAME, "mFrameHeight", "I")
+                                mv.visitMethodInsn(INVOKEVIRTUAL, "com/svga/glide/bitmap/SVGAGlideBitmapFileDecoderDelegate", "decodeBitmapFrom", "(Ljava/lang/Object;II)Landroid/graphics/Bitmap;", false)
+                                label1 = Label()
+                                mv.visitJumpInsn(GOTO, label1)
+                                mv.visitLabel(label0)
                             }
-                            super.visitInsn(opcode)
-                        }
-                    }
-                } else if (descriptor == "([BLjava/lang/String;)Landroid/graphics/Bitmap;") {
-                    object : MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, descriptor, signature, exceptions)) {
 
-                        private var label1: Label? = null
-
-                        override fun visitCode() {
-                            super.visitCode()
-                            mv.visitVarInsn(ALOAD, 0)
-                            mv.visitFieldInsn(GETFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "isGlide", "Z")
-                            val label0 = Label()
-                            mv.visitJumpInsn(IFEQ, label0)
-                            mv.visitFieldInsn(GETSTATIC, "com/svga/glide/bitmap/SVGAGlideBitmapByteDecoderDelegate", "INSTANCE", "Lcom/svga/glide/bitmap/SVGAGlideBitmapByteDecoderDelegate;")
-                            mv.visitVarInsn(ALOAD, 1)
-                            mv.visitVarInsn(ALOAD, 0)
-                            mv.visitFieldInsn(GETFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "mFrameWidth", "I")
-                            mv.visitVarInsn(ALOAD, 0)
-                            mv.visitFieldInsn(GETFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "mFrameHeight", "I")
-                            mv.visitMethodInsn(INVOKEVIRTUAL, "com/svga/glide/bitmap/SVGAGlideBitmapByteDecoderDelegate", "decodeBitmapFrom", "(Ljava/lang/Object;II)Landroid/graphics/Bitmap;", false)
-                            label1 = Label()
-                            mv.visitJumpInsn(GOTO, label1)
-                            mv.visitLabel(label0)
-                        }
-
-                        override fun visitMethodInsn(opcode: Int, owner: String?, name: String?, descriptor: String?, isInterface: Boolean) {
-                            super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
-                            if (owner == "com/opensource/svgaplayer/bitmap/SVGABitmapByteArrayDecoder" && name == "decodeBitmapFrom") {
-                                Logger.i("visitMethodInsn label1 visitLabel")
-                                mv.visitLabel(label1)
+                            override fun visitInsn(opcode: Int) {
+                                if (Opcodes.ARETURN == opcode) {
+                                    mv.visitLabel(label1)
+                                }
+                                super.visitInsn(opcode)
                             }
                         }
                     }
-                } else {
-                    super.visitMethod(access, name, descriptor, signature, exceptions)
+                    "([BLjava/lang/String;)Landroid/graphics/Bitmap;" -> {
+                        object : MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, descriptor, signature, exceptions)) {
+
+                            private var label1: Label? = null
+
+                            override fun visitCode() {
+                                super.visitCode()
+                                mv.visitVarInsn(ALOAD, 0)
+                                mv.visitFieldInsn(GETFIELD, ENTITY_SVGA_NAME, "isGlide", "Z")
+                                val label0 = Label()
+                                mv.visitJumpInsn(IFEQ, label0)
+                                mv.visitFieldInsn(GETSTATIC, "com/svga/glide/bitmap/SVGAGlideBitmapByteDecoderDelegate", "INSTANCE", "Lcom/svga/glide/bitmap/SVGAGlideBitmapByteDecoderDelegate;")
+                                mv.visitVarInsn(ALOAD, 1)
+                                mv.visitVarInsn(ALOAD, 0)
+                                mv.visitFieldInsn(GETFIELD, ENTITY_SVGA_NAME, "mFrameWidth", "I")
+                                mv.visitVarInsn(ALOAD, 0)
+                                mv.visitFieldInsn(GETFIELD, ENTITY_SVGA_NAME, "mFrameHeight", "I")
+                                mv.visitMethodInsn(INVOKEVIRTUAL, "com/svga/glide/bitmap/SVGAGlideBitmapByteDecoderDelegate", "decodeBitmapFrom", "(Ljava/lang/Object;II)Landroid/graphics/Bitmap;", false)
+                                label1 = Label()
+                                mv.visitJumpInsn(GOTO, label1)
+                                mv.visitLabel(label0)
+                            }
+
+                            override fun visitMethodInsn(opcode: Int, owner: String?, name: String?, descriptor: String?, isInterface: Boolean) {
+                                super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
+                                if (owner == "com/opensource/svgaplayer/bitmap/SVGABitmapByteArrayDecoder" && name == "decodeBitmapFrom") {
+                                    mv.visitLabel(label1)
+                                }
+                            }
+                        }
+                    }
+                    else -> {
+                        super.visitMethod(access, name, descriptor, signature, exceptions)
+                    }
                 }
             }
 

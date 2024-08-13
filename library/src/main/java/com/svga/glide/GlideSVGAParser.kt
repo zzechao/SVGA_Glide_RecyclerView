@@ -78,7 +78,8 @@ class GlideSVGAParser {
                             videoEntity,
                             File(path),
                             width,
-                            height
+                            height,
+                            true
                         )
                     }
                     LogUtils.debug(TAG, "decodeFromInputStream end")
@@ -106,7 +107,8 @@ class GlideSVGAParser {
                     videoEntity,
                     File(source),
                     width,
-                    height
+                    height,
+                    true
                 )
             }
         } catch (e: Exception) {
@@ -141,7 +143,7 @@ class GlideSVGAParser {
                         width = minOf(it.width.toInt(), frameWidth)
                         height = minOf(it.height.toInt(), frameHeight)
                     }
-                    return SVGAVideoEntity(jsonObj, File(source), width, height)
+                    return SVGAVideoEntity(jsonObj, File(source), width, height, true)
                 }
             }
         } catch (e: Exception) {

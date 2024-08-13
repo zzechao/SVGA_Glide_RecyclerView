@@ -53,6 +53,9 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
         //
         var mSVGAGlideResourceDelegateIndex = -1
 
+        // GlideSVGAParser.class 的位置
+        var mSVGAGlideParserIndex = -1
+
         val jarOutput = JarOutputStream(BufferedOutputStream(FileOutputStream(output.get().asFile)))
         jarOutput.use {
 
@@ -71,6 +74,9 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                             } else if (HookParams.ENTITY_SVGA_TARGET_CLASS == entryName) {
                                 Logger.i("allJars match handling entryName:$entryName")
                                 imageViewDrawableTargetIndex = index
+                            } else if (HookParams.SVGA_GLIDE_PARSER_CLASS == entryName) {
+                                Logger.i("allJars match handling entryName:$entryName")
+                                mSVGAGlideParserIndex = index
                             } else {
                                 jarFile.getInputStream(jarEntry).use {
                                     jarOutput.writeEntity(jarEntry.name, it)
@@ -99,6 +105,7 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                 }
             }
 
+
             // SVGAVideoEntity的修改
             if (entitySVGAFileContainsIndex >= 0) {
                 allJars.get().getOrNull(entitySVGAFileContainsIndex)?.let {
@@ -107,10 +114,19 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                 }
             }
 
+            // ImageViewDrawableTarget的修改
             if (imageViewDrawableTargetIndex > 0) {
                 allJars.get().getOrNull(imageViewDrawableTargetIndex)?.let {
                     val jarFile = JarFile(it.asFile)
                     jarFile.referHack(HookParams.ENTITY_SVGA_TARGET_CLASS, jarOutput)
+                }
+            }
+
+            // SVGAGlideParser的修改
+            if (mSVGAGlideParserIndex > 0) {
+                allJars.get().getOrNull(mSVGAGlideParserIndex)?.let {
+                    val jarFile = JarFile(it.asFile)
+                    jarFile.referHack(HookParams.SVGA_GLIDE_PARSER_CLASS, jarOutput)
                 }
             }
 
@@ -166,6 +182,11 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
 
                         HookParams.ENTITY_SVGA_CLASS -> {
                             val cv = SVGAEntityClassVisitor2(Opcodes.ASM9, cw)
+                            cr.accept(cv, ClassReader.EXPAND_FRAMES)
+                        }
+
+                        HookParams.SVGA_GLIDE_PARSER_CLASS -> {
+                            val cv = SVGAGlideParserClassVisitor(Opcodes.ASM9, cw)
                             cr.accept(cv, ClassReader.EXPAND_FRAMES)
                         }
                     }

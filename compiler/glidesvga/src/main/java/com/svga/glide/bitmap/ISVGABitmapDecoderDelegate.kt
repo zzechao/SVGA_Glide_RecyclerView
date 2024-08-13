@@ -1,13 +1,11 @@
 package com.svga.glide.bitmap
 
-import android.annotation.TargetApi
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import com.bumptech.glide.load.ImageHeaderParser.ImageType
 import com.bumptech.glide.load.resource.bitmap.TransformationUtils
 import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
-import com.svga.glide.SVGAGlideEx
 import com.svga.glide.SVGAGlideEx.bitmapPool
 import com.svga.glide.SVGAGlideEx.log
 import java.io.IOException
@@ -15,7 +13,6 @@ import java.util.Collections
 import java.util.EnumSet
 import kotlin.math.ceil
 import kotlin.math.max
-
 
 
 private const val TAG = "ISVGABitmapDecoderDelegate"
@@ -36,12 +33,10 @@ interface ISVGABitmapDecoderDelegate<T> {
             // 如果期望的宽高是合法的, 则开启检测尺寸模式
             inJustDecodeBounds = (reqWidth > 0 && reqHeight > 0)
             inPreferredConfig = Bitmap.Config.RGB_565
-
             val bitmap = onDecode(data, this)
             if (!inJustDecodeBounds) {
                 return bitmap
             }
-
             val sourceWidth: Int = outWidth
             val sourceHeight: Int = outHeight
 
@@ -52,7 +47,6 @@ interface ISVGABitmapDecoderDelegate<T> {
             val imageType: ImageType = getImageType(data)
 
             var userInBitmap = false
-
             /**
              * com.bumptech.glide.load.resource.bitmap.Downsampler.decodeFromWrappedStreams
              */
@@ -79,7 +73,6 @@ interface ISVGABitmapDecoderDelegate<T> {
                     this.inTargetDensity = 0
                     this.inDensity = this.inTargetDensity
                 }
-
                 val densityMultiplier =
                     if (isScaling(this)) inTargetDensity * 1f / inDensity else 1f
                 val sampleSize = inSampleSize
@@ -94,7 +87,6 @@ interface ISVGABitmapDecoderDelegate<T> {
                     userInBitmap = setInBitmap(this, expectedWidth, expectedHeight)
                 }
             }
-
             if (userInBitmap) {
                 var result: Bitmap? = null
                 TransformationUtils.getBitmapDrawableLock().lock()
@@ -233,11 +225,10 @@ interface ISVGABitmapDecoderDelegate<T> {
     /**
      * com.bumptech.glide.load.resource.bitmap.Downsampler.setInBitmap
      */
-    @TargetApi(Build.VERSION_CODES.O)
     private fun setInBitmap(
         options: BitmapFactory.Options, width: Int, height: Int
     ): Boolean {
-        if (SVGAGlideEx::bitmapPool.isLateinit) {
+        try {
             var expectedConfig: Bitmap.Config? = null
             // Avoid short circuiting, it appears to break on some devices.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -260,6 +251,7 @@ interface ISVGABitmapDecoderDelegate<T> {
             // BitmapFactory will clear out the Bitmap before writing to it, so getDirty is safe.
             options.inBitmap = bitmapPool.getDirty(width, height, expectedConfig)
             return true
+        } catch (_: Throwable) {
         }
         return false
     }

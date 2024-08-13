@@ -15,6 +15,10 @@ data class SVGAResource(
     val height: Int
 ) {
     val imageMapField: com.svga.glide.util.ReflectUtils? by lazy {
-        com.svga.glide.util.ReflectUtils.reflect(videoItem).field("imageMap")
+        try {
+            com.svga.glide.util.ReflectUtils.reflect(videoItem).field("imageMap")
+        } catch (e: Throwable) {
+            null
+        }
     }
 }
