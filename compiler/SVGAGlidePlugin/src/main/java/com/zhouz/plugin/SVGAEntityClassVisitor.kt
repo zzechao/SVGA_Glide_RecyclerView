@@ -25,6 +25,12 @@ class SVGAEntityClassVisitor(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv)
                 )
             }
 
+            name == HookParams.ENTITY_SVGA_CLASS_METHOD2 -> {
+                super.visitMethod(
+                    Opcodes.ACC_PUBLIC, HookParams.ENTITY_SVGA_CLASS_METHOD2, descriptor, signature, exceptions
+                )
+            }
+
             name == "getAntiAlias" && descriptor == "()Z" -> {
                 val fieldVisitor = cv.visitField(Opcodes.ACC_PRIVATE, "isGlide", "Z", null, null)
                 fieldVisitor.visitEnd()
@@ -218,14 +224,14 @@ class SVGAEntityClassVisitor(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv)
             name == "createBitmap" && descriptor == "([BLjava/lang/String;)Landroid/graphics/Bitmap;" -> {
                 val createBitmapMethod = object : MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, descriptor, signature, exceptions)) {
 
-                    private var label1: Label? = null
+                    private var label2: Label? = null
 
                     override fun visitFieldInsn(opcode: Int, owner: String?, name: String?, descriptor: String?) {
-                        if (owner == "com/opensource/svgaplayer/bitmap/SVGABitmapFileDecoder" && name == "INSTANCE") {
+                        if (owner == "com/opensource/svgaplayer/bitmap/SVGABitmapByteArrayDecoder" && name == "INSTANCE") {
                             mv.visitVarInsn(Opcodes.ALOAD, 0)
                             mv.visitFieldInsn(Opcodes.GETFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "isGlide", "Z")
-                            val label0 = Label()
-                            mv.visitJumpInsn(Opcodes.IFEQ, label0)
+                            val label1 = Label()
+                            mv.visitJumpInsn(Opcodes.IFEQ, label1)
                             mv.visitFieldInsn(Opcodes.GETSTATIC, "com/svga/glide/bitmap/SVGAGlideBitmapByteDecoderDelegate", "INSTANCE", "Lcom/svga/glide/bitmap/SVGAGlideBitmapByteDecoderDelegate;")
                             mv.visitVarInsn(Opcodes.ALOAD, 1)
                             mv.visitVarInsn(Opcodes.ALOAD, 0)
@@ -233,9 +239,10 @@ class SVGAEntityClassVisitor(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv)
                             mv.visitVarInsn(Opcodes.ALOAD, 0)
                             mv.visitFieldInsn(Opcodes.GETFIELD, "com/opensource/svgaplayer/SVGAVideoEntity", "mFrameHeight", "I")
                             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "com/svga/glide/bitmap/SVGAGlideBitmapByteDecoderDelegate", "decodeBitmapFrom", "(Ljava/lang/Object;II)Landroid/graphics/Bitmap;", false)
-                            label1 = Label()
-                            mv.visitJumpInsn(Opcodes.GOTO, label1)
-                            mv.visitLabel(label0)
+                            label2 = Label()
+                            Logger.i("visitFieldInsn label2 set")
+                            mv.visitJumpInsn(Opcodes.GOTO, label2)
+                            mv.visitLabel(label1)
                             super.visitFieldInsn(opcode, owner, name, descriptor)
                         } else {
                             super.visitFieldInsn(opcode, owner, name, descriptor)
@@ -245,7 +252,8 @@ class SVGAEntityClassVisitor(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv)
                     override fun visitMethodInsn(opcode: Int, owner: String?, name: String?, descriptor: String?, isInterface: Boolean) {
                         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
                         if (owner == "com/opensource/svgaplayer/bitmap/SVGABitmapByteArrayDecoder" && name == "decodeBitmapFrom") {
-                            mv.visitLabel(label1)
+                            Logger.i("visitMethodInsn label2 visitLabel")
+                            mv.visitLabel(label2)
                         }
                     }
                 }

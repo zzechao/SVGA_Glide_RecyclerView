@@ -24,11 +24,11 @@ object HookParams {
 
     const val ENTITY_SVGA_TARGET_CLASS_PREPARE_2_CLASS = "$ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME.class"
 
-    const val ENTITY_SVGA_TARGET_NAME = "com/zhouz/glide/SVGAImageViewDrawableTarget"
+    const val ENTITY_SVGA_TARGET_NAME = "com/svga/glide/SVGAImageViewDrawableTarget"
 
     const val ENTITY_SVGA_TARGET_CLASS = "$ENTITY_SVGA_TARGET_NAME.class"
 
-    const val ENTITY_SVGA_ANIMATION_DRAWABLE_NAME = "com/zhouz/glide/SVGAAnimationDrawable"
+    const val ENTITY_SVGA_ANIMATION_DRAWABLE_NAME = "com/svga/glide/SVGAAnimationDrawable"
 
-    const val ENTITY_SVGA_RESOURCE_NAME = "com/zhouz/glide/SVGAResource"
+    const val ENTITY_SVGA_RESOURCE_NAME = "com/svga/glide/SVGAResource"
 }
