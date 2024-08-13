@@ -55,11 +55,10 @@ class SVGAVideoEntity {
 
     constructor(json: JSONObject, cacheDir: File) : this(json, cacheDir, 0, 0)
 
-    constructor(json: JSONObject, cacheDir: File, frameWidth: Int, frameHeight: Int, glide: Boolean = false) {
+    constructor(json: JSONObject, cacheDir: File, frameWidth: Int, frameHeight: Int) {
         mFrameWidth = frameWidth
         mFrameHeight = frameHeight
         mCacheDir = cacheDir
-        isGlide = glide
         val movieJsonObject = json.optJSONObject("movie") ?: return
         setupByJson(movieJsonObject)
         try {
@@ -84,12 +83,12 @@ class SVGAVideoEntity {
 
     constructor(entity: MovieEntity, cacheDir: File) : this(entity, cacheDir, 0, 0)
 
-    constructor(entity: MovieEntity, cacheDir: File, frameWidth: Int, frameHeight: Int, glide: Boolean = false) {
+
+    constructor(entity: MovieEntity, cacheDir: File, frameWidth: Int, frameHeight: Int) {
         this.mFrameWidth = frameWidth
         this.mFrameHeight = frameHeight
         this.mCacheDir = cacheDir
         this.movieItem = entity
-        isGlide = glide
         entity.params?.let(this::setupByMovie)
         try {
             parserImages(entity)
@@ -354,5 +353,37 @@ class SVGAVideoEntity {
         imageMap.clear()
     }
     private var isGlide = false
+    constructor(json: JSONObject, cacheDir: File, frameWidth: Int, frameHeight: Int, glide: Boolean) {
+        isGlide = glide
+        mFrameWidth = frameWidth
+        mFrameHeight = frameHeight
+        mCacheDir = cacheDir
+        val movieJsonObject = json.optJSONObject("movie") ?: return
+        setupByJson(movieJsonObject)
+        try {
+            parserImages(json)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } catch (e: OutOfMemoryError) {
+            e.printStackTrace()
+        }
+        resetSprites(json)
+    }
+    constructor(entity: MovieEntity, cacheDir: File, frameWidth: Int, frameHeight: Int, glide: Boolean) {
+        isGlide = glide
+        this.mFrameWidth = frameWidth
+        this.mFrameHeight = frameHeight
+        this.mCacheDir = cacheDir
+        this.movieItem = entity
+        entity.params?.let(this::setupByMovie)
+        try {
+            parserImages(entity)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } catch (e: OutOfMemoryError) {
+            e.printStackTrace()
+        }
+        resetSprites(entity)
+    }
 }
 
