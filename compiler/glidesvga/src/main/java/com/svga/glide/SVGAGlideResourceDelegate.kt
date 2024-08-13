@@ -25,23 +25,22 @@ class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<S
 
     override fun getSize(): Int {
         var cnt = 0
-        val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
-        map?.values?.forEach {
-            cnt += Util.getBitmapByteSize(it)
+        try {
+            val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
+            map?.forEach { cnt += Util.getBitmapByteSize(it.value) }
+        } catch (_: Throwable) {
         }
         return cnt
     }
 
     override fun recycle() {
-        log.d(TAG, "recycle ${resource.model}")
-        resource.videoItem?.movieItem = null
-        bitmapPool.let { pool ->
+        try {
             val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
-            log.d(TAG, "recycle ${map?.size}")
-            map?.forEach {
-                pool.put(it.value)
-            }
+            log.d(TAG, "recycle ${resource.model} size:${map?.size}")
+            map?.forEach { bitmapPool.put(it.value) }
+        } catch (_: Throwable) {
         }
+        resource.videoItem?.movieItem = null
         resource.videoItem?.clear()
     }
 }

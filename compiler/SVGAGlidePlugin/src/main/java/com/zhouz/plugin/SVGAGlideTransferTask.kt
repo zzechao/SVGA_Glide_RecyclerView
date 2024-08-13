@@ -50,7 +50,7 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
         // SVGAImageViewDrawableTarget.class 的位置
         var imageViewDrawableTargetIndex = -1
 
-        //
+        // SVGAGlideResourceDelegate.class 的位置
         var mSVGAGlideResourceDelegateIndex = -1
 
         // GlideSVGAParser.class 的位置
@@ -77,6 +77,9 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                             } else if (HookParams.SVGA_GLIDE_PARSER_CLASS == entryName) {
                                 Logger.i("allJars match handling entryName:$entryName")
                                 mSVGAGlideParserIndex = index
+                            } else if (HookParams.SVGA_GLIDE_RESOURCE_DELEGATE_CLASS == entryName) {
+                                Logger.i("allJars match handling entryName:$entryName")
+                                mSVGAGlideResourceDelegateIndex = index
                             } else {
                                 jarFile.getInputStream(jarEntry).use {
                                     jarOutput.writeEntity(jarEntry.name, it)
@@ -127,6 +130,13 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                 allJars.get().getOrNull(mSVGAGlideParserIndex)?.let {
                     val jarFile = JarFile(it.asFile)
                     jarFile.referHack(HookParams.SVGA_GLIDE_PARSER_CLASS, jarOutput)
+                }
+            }
+
+            if (mSVGAGlideResourceDelegateIndex > 0) {
+                allJars.get().getOrNull(mSVGAGlideResourceDelegateIndex)?.let {
+                    val jarFile = JarFile(it.asFile)
+                    jarFile.referHack(HookParams.SVGA_GLIDE_RESOURCE_DELEGATE_CLASS, jarOutput)
                 }
             }
 
@@ -187,6 +197,11 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
 
                         HookParams.SVGA_GLIDE_PARSER_CLASS -> {
                             val cv = SVGAGlideParserClassVisitor(Opcodes.ASM9, cw)
+                            cr.accept(cv, ClassReader.EXPAND_FRAMES)
+                        }
+
+                        HookParams.SVGA_GLIDE_RESOURCE_DELEGATE_CLASS -> {
+                            val cv = SVGAGlideResourceDelegateVisitor(Opcodes.ASM9, cw)
                             cr.accept(cv, ClassReader.EXPAND_FRAMES)
                         }
                     }

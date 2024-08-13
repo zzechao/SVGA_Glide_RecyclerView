@@ -25,33 +25,22 @@ class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<S
 
     override fun getSize(): Int {
         var cnt = 0
-//        try {
-//            val map = resource.videoItem?.imageMap
-//            map?.forEach { cnt += Util.getBitmapByteSize(it.value) }
-//        } catch (_: Throwable) {
-//            try {
-//                val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
-//                map?.forEach { cnt += Util.getBitmapByteSize(it.value) }
-//            } catch (_: Throwable) {
-//            }
-//        }
+        try {
+            val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
+            map?.forEach { cnt += Util.getBitmapByteSize(it.value) }
+        } catch (_: Throwable) {
+        }
         return cnt
     }
 
     override fun recycle() {
+        try {
+            val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
+            log.d(TAG, "recycle ${resource.model} size:${map?.size}")
+            map?.forEach { bitmapPool.put(it.value) }
+        } catch (_: Throwable) {
+        }
         resource.videoItem?.movieItem = null
-//        try {
-//            val map = resource.videoItem?.imageMap
-//            log.d(TAG, "recycle ${map?.size}")
-//            map?.forEach { bitmapPool.put(it.value) }
-//        } catch (_: Throwable) {
-//            try {
-//                val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
-//                log.d(TAG, "recycle ${map?.size}")
-//                map?.forEach { bitmapPool.put(it.value) }
-//            } catch (_: Throwable) {
-//            }
-//        }
         resource.videoItem?.clear()
     }
 }

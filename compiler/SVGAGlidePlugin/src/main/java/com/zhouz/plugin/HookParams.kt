@@ -33,4 +33,6 @@ object HookParams {
     const val ENTITY_SVGA_RESOURCE_NAME = "com/svga/glide/SVGAResource"
 
     const val SVGA_GLIDE_PARSER_CLASS = "com/svga/glide/GlideSVGAParser.class"
+
+    const val SVGA_GLIDE_RESOURCE_DELEGATE_CLASS = "com/svga/glide/SVGAGlideResourceDelegate.class"
 }
