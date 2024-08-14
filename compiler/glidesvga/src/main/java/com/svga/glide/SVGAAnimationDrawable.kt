@@ -157,7 +157,7 @@ class SVGAAnimationDrawable(
 
     private fun updateDrawableFrame() {
         if (currentFrameField == null) {
-            com.svga.glide.util.ReflectUtils.reflect(drawer).getField("currentFrame")
+            currentFrameField = com.svga.glide.util.ReflectUtils.reflect(drawer).getField("currentFrame")
         }
         currentFrameField?.set(drawer, currentFrame)
     }

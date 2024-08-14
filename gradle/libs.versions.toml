@@ -1,7 +1,7 @@
 [versions]
 asmCommons = "9.6"
 commonsCompress = "1.21"
-glide = "4.15.1"
+glide = "4.16.0"
 gradle = "8.1.4"
 gradleApi = "8.0.2"
 kotlinGradlePlugin = "1.3.72"

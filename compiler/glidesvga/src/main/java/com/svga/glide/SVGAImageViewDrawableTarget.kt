@@ -48,7 +48,18 @@ open class SVGAImageViewDrawableTarget(
         drawable.svgaCallback = svgaCallback
         drawable.scaleType = view.scaleType
         view.setImageDrawable(drawable)
-        drawable.start()
+        prepare(resource, drawable)
+    }
+
+    private fun prepare(resource: SVGAResource, drawable: SVGAAnimationDrawable) {
+        try {
+            resource.videoItem ?: return
+            val method = resource.videoItem::class.java.methods.firstOrNull { it.name == "prepare\$com_opensource_svgaplayer" }
+            method?.invoke(resource.videoItem, {
+                drawable.start()
+            }, null)
+        } catch (_: Throwable) {
+        }
     }
 
     override fun onResourceCleared(placeholder: Drawable?) {

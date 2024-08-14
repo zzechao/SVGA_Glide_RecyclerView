@@ -49,7 +49,15 @@ open class SVGAImageViewDrawableTarget(
         drawable.svgaCallback = svgaCallback
         drawable.scaleType = view.scaleType
         view.setImageDrawable(drawable)
-        drawable.start()
+        prepare(resource, drawable)
+    }
+
+    private fun prepare(resource: SVGAResource, drawable: SVGAAnimationDrawable) {
+        log.d(TAG, "prepare for plugin")
+        resource.videoItem ?: return
+        resource.videoItem.prepare({
+            drawable.start()
+        }, null)
     }
 
     override fun onResourceCleared(placeholder: Drawable?) {

@@ -1,13 +1,27 @@
 package com.zhouz.plugin
 
-import com.zhouz.plugin.HookParams.ENTITY_SVGA_ANIMATION_DRAWABLE_NAME
-import com.zhouz.plugin.HookParams.ENTITY_SVGA_CLASS_METHOD_NEW
-import com.zhouz.plugin.HookParams.ENTITY_SVGA_NAME
 import com.zhouz.plugin.HookParams.ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.FieldVisitor
+import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
+import org.objectweb.asm.Opcodes.ACC_FINAL
+import org.objectweb.asm.Opcodes.ACC_PRIVATE
+import org.objectweb.asm.Opcodes.ACONST_NULL
+import org.objectweb.asm.Opcodes.ALOAD
+import org.objectweb.asm.Opcodes.CHECKCAST
+import org.objectweb.asm.Opcodes.DUP
+import org.objectweb.asm.Opcodes.GETFIELD
+import org.objectweb.asm.Opcodes.GETSTATIC
+import org.objectweb.asm.Opcodes.IFNONNULL
+import org.objectweb.asm.Opcodes.INVOKEINTERFACE
+import org.objectweb.asm.Opcodes.INVOKESPECIAL
+import org.objectweb.asm.Opcodes.INVOKEVIRTUAL
+import org.objectweb.asm.Opcodes.NEW
+import org.objectweb.asm.Opcodes.POP
+import org.objectweb.asm.Opcodes.RETURN
+
 
 /**
  * @author:zhouz
@@ -24,36 +38,49 @@ class SVGAImageViewDrawableTargetClassVisitor(api: Int, cv: ClassVisitor) : Clas
         return super.visitField(access, name, descriptor, signature, value)
     }
 
-    override fun visitMethod(access: Int, name: String?, descriptor: String?, signature: String?, exceptions: Array<out String>?): MethodVisitor {
-        var mv = super.visitMethod(access, name, descriptor, signature, exceptions)
-        if (name == HookParams.ENTITY_SVGA_TARGET_METHOD) {
+    override fun visitMethod(access: Int, name: String?, descriptor: String?, signature: String?, exceptions: Array<out String>?): MethodVisitor? {
+        return if (name == HookParams.ENTITY_SVGA_TARGET_METHOD && descriptor == "(Lcom/svga/glide/SVGAResource;Lcom/svga/glide/SVGAAnimationDrawable;)V") {
             Logger.i("SVGAImageViewDrawableTargetClassVisitor visitMethod name:${name}")
-            mv = OnResourceReadyMethodVisitor(Opcodes.ASM9, mv)
+            null
+        } else {
+            super.visitMethod(access, name, descriptor, signature, exceptions)
         }
-        return mv
     }
 
+    override fun visitEnd() {
+        prepareCreate()
+        super.visitEnd()
+    }
 
-    inner class OnResourceReadyMethodVisitor(api: Int, mv: MethodVisitor) : MethodVisitor(api, mv) {
-        override fun visitMethodInsn(opcode: Int, owner: String?, name: String?, descriptor: String?, isInterface: Boolean) {
-            // 匹配visitMethodInsn(INVOKEVIRTUAL, "android/widget/ImageView", "setImageDrawable", "(Landroid/graphics/drawable/Drawable;)V", false);
-            if (opcode == Opcodes.INVOKEVIRTUAL && name == "setImageDrawable") {
-                Logger.i("MethodWriter visitMethodInsn name:${name}")
-                super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
-                mv.visitVarInsn(Opcodes.ALOAD, 1)
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, HookParams.ENTITY_SVGA_RESOURCE_NAME, "getVideoItem", "()L${HookParams.ENTITY_SVGA_NAME};", false)
-                mv.visitTypeInsn(Opcodes.NEW, ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME)
-                mv.visitInsn(Opcodes.DUP)
-            } else if (opcode == Opcodes.INVOKEVIRTUAL && name == "start") {
-                Logger.i("MethodWriter visitMethodInsn name:${name}")
-                // 匹配visitMethodInsn(INVOKEVIRTUAL, "com/svga/glide/SVGAAnimationDrawable", "start", "()V", false);
-                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME, "<init>", "(L${ENTITY_SVGA_ANIMATION_DRAWABLE_NAME};)V", false)
-                mv.visitTypeInsn(Opcodes.CHECKCAST, "kotlin/jvm/functions/Function0")
-                mv.visitInsn(Opcodes.ACONST_NULL)
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, ENTITY_SVGA_NAME, ENTITY_SVGA_CLASS_METHOD_NEW, "(Lkotlin/jvm/functions/Function0;Lcom/opensource/svgaplayer/SVGAParser\$PlayCallback;)V", false)
-            } else {
-                super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
-            }
-        }
+    private fun prepareCreate() {
+        val methodVisitor = cv.visitMethod(ACC_PRIVATE or ACC_FINAL, "prepare", "(Lcom/svga/glide/SVGAResource;Lcom/svga/glide/SVGAAnimationDrawable;)V", null, null)
+        methodVisitor.visitCode()
+        methodVisitor.visitFieldInsn(GETSTATIC, "com/svga/glide/SVGAGlideEx", "INSTANCE", "Lcom/svga/glide/SVGAGlideEx;")
+        methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "com/svga/glide/SVGAGlideEx", "getLog", "()Lcom/svga/glide/log/ILog;", false)
+        methodVisitor.visitVarInsn(ALOAD, 0)
+        methodVisitor.visitFieldInsn(GETFIELD, "com/svga/glide/SVGAImageViewDrawableTarget", "TAG", "Ljava/lang/String;")
+        methodVisitor.visitLdcInsn("prepare for plugin")
+        methodVisitor.visitMethodInsn(INVOKEINTERFACE, "com/svga/glide/log/ILog", "d", "(Ljava/lang/String;Ljava/lang/String;)V", true)
+        methodVisitor.visitVarInsn(ALOAD, 1)
+        methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "com/svga/glide/SVGAResource", "getVideoItem", "()Lcom/opensource/svgaplayer/SVGAVideoEntity;", false)
+        methodVisitor.visitInsn(DUP)
+        val label0 = Label()
+        methodVisitor.visitJumpInsn(IFNONNULL, label0)
+        methodVisitor.visitInsn(POP)
+        methodVisitor.visitInsn(RETURN)
+        methodVisitor.visitLabel(label0)
+        methodVisitor.visitInsn(POP)
+        methodVisitor.visitVarInsn(ALOAD, 1)
+        methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "com/svga/glide/SVGAResource", "getVideoItem", "()Lcom/opensource/svgaplayer/SVGAVideoEntity;", false)
+        methodVisitor.visitTypeInsn(NEW, "com/svga/glide/SVGAImageViewDrawableTarget\$prepare$1")
+        methodVisitor.visitInsn(DUP)
+        methodVisitor.visitVarInsn(ALOAD, 2)
+        methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/svga/glide/SVGAImageViewDrawableTarget\$prepare$1", "<init>", "(Lcom/svga/glide/SVGAAnimationDrawable;)V", false)
+        methodVisitor.visitTypeInsn(CHECKCAST, "kotlin/jvm/functions/Function0")
+        methodVisitor.visitInsn(ACONST_NULL)
+        methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "com/opensource/svgaplayer/SVGAVideoEntity", "prepare\$com_opensource_svgaplayer", "(Lkotlin/jvm/functions/Function0;Lcom/opensource/svgaplayer/SVGAParser\$PlayCallback;)V", false)
+        methodVisitor.visitInsn(RETURN)
+        methodVisitor.visitMaxs(4, 3)
+        methodVisitor.visitEnd()
     }
 }
