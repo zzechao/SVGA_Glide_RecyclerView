@@ -10,11 +10,12 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
-import androidx.annotation.RequiresApi
 import com.opensource.svgaplayer.SVGACallback2
 import com.opensource.svgaplayer.SVGADrawable
 import com.opensource.svgaplayer.SVGADynamicEntity
 import com.opensource.svgaplayer.SVGAVideoEntity
+import com.svga.glide.SVGAGlideEx.log
+import java.lang.reflect.Field
 
 /**
  * 当同一个SVGA图片被加载的时候 如果此时svga动画在运行中他们会共享同样的动画效果
@@ -46,18 +47,17 @@ class SVGAAnimationDrawable(
     private var drawer = SVGADrawable(videoItem, dynamicItem)
 
     var scaleType = ImageView.ScaleType.MATRIX
-    var isStop: Boolean = false
-
-    fun resetDynamicEntity(dynamicItem: SVGADynamicEntity) {
-        drawer = SVGADrawable(videoItem, dynamicItem)
-    }
+        set(value) {
+            field = value
+            drawer.scaleType = value
+        }
 
     override fun start() {
         if (mAnimator == null || mAnimator?.isRunning == false) {
             val startFrame = 0
             val endFrame = videoItem.frames - 1
             totalFrame = (endFrame - startFrame + 1)
-            drawer.cleared = false
+            setUpDrawableClear()
             mAnimator?.cancel()
             mAnimator = null
             mAnimator = ValueAnimator.ofInt(startFrame, endFrame)
@@ -75,6 +75,11 @@ class SVGAAnimationDrawable(
                 mAnimator?.start()
             }
         }
+    }
+
+    private fun setUpDrawableClear() {
+        log.d(TAG, "setUpDrawableClear")
+        drawer.cleared = false
     }
 
     private fun generateScale(): Double {
@@ -104,8 +109,6 @@ class SVGAAnimationDrawable(
 
     override fun stop() {
         if (mAnimator != null) {
-
-            isStop = true
             mAnimator?.cancel()
             mAnimator?.removeAllListeners()
             mAnimator?.removeAllUpdateListeners()
@@ -142,40 +145,55 @@ class SVGAAnimationDrawable(
         val frame = animation.animatedValue as Int
         if (currentFrame != frame) {
             currentFrame = frame
-            drawer.currentFrame = currentFrame
+            updateDrawableFrame()
             invalidateSelf()
             val percentage = (currentFrame + 1).toDouble() / videoItem.frames.toDouble()
             svgaCallback?.onStep(currentFrame, percentage)
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    private fun updateDrawableFrame() {
+        drawer.currentFrame = currentFrame
+    }
+
     fun pause(isInitiative: Boolean = false) {
-        if (mAnimator?.isStarted == true && mAnimator?.isPaused == false) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (mAnimator?.isStarted == true && mAnimator?.isPaused == false) {
+                if (isInitiative) {
+                    isInitiativePause = true
+                }
+                mAnimator?.pause()
+                svgaCallback?.onPause()
+                drawer.pause()
+            }
+        } else {
             if (isInitiative) {
                 isInitiativePause = true
             }
-            mAnimator?.pause()
-            svgaCallback?.onPause()
-            drawer.pause()
+            stop()
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
+
     fun resume(isInitiative: Boolean = false) {
         if (this.isInitiativePause && !isInitiative) {
             return
         }
         isInitiativePause = false
-        if (mAnimator?.isStarted == true && mAnimator?.isPaused == true) {
-            mAnimator?.resume()
-            svgaCallback?.onResume()
-            drawer.resume()
+        start()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (mAnimator?.isStarted == true) {
+                if (mAnimator?.isPaused == true) {
+                    mAnimator?.resume()
+                    svgaCallback?.onResume()
+                    drawer.resume()
+                }
+            } else {
+                start()
+            }
+        } else {
+            start()
         }
-    }
-
-    fun clear() {
-        drawer.clear()
     }
 
     override fun onAnimationStart(animation: Animator) {

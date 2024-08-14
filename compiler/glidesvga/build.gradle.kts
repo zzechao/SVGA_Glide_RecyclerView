@@ -31,6 +31,5 @@ dependencies {
     implementation(libs.svgaplayer.android)
     implementation(libs.glide)
     implementation(libs.wire.runtime)
-    //implementation(project(":originlib"))
     kapt(libs.glide.compiler)
 }

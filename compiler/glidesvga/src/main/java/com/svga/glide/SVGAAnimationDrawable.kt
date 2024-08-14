@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
-import androidx.annotation.RequiresApi
 import com.opensource.svgaplayer.SVGADrawable
 import com.opensource.svgaplayer.SVGADynamicEntity
 import com.opensource.svgaplayer.SVGAVideoEntity
@@ -46,27 +45,20 @@ class SVGAAnimationDrawable(
     private var clearedField: Field? = null
     private var currentFrameField: Field? = null
 
-    private var drawer = SVGADrawable(videoItem, dynamicItem).apply {
-        clearedField = com.svga.glide.util.ReflectUtils.reflect(this).getField("cleared")
-        currentFrameField = com.svga.glide.util.ReflectUtils.reflect(this).getField("currentFrame")
-    }
+    private var drawer = SVGADrawable(videoItem, dynamicItem)
 
     var scaleType = ImageView.ScaleType.MATRIX
-    var isStop: Boolean = false
-
-    fun resetDynamicEntity(dynamicItem: SVGADynamicEntity) {
-        drawer = SVGADrawable(videoItem, dynamicItem).apply {
-            clearedField = com.svga.glide.util.ReflectUtils.reflect(this).getField("cleared")
-            currentFrameField = com.svga.glide.util.ReflectUtils.reflect(this).getField("currentFrame")
+        set(value) {
+            field = value
+            drawer.scaleType = value
         }
-    }
 
     override fun start() {
         if (mAnimator == null || mAnimator?.isRunning == false) {
             val startFrame = 0
             val endFrame = videoItem.frames - 1
             totalFrame = (endFrame - startFrame + 1)
-            clearedField?.set(drawer, false)
+            setUpDrawableClear()
             mAnimator?.cancel()
             mAnimator = null
             mAnimator = ValueAnimator.ofInt(startFrame, endFrame)
@@ -84,6 +76,13 @@ class SVGAAnimationDrawable(
                 mAnimator?.start()
             }
         }
+    }
+
+    private fun setUpDrawableClear() {
+        if (clearedField == null) {
+            clearedField = com.svga.glide.util.ReflectUtils.reflect(drawer).getField("cleared")
+        }
+        clearedField?.set(drawer, false)
     }
 
     private fun generateScale(): Double {
@@ -113,8 +112,6 @@ class SVGAAnimationDrawable(
 
     override fun stop() {
         if (mAnimator != null) {
-
-            isStop = true
             mAnimator?.cancel()
             mAnimator?.removeAllListeners()
             mAnimator?.removeAllUpdateListeners()
@@ -151,40 +148,58 @@ class SVGAAnimationDrawable(
         val frame = animation.animatedValue as Int
         if (currentFrame != frame) {
             currentFrame = frame
-            currentFrameField?.set(drawer, currentFrame)
+            updateDrawableFrame()
             invalidateSelf()
             val percentage = (currentFrame + 1).toDouble() / videoItem.frames.toDouble()
             svgaCallback?.onStep(currentFrame, percentage)
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    private fun updateDrawableFrame() {
+        if (currentFrameField == null) {
+            com.svga.glide.util.ReflectUtils.reflect(drawer).getField("currentFrame")
+        }
+        currentFrameField?.set(drawer, currentFrame)
+    }
+
     fun pause(isInitiative: Boolean = false) {
-        if (mAnimator?.isStarted == true && mAnimator?.isPaused == false) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (mAnimator?.isStarted == true && mAnimator?.isPaused == false) {
+                if (isInitiative) {
+                    isInitiativePause = true
+                }
+                mAnimator?.pause()
+                svgaCallback?.onPause()
+                drawer.pause()
+            }
+        } else {
             if (isInitiative) {
                 isInitiativePause = true
             }
-            mAnimator?.pause()
-            svgaCallback?.onPause()
-            drawer.pause()
+            stop()
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
+
     fun resume(isInitiative: Boolean = false) {
         if (this.isInitiativePause && !isInitiative) {
             return
         }
         isInitiativePause = false
-        if (mAnimator?.isStarted == true && mAnimator?.isPaused == true) {
-            mAnimator?.resume()
-            svgaCallback?.onResume()
-            drawer.resume()
+        start()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (mAnimator?.isStarted == true) {
+                if (mAnimator?.isPaused == true) {
+                    mAnimator?.resume()
+                    svgaCallback?.onResume()
+                    drawer.resume()
+                }
+            } else {
+                start()
+            }
+        } else {
+            start()
         }
-    }
-
-    fun clear() {
-        drawer.clear()
     }
 
     override fun onAnimationStart(animation: Animator) {

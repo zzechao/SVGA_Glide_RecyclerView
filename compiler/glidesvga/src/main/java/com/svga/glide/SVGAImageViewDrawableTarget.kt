@@ -2,11 +2,11 @@ package com.svga.glide
 
 import android.animation.ValueAnimator
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.widget.ImageView
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.opensource.svgaplayer.SVGADynamicEntity
+import com.svga.glide.SVGAGlideEx.log
 
 /**
  * Time:2022/11/26 16:07
@@ -52,24 +52,23 @@ open class SVGAImageViewDrawableTarget(
     }
 
     override fun onResourceCleared(placeholder: Drawable?) {
-        clearDrawable("onResourceCleared")
+        clearDrawable("")
     }
 
     private fun clearDrawable(reason: String) {
-        (view.drawable as? SVGAAnimationDrawable)?.stop()
+        (view.drawable as? SVGAAnimationDrawable)?.apply {
+            if (reason.isNotEmpty())
+                log.d(TAG, "clearDrawable $reason")
+        }?.stop()
         view.setImageDrawable(null)
     }
 
     override fun onStart() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            (view.drawable as? SVGAAnimationDrawable)?.resume()
-        }
+        (view.drawable as? SVGAAnimationDrawable)?.apply { log.d(TAG, "onStart") }?.resume()
     }
 
     override fun onStop() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            (view.drawable as? SVGAAnimationDrawable)?.pause()
-        }
+        (view.drawable as? SVGAAnimationDrawable)?.apply { log.d(TAG, "onStop") }?.pause()
     }
 
     override fun onDestroy() {
