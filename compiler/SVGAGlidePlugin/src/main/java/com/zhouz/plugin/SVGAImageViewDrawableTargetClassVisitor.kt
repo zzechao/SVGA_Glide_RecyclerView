@@ -28,13 +28,13 @@ class SVGAImageViewDrawableTargetClassVisitor(api: Int, cv: ClassVisitor) : Clas
         var mv = super.visitMethod(access, name, descriptor, signature, exceptions)
         if (name == HookParams.ENTITY_SVGA_TARGET_METHOD) {
             Logger.i("SVGAImageViewDrawableTargetClassVisitor visitMethod name:${name}")
-            mv = MethodWriter(Opcodes.ASM9, mv)
+            mv = OnResourceReadyMethodVisitor(Opcodes.ASM9, mv)
         }
         return mv
     }
 
 
-    inner class MethodWriter(api: Int, mv: MethodVisitor) : MethodVisitor(api, mv) {
+    inner class OnResourceReadyMethodVisitor(api: Int, mv: MethodVisitor) : MethodVisitor(api, mv) {
         override fun visitMethodInsn(opcode: Int, owner: String?, name: String?, descriptor: String?, isInterface: Boolean) {
             // 匹配visitMethodInsn(INVOKEVIRTUAL, "android/widget/ImageView", "setImageDrawable", "(Landroid/graphics/drawable/Drawable;)V", false);
             if (opcode == Opcodes.INVOKEVIRTUAL && name == "setImageDrawable") {

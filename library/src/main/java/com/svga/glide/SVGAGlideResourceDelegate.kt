@@ -23,7 +23,7 @@ class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<S
         return resource
     }
 
-    override fun getSize(): Int {
+    private fun mapSize(): Int {
         var cnt = 0
         try {
             val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
@@ -33,13 +33,51 @@ class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<S
         return cnt
     }
 
-    override fun recycle() {
+    private fun mapSizeZ(): Int {
+        var cnt = 0
+        try {
+            val map = resource.videoItem?.imageMap
+            map?.forEach { cnt += Util.getBitmapByteSize(it.value) }
+        } catch (_: Throwable) {
+            try {
+                val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
+                map?.forEach { cnt += Util.getBitmapByteSize(it.value) }
+            } catch (_: Throwable) {
+            }
+        }
+        return cnt
+    }
+
+    private fun recycleImage() {
         try {
             val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
             log.d(TAG, "recycle ${resource.model} size:${map?.size}")
             map?.forEach { bitmapPool.put(it.value) }
         } catch (_: Throwable) {
         }
+    }
+
+    private fun recycleImageZ() {
+        try {
+            val map = resource.videoItem?.imageMap
+            log.d(TAG, "recycle imageMap ${resource.model} size:${map?.size}")
+            map?.forEach { bitmapPool.put(it.value) }
+        } catch (_: Throwable) {
+            try {
+                val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
+                log.d(TAG, "recycle imageMapField ${resource.model} size:${map?.size}")
+                map?.forEach { bitmapPool.put(it.value) }
+            } catch (_: Throwable) {
+            }
+        }
+    }
+
+    override fun getSize(): Int {
+        return mapSizeZ()
+    }
+
+    override fun recycle() {
+        recycleImageZ()
         resource.videoItem?.movieItem = null
         resource.videoItem?.clear()
     }
