@@ -8,10 +8,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.glideapp.GlideRequests
 import com.example.glideapp.R
-import com.opensource.svgaplayer.SVGACallback2
 import com.opensource.svgaplayer.SVGADrawable
 import com.opensource.svgaplayer.SVGAParser
 import com.opensource.svgaplayer.SVGAVideoEntity
+import com.svga.glide.SVGACallback2
 import com.svga.glide.SVGAImageViewDrawableTarget
 import com.svga.glide.setSvgaClickMapListener
 import kotlinx.android.synthetic.main.activity_test_recyclerview.head_tool
