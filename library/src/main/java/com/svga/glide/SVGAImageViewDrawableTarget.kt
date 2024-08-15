@@ -7,7 +7,7 @@ import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.opensource.svgaplayer.SVGACallback2
 import com.opensource.svgaplayer.SVGADynamicEntity
-import com.opensource.svgaplayer.utils.log.LogUtils
+import com.svga.glide.SVGAGlideEx.log
 
 /**
  * Time:2022/11/26 16:07
@@ -34,22 +34,10 @@ open class SVGAImageViewDrawableTarget(
         svgaCallback?.onFailure()
     }
 
-    override fun onResourceLoading(placeholder: Drawable?) {
-        super.onResourceLoading(placeholder)
-        LogUtils.debug(
-            TAG, "onResourceLoading ${Thread.currentThread().name} "
-        )
-    }
-
     override fun onResourceReady(
         resource: SVGAResource,
         transition: Transition<in SVGAResource>?
     ) {
-        LogUtils.debug(
-            TAG, "onResourceReady ${Thread.currentThread().name} " +
-                    "resource.videoItem:${resource.videoItem == null} " +
-                    "showLastFrame:$showLastFrame"
-        )
         resource.videoItem ?: kotlin.run {
             svgaCallback?.onFailure()
             return
@@ -61,34 +49,35 @@ open class SVGAImageViewDrawableTarget(
         drawable.svgaCallback = svgaCallback
         drawable.scaleType = view.scaleType
         view.setImageDrawable(drawable)
+        prepare(resource, drawable)
+    }
+
+    private fun prepare(resource: SVGAResource, drawable: SVGAAnimationDrawable) {
+        log.d(TAG, "prepare for plugin")
+        resource.videoItem ?: return
         resource.videoItem.prepare({
             drawable.start()
         }, null)
     }
 
     override fun onResourceCleared(placeholder: Drawable?) {
-        clearDrawable("onResourceCleared")
+        clearDrawable("")
     }
 
     private fun clearDrawable(reason: String) {
         (view.drawable as? SVGAAnimationDrawable)?.apply {
-            LogUtils.debug(TAG, "clearDrawable $reason ${this.tag}")
-        }?.apply {
-            stop()
-        }
+            if (reason.isNotEmpty())
+                log.d(TAG, "clearDrawable $reason")
+        }?.stop()
         view.setImageDrawable(null)
     }
 
     override fun onStart() {
-        (view.drawable as? SVGAAnimationDrawable)?.apply {
-            LogUtils.debug(TAG, "onStart ${this.tag}")
-        }?.resume()
+        (view.drawable as? SVGAAnimationDrawable)?.apply { log.d(TAG, "onStart") }?.resume()
     }
 
     override fun onStop() {
-        (view.drawable as? SVGAAnimationDrawable)?.apply {
-            LogUtils.debug(TAG, "onStop ${this.tag}")
-        }?.pause()
+        (view.drawable as? SVGAAnimationDrawable)?.apply { log.d(TAG, "onStop") }?.pause()
     }
 
     override fun onDestroy() {

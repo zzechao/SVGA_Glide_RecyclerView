@@ -1,0 +1,19 @@
+<resources>
+    <!-- Base application theme. -->
+
+    <declare-styleable name="MyTheme">
+        <attr name="textBackGround" format="reference" />
+    </declare-styleable>
+
+    <style name="Theme.SVGAPlayerAndroid" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">false</item>
+        <!-- item name="android:windowBackground">@color/common_bg_default</item-->
+        <item name="android:windowBackground">@null</item>
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorAccent">@color/teal_200</item>
+        <!-- Customize your theme here. -->
+        <item name="textBackGround">@color/teal_200</item>
+    </style>
+</resources>

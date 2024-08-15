@@ -1,10 +1,10 @@
 package com.svga.glide
 
-import com.bumptech.glide.Glide
+import android.graphics.Bitmap
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.util.Util
-import com.opensource.svgaplayer.utils.log.LogUtils
 import com.svga.glide.SVGAGlideEx.bitmapPool
+import com.svga.glide.SVGAGlideEx.log
 
 /**
  * Time:2022/11/26 22:38
@@ -23,25 +23,62 @@ class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<S
         return resource
     }
 
-    override fun getSize(): Int {
-        var cnt = 0L
-        resource.videoItem?.imageMap?.values?.forEach {
-            cnt += Util.getBitmapByteSize(it)
+    private fun mapSize(): Int {
+        var cnt = 0
+        try {
+            val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
+            map?.forEach { cnt += Util.getBitmapByteSize(it.value) }
+        } catch (_: Throwable) {
         }
-        return cnt.toInt().apply {
-            LogUtils.debug(TAG, "getSize ${resource.model} size:$this")
+        return cnt
+    }
+
+    private fun mapSizeZ(): Int {
+        var cnt = 0
+        try {
+            val map = resource.videoItem?.imageMap
+            map?.forEach { cnt += Util.getBitmapByteSize(it.value) }
+        } catch (_: Throwable) {
+            try {
+                val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
+                map?.forEach { cnt += Util.getBitmapByteSize(it.value) }
+            } catch (_: Throwable) {
+            }
+        }
+        return cnt
+    }
+
+    private fun recycleImage() {
+        try {
+            val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
+            log.d(TAG, "recycle ${resource.model} size:${map?.size}")
+            map?.forEach { bitmapPool.put(it.value) }
+        } catch (_: Throwable) {
         }
     }
 
-    override fun recycle() {
-        LogUtils.debug(TAG, "recycle ${resource.model}")
-        resource.videoItem?.movieItem = null
-        bitmapPool?.let { pool ->
-            resource.videoItem?.imageMap?.forEach {
-                pool.put(it.value)
+    private fun recycleImageZ() {
+        try {
+            val map = resource.videoItem?.imageMap
+            log.d(TAG, "recycle imageMap ${resource.model} size:${map?.size}")
+            map?.forEach { bitmapPool.put(it.value) }
+        } catch (_: Throwable) {
+            try {
+                val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
+                log.d(TAG, "recycle imageMapField ${resource.model} size:${map?.size}")
+                map?.forEach { bitmapPool.put(it.value) }
+            } catch (_: Throwable) {
             }
         }
-        resource.videoItem?.imageMap?.clear()
+    }
+
+    override fun getSize(): Int {
+        return mapSizeZ()
+    }
+
+    override fun recycle() {
+        recycleImageZ()
+        resource.videoItem?.movieItem = null
         resource.videoItem?.clear()
     }
 }
