@@ -1,17 +1,31 @@
-### Glide加载模式（Glide版本是4.13.2以后，并添加compiler模块）
+### Glide加载模式（Glide版本是4.16.0以后，并添加compiler模块）
 
  采用glide对svga的加载进行优化  
- 1、对内部的图片采用glide.bitmappool进行复用优化（inBitmap复用内存空间），防止内存抖动  
+ 1、对内部的图片采用glide.bitmappool进行复用优化（inBitmap复用内存空间），防止内存抖动(插件提供)
  2、图片的采样率优化（CustomViewTarget监听布局ViewTreeObserver.OnDrawListener后回调到解析器进行解析）  
- 3、SVGAVideoEntity复用优化，对于相同svga资源公用同个解析对象，过度解析  
+ 3、SVGAVideoEntity复用优化，对于相同svga资源公用同个解析对象，过度解析 
  4、普通imageview加载svga的构造（SVGAImageViewDrawableTarget，并对imageview的相同drawable进行复用，以及恢复暂停清除的生命周期控制）  
  5、采用okio重写解析器SVGAParser，减少io多次Array.copy的内存抖动  
 
-### 用法
-1、master分支自动导出aar，原因 SVGA library 中核心方法和类用了很多internal字段修饰，要glide做到上述加载优化，侵入性很强，所以不构建远程版本仓库，自行aar。
+### 用法 
+#### rootDir#build.gradle
+```groovy
+    repositories {
+        maven { url "$rootDir/repo" }
+    }
 
-#### 正在改造
-2、glide_svga_transfer_plugin分支，运用plugin的toTransfer去修改svga的library的核心库修饰符，从而支持glide的版本svga发布。
+    dependencies {
+        classpath "com.zhouz.lib.build:glidesvgaplugin:1.0.0"
+    }
+```
+#### app#build.gradle
+```groovy
+    apply plugin: 'glide-svga-build'
+
+    dependencies {
+        implementation project(':compiler:glidesvga')
+    }
+```
 
 ### 思路架构图
 ![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/process.png)
