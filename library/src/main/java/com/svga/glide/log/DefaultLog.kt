@@ -1,6 +1,6 @@
 package com.svga.glide.log
 
-import android.util.Log
+import com.opensource.svgaplayer.utils.log.LogUtils
 
 /**
  * @author:zhouzechao
@@ -21,25 +21,27 @@ open class DefaultLog : ILog {
     }
 
     override fun d(tag: String, message: () -> Any?) {
-        message?.toString()?.let { Log.d(tag, it) }
+        message?.toString()?.let { LogUtils.debug(tag, it) }
     }
 
     override fun d(tag: String, format: String, vararg args: Any?) {
-        Log.d(tag, format.format(args))
+        LogUtils.debug(tag, format.format(args))
     }
 
     override fun d(tag: String, message: String) {
-        Log.d(tag, message)
+        LogUtils.debug(tag, message)
     }
 
     override fun i(tag: String, message: () -> Any?) {
+        message?.toString()?.let { LogUtils.info(tag, it) }
     }
 
     override fun i(tag: String, format: String, vararg args: Any?) {
+        LogUtils.info(tag, format.format(args))
     }
 
     override fun i(tag: String, message: String) {
-        Log.i(tag, message)
+        LogUtils.info(tag, message)
     }
 
     override fun w(tag: String, message: () -> Any?) {
@@ -58,5 +60,8 @@ open class DefaultLog : ILog {
     }
 
     override fun e(tag: String, message: String, error: Throwable?) {
+        error?.let {
+            LogUtils.error(tag, message, error)
+        } ?: LogUtils.error(tag, message)
     }
 }

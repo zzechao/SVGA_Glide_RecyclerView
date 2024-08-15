@@ -10,7 +10,7 @@ import com.svga.glide.log.ILog
 import java.io.InputStream
 
 object SVGAGlideEx {
-    var log: ILog = DefaultLog()
+    internal var log: ILog = DefaultLog()
 
     lateinit var bitmapPool: BitmapPool
     lateinit var arrayPool: ArrayPool
