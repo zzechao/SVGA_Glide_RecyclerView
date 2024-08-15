@@ -14,7 +14,7 @@ buildscript {
         classpath "net.researchgate:gradle-release:2.8.1"
         classpath "com.novoda:bintray-release:0.8.1"
         //classpath "com.zhouz.plugin:ARouterAGP8Plugin:1.0.0"
-        classpath "com.zhouz.plugin:SVGAGlidePlugin:1.0.0"
+        classpath "com.zhouz.lib.build:glidesvgaplugin:1.0.0"
         //classpath "digital.wup:android-maven-publish:3.6.3"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

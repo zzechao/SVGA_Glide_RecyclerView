@@ -30,26 +30,25 @@ java {
 
 gradlePlugin {
     plugins {
-        register("SVGAGlidePlugin") {
-            id = "com.zhouz.plugin.SVGAGlidePlugin"
+        register("build") {
+            id = "glide-svga-build"
             implementationClass = "com.zhouz.plugin.SVGAGlidePlugin"
         }
     }
 }
 
-group = "com.zhouz.plugin"
+val isLocal = true
+
+group = "com.zhouz.lib.build"
 version = "1.0.0"
 
 publishing {
-    publications {
-        create<MavenPublication>("SVGAGlidePlugin") {
-            groupId = "com.zhouz.plugin"
-            artifactId = "SVGAGlidePlugin"
-            version = "1.0.0"
-        }
-    }
     repositories {
-        maven(uri("$rootDir/repo/"))
+        if (isLocal) {
+            maven(uri("$rootDir/repo/"))
+        } else {
+            maven(uri("$rootDir/repo/"))
+        }
     }
 }
 
