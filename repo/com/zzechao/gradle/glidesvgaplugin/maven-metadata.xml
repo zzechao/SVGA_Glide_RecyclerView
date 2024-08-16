@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-  <groupId>com.zhouz.lib.build</groupId>
+  <groupId>com.zzechao.gradle</groupId>
   <artifactId>glidesvgaplugin</artifactId>
   <versioning>
-    <latest>1.0.0</latest>
-    <release>1.0.0</release>
+    <latest>1.0.0-SNAPSHOT</latest>
     <versions>
       <version>1.0.0-SNAPSHOT</version>
-      <version>1.0.0</version>
     </versions>
-    <lastUpdated>20240815105126</lastUpdated>
+    <lastUpdated>20240816102907</lastUpdated>
   </versioning>
 </metadata>

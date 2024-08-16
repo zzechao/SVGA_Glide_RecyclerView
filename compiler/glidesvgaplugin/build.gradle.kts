@@ -4,52 +4,14 @@ plugins {
     id("com.gradle.plugin-publish") version "1.2.0"
 }
 
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-        maven("https://jitpack.io")
-    }
-    dependencies {
-        classpath(libs.gradle)
-        classpath(libs.kotlin.gradle.plugin)
-        classpath(libs.commons.compress)
-    }
-}
-
 repositories {
-    mavenCentral()
     google()
-    maven("https://jitpack.io")
+    mavenCentral()
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
-}
-
-gradlePlugin {
-    plugins {
-        register("build") {
-            id = "glide-svga-build"
-            implementationClass = "com.zhouz.plugin.SVGAGlidePlugin"
-        }
-    }
-}
-
-val isLocal = true
-
-group = "com.zhouz.lib.build"
-version = "1.0.0"
-
-publishing {
-    repositories {
-        if (isLocal) {
-            maven(uri("$rootDir/repo/"))
-        } else {
-            maven(uri("$rootDir/repo/"))
-        }
-    }
 }
 
 dependencies {
@@ -58,3 +20,5 @@ dependencies {
     compileOnly(libs.asm.commons)
     compileOnly(libs.asm.tree)
 }
+
+apply(from = "./publish.gradle")

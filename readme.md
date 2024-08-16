@@ -1,8 +1,8 @@
 ### Glide加载模式（Glide版本是4.16.0以后，并添加compiler模块）
 
  采用glide对svga的加载进行优化  
- 1、对内部的图片采用glide.bitmappool进行复用优化（inBitmap复用内存空间），防止内存抖动(插件提供)
- 2、图片的采样率优化（CustomViewTarget监听布局ViewTreeObserver.OnDrawListener后回调到解析器进行解析）  
+ 1、对内部的图片采用glide.bitmappool进行复用优化（inBitmap复用内存空间），防止内存抖动(com.zzechao.glide-svga-build插件提供)
+ 2、图片的采样率优化（CustomViewTarget监听布局ViewTreeObserver.OnDrawListener后回调到解析器进行解析）, inTargetDensity和inDensity使用（com.zzechao.glide-svga-build插件提供） 
  3、SVGAVideoEntity复用优化，对于相同svga资源公用同个解析对象，过度解析 
  4、普通imageview加载svga的构造（SVGAImageViewDrawableTarget，并对imageview的相同drawable进行复用，以及恢复暂停清除的生命周期控制）  
  5、采用okio重写解析器SVGAParser，减少io多次Array.copy的内存抖动  
@@ -15,12 +15,12 @@
     }
 
     dependencies {
-        classpath "com.zhouz.lib.build:glidesvgaplugin:1.0.0"
+        classpath "com.zzechao.gradle:glidesvgaplugin:1.0.0-SNAPSHOT"
     }
 ```
 #### app#build.gradle
 ```groovy
-    apply plugin: 'glide-svga-build'
+    apply plugin: 'com.zzechao.glide-svga-build'
 
     dependencies {
         implementation project(':compiler:glidesvga')

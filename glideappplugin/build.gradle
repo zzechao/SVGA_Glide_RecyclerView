@@ -5,13 +5,13 @@ plugins {
 
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'glide-svga-build'
+apply plugin: 'com.zzechao.glide-svga-build'
 
 //apply plugin: 'com.zhouz.plugin.SVGAGlidePlugin'
 
 android {
+    namespace = "com.example.glideappplugin"
     compileSdkVersion 32
-
     defaultConfig {
         applicationId "com.example.glideappplugin"
         minSdkVersion 21

@@ -1,0 +1,16 @@
+gradlePlugin {
+    plugins {
+        register("build") {
+            id = project.pluginId
+            implementationClass = "com.zhouz.plugin.SVGAGlidePlugin"
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            url "$rootDir\\repo\\"
+        }
+    }
+}

@@ -1,0 +1,40 @@
+project.description = "Use Glide to load the SVGA gradle plugin"
+project.group = "com.zzechao.gradle"
+project.version = "1.0.0-SNAPSHOT"
+
+project.ext {
+    isLocal = true
+    pluginId = "com.zzechao.glide-svga-build"
+    artifactId = 'glide-svga-build'
+    name = 'SVGAGlide gradle plugin'
+    url = "https://github.com/zzechao/svgaplayer-android-glide_feature"
+    scm = [
+            connectionUrl         : "scm:git@github.com:zzechao/svgaplayer-android-glide_feature.git",
+            developerConnectionUrl: "scm:git@github.com:zzechao/svgaplayer-android-glide_feature.git"
+    ]
+}
+
+tasks.register('sourcesJar', Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier.set("sources")
+}
+
+tasks.register('javadocJar', Jar) {
+    from tasks.javadoc
+    archiveClassifier.set("javadoc")
+}
+
+if (project.isLocal) {
+    print("public local")
+
+    apply from: './local-publish.gradle'
+} else {
+    print("public remote")
+
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
+    apply from: './maven-publish.gradle'
+    apply from: './gradle-publish.gradle'
+}
+

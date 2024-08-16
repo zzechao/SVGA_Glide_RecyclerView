@@ -1,0 +1,66 @@
+//--- 修改配置二 ---
+ext["signing.keyId"] = 'EA331011'
+//ext["signing.keyId"] = 'DE3381FC'
+ext["signing.password"] = '12345678'
+ext["signing.secretKeyRingFile"] = 'D:\\secring.gpg'
+ext["ossrhUsername"] = "FHJ43aVm"
+ext["ossrhPassword"] = "PT9sWYg1/0N4IhGt10jq6RE3wzTf1Dcv1CbHO5cZB5PE"
+
+publishing {
+    if (!project.isLocal) {
+        publications {
+            release(MavenPublication) {
+                groupId = project.group
+                artifactId = project.artifactId
+                version = project.version
+
+                from components.java
+                artifact tasks["sourcesJar"]
+                artifact tasks["javadocJar"]
+
+                pom {
+                    name = project.name
+                    packaging "jar"
+                    description = project.description
+                    url = project.url
+                    licenses {
+                        license {
+                            //协议类型，一般默认Apache License2.0的话不用改：
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            //--- 修改配置四 ---
+                            id = 'zhouzechao10'     //你的sonatype用户ID
+                            name = 'zhouz'   //你的sonatype用户名
+                            email = 'zhouzechao10@gmail.com'    //你的sonatype注册邮箱
+                        }
+                    }
+                    scm {
+                        url = project.url
+                        connection = project.scm.connectionUrl
+                        developerConnection = project.scm.developerConnectionUrl
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = project.name
+                def releasesRepoUrl = "https://s01.oss.sonatype.org/content/groups/staging/"
+                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                    username "$ossrhUsername"
+                    password "$ossrhPassword"
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications
+}

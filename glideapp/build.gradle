@@ -8,6 +8,7 @@ apply plugin: 'kotlin-kapt'
 //apply plugin: 'com.zhouz.plugin.SVGAGlidePlugin'
 
 android {
+    namespace = "com.example.glideapp"
     compileSdkVersion 32
 
     defaultConfig {
