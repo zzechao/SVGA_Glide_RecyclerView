@@ -5,7 +5,7 @@ plugins {
 
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.zzechao.glide-svga-build'
+apply plugin: 'io.github.zzechao.glide-svga'
 
 //apply plugin: 'com.zhouz.plugin.SVGAGlidePlugin'
 

@@ -1,13 +1,15 @@
 project.description = "Use Glide to load the SVGA gradle plugin"
-project.group = "com.zzechao.gradle"
-project.version = "1.0.0-SNAPSHOT"
+project.group = "io.github.zzechao.gradle"
+project.version = "1.0.0"
 
 project.ext {
-    isLocal = true
-    pluginId = "com.zzechao.glide-svga-build"
-    artifactId = 'glide-svga-build'
+    isLocal = false
+    pluginId = "io.github.zzechao.glide-svga"
+    pluginId_local = "io.github.zzechao.glide-svga-local"
+    artifactId = 'glidesvgaplugin'
     name = 'SVGAGlide gradle plugin'
     url = "https://github.com/zzechao/svgaplayer-android-glide_feature"
+    feature = "https://github.com/zzechao/svgaplayer-android-glide_feature/tree/master"
     scm = [
             connectionUrl         : "scm:git@github.com:zzechao/svgaplayer-android-glide_feature.git",
             developerConnectionUrl: "scm:git@github.com:zzechao/svgaplayer-android-glide_feature.git"
@@ -30,11 +32,10 @@ if (project.isLocal) {
     apply from: './local-publish.gradle'
 } else {
     print("public remote")
-
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
 
-    apply from: './maven-publish.gradle'
     apply from: './gradle-publish.gradle'
+    apply from: './maven-publish.gradle'
 }
 

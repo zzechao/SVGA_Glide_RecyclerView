@@ -1,7 +1,7 @@
 gradlePlugin {
     plugins {
         register("build") {
-            id = project.pluginId
+            id = project.pluginId_local
             implementationClass = "com.zhouz.plugin.SVGAGlidePlugin"
         }
     }
