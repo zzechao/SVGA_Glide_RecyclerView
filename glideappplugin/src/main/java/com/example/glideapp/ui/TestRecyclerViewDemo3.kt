@@ -71,7 +71,7 @@ class TestRecyclerViewDemo3 : AppCompatActivity() {
                 .asSVGAResource()
                 .load("file:///android_asset/test2.svga")
                 .setSVGATag(svgaUrl)
-                .into(SVGAImageViewDrawableTarget(head_tool, 1, svgaCallback = object : SVGACallback2 {
+                .into(SVGAImageViewDrawableTarget(head_tool, 3, svgaCallback = object : SVGACallback2 {
                     override fun onFinished() {
                         super.onFinished()
                         Log.i("TestRecyclerViewDemo3", "onFinished index:$index")

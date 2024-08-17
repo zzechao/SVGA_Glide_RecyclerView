@@ -21,7 +21,7 @@ import java.lang.reflect.Field
  * ***/
 class SVGAAnimationDrawable(
     val videoItem: SVGAVideoEntity,
-    val repeatCount: Int,
+    var repeatCount: Int,
     val repeatMode: Int,
     val dynamicItem: SVGADynamicEntity,
     var showLastFrame: Boolean = false
@@ -186,7 +186,6 @@ class SVGAAnimationDrawable(
             return
         }
         isInitiativePause = false
-        start()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (mAnimator?.isStarted == true) {
                 if (mAnimator?.isPaused == true) {
@@ -195,10 +194,20 @@ class SVGAAnimationDrawable(
                     drawer.resume()
                 }
             } else {
-                start()
+                if (repeatCount == -1) {
+                    start()
+                } else if (repeatCount - (mAnimator?.repeatCount ?: Int.MAX_VALUE) > 0) {
+                    repeatCount -= (mAnimator?.repeatCount ?: 0)
+                    start()
+                }
             }
         } else {
-            start()
+            if (repeatCount == -1) {
+                start()
+            } else if (repeatCount - (mAnimator?.repeatCount ?: Int.MAX_VALUE) > 0) {
+                repeatCount -= (mAnimator?.repeatCount ?: 0)
+                start()
+            }
         }
     }
 
