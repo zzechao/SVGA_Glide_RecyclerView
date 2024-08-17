@@ -5,7 +5,7 @@ plugins {
 
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.github.zzechao.glide-svga-local'
+//apply plugin: 'io.github.zzechao.glide-svga-local'
 
 //apply plugin: 'com.zhouz.plugin.SVGAGlidePlugin'
 
@@ -44,6 +44,6 @@ dependencies {
     implementation project(':compiler:glidesvga')
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation libs.glide
-    kapt libs.glide.compiler
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
 }

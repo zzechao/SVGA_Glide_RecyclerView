@@ -39,7 +39,7 @@ dependencies {
 
 project.description = "Use Glide to load the SVGA lib"
 project.group = "io.github.zzechao"
-project.version = "1.0.0-SNAPSHOT"
+project.version = "1.0.1"
 project.ext {
     set("artifactId", "libglidesvga")
     set("url", "https://github.com/zzechao/svgaplayer-android-glide_feature")

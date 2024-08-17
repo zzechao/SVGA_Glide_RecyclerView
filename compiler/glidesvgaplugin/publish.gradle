@@ -1,9 +1,9 @@
 project.description = "Use Glide to load the SVGA gradle plugin"
 project.group = "io.github.zzechao.gradle"
-project.version = "1.0.0-SNAPSHOT"
+project.version = "1.0.1"
 
 project.ext {
-    isLocal = true
+    isLocal = false
     pluginId = "io.github.zzechao.glide-svga"
     pluginId_local = "io.github.zzechao.glide-svga-local"
     artifactId = 'glidesvgaplugin'

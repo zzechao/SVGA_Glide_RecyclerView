@@ -1,5 +1,26 @@
 gradlePlugin {
+    url = project.url
     plugins {
+//        this.generatePomFileForBuildPluginPluginMarkerMavenPublication.pom.licenses {
+//            license {
+//                //协议类型，一般默认Apache License2.0的话不用改：
+//                name = 'The Apache License, Version 2.0'
+//                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//            }
+//        }
+//        this.generatePomFileForBuildPluginPluginMarkerMavenPublication.pom.scm {
+//            url = project.feature
+//            connection = project.scm.connectionUrl
+//            developerConnection = project.scm.developerConnectionUrl
+//        }
+//        this.generatePomFileForBuildPluginPluginMarkerMavenPublication.pom.developers {
+//            developer {
+//                //--- 修改配置四 ---
+//                id = 'zhouzechao10'     //你的sonatype用户ID
+//                name = 'zhouz'   //你的sonatype用户名
+//                email = 'zhouzechao10@gmail.com'    //你的sonatype注册邮箱
+//            }
+//        }
         buildPlugin {
             id = project.pluginId
             implementationClass = "com.zhouz.plugin.SVGAGlidePlugin"
