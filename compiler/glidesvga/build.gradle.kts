@@ -13,6 +13,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = false
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -33,3 +36,20 @@ dependencies {
     implementation(libs.wire.runtime)
     kapt(libs.glide.compiler)
 }
+
+project.description = "Use Glide to load the SVGA lib"
+project.group = "io.github.zzechao"
+project.version = "1.0.0-SNAPSHOT"
+project.ext {
+    set("artifactId", "libglidesvga")
+    set("url", "https://github.com/zzechao/svgaplayer-android-glide_feature")
+    set("feature", "https://github.com/zzechao/svgaplayer-android-glide_feature/tree/master")
+    set(
+        "scm",
+        mapOf(
+            Pair("connectionUrl", "scm:git@github.com:zzechao/svgaplayer-android-glide_feature.git"),
+            Pair("developerConnectionUrl", "scm:git@github.com:zzechao/svgaplayer-android-glide_feature.git")
+        )
+    )
+}
+apply(from = "${project.projectDir}/publish-maven.gradle")

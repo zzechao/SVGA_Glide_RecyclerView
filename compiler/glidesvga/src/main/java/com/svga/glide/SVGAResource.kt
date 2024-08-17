@@ -10,7 +10,7 @@ import com.opensource.svgaplayer.SVGAVideoEntity
  */
 data class SVGAResource(
     val videoItem: SVGAVideoEntity?,
-    val model: String,
+    var model: String,
     val width: Int,
     val height: Int
 ) {

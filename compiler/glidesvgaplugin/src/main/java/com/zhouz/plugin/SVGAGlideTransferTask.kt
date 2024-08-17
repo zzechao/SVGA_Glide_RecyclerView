@@ -71,21 +71,21 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
                         if (!jarEntry.isDirectory && entryName.isNotEmpty()) {
                             //println("Adding from jar ${jarEntry.name} ${entryName.startsWith(ScanSetting.ROUTER_CLASS_PACKAGE_NAME) && shouldProcessPreDexJar(entryName)}")
                             if (HookParams.ENTITY_SVGA_CLASS == entryName) {
-                                Logger.i("allJars match handling entryName:$entryName")
                                 //Logger.i("Directory CLASS_FILE_NAME entry name $entryName in arouter pool in jar")
                                 entitySVGAFileContainsIndex = index
+                                Logger.i("allJars match handling entryName:$entryName $entitySVGAFileContainsIndex")
                             } else if (HookParams.ENTITY_SVGA_TARGET_CLASS == entryName) {
-                                Logger.i("allJars match handling entryName:$entryName")
                                 imageViewDrawableTargetIndex = index
+                                Logger.i("allJars match handling entryName:$entryName $imageViewDrawableTargetIndex")
                             } else if (HookParams.SVGA_GLIDE_PARSER_CLASS == entryName) {
-                                Logger.i("allJars match handling entryName:$entryName")
                                 mSVGAGlideParserIndex = index
+                                Logger.i("allJars match handling entryName:$entryName $mSVGAGlideParserIndex")
                             } else if (HookParams.SVGA_GLIDE_RESOURCE_DELEGATE_CLASS == entryName) {
-                                Logger.i("allJars match handling entryName:$entryName")
                                 mSVGAGlideResourceDelegateIndex = index
+                                Logger.i("allJars match handling entryName:$entryName $mSVGAGlideResourceDelegateIndex")
                             } else if (HookParams.SVGA_GLIDE_DRAWABLE_CLASS == entryName) {
-                                Logger.i("allJars match handling entryName:$entryName")
                                 mSVGAAnimationDrawableIndex = index
+                                Logger.i("allJars match handling entryName:$entryName $mSVGAAnimationDrawableIndex")
                             } else {
                                 jarFile.getInputStream(jarEntry).use {
                                     jarOutput.writeEntity(jarEntry.name, it)
@@ -124,7 +124,7 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
             }
 
             // ImageViewDrawableTarget的修改
-            if (imageViewDrawableTargetIndex > 0) {
+            if (imageViewDrawableTargetIndex >= 0) {
                 allJars.get().getOrNull(imageViewDrawableTargetIndex)?.let {
                     val jarFile = JarFile(it.asFile)
                     jarFile.referHack(HookParams.ENTITY_SVGA_TARGET_CLASS, jarOutput)
@@ -132,7 +132,7 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
             }
 
             // SVGAGlideParser的修改
-            if (mSVGAGlideParserIndex > 0) {
+            if (mSVGAGlideParserIndex >= 0) {
                 allJars.get().getOrNull(mSVGAGlideParserIndex)?.let {
                     val jarFile = JarFile(it.asFile)
                     jarFile.referHack(HookParams.SVGA_GLIDE_PARSER_CLASS, jarOutput)
@@ -140,7 +140,7 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
             }
 
             // SVGAGlideResourceDelegate的修改
-            if (mSVGAGlideResourceDelegateIndex > 0) {
+            if (mSVGAGlideResourceDelegateIndex >= 0) {
                 allJars.get().getOrNull(mSVGAGlideResourceDelegateIndex)?.let {
                     val jarFile = JarFile(it.asFile)
                     jarFile.referHack(HookParams.SVGA_GLIDE_RESOURCE_DELEGATE_CLASS, jarOutput)
@@ -148,7 +148,7 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
             }
 
             // SVGAAnimationDrawable的修改
-            if (mSVGAAnimationDrawableIndex > 0) {
+            if (mSVGAAnimationDrawableIndex >= 0) {
                 allJars.get().getOrNull(mSVGAAnimationDrawableIndex)?.let {
                     val jarFile = JarFile(it.asFile)
                     jarFile.referHack(HookParams.SVGA_GLIDE_DRAWABLE_CLASS, jarOutput)
@@ -194,6 +194,7 @@ abstract class SVGAGlideTransferTask : DefaultTask() {
      * hook的 class
      */
     private fun JarFile.referHack(clazzName: String, jarOutput: JarOutputStream) {
+        Logger.i("$clazzName $this $clazzName referHack")
         use {
             getJarEntry(clazzName)?.let {
                 this.getInputStream(it).use {

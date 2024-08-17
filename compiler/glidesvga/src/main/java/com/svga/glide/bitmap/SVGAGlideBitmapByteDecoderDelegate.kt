@@ -20,4 +20,6 @@ object SVGAGlideBitmapByteDecoderDelegate : ISVGABitmapDecoderDelegate<ByteArray
     override fun getImageType(data: ByteArray): ImageHeaderParser.ImageType {
         return ImageHeaderParserUtils.getType(parsers, ByteBuffer.wrap(data))
     }
+
+    override var timeMillis: Long = 0L
 }

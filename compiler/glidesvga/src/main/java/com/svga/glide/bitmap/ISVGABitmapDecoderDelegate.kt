@@ -28,6 +28,8 @@ private val TYPES_THAT_USE_POOL_PRE_KITKAT: Set<ImageType> = Collections.unmodif
  */
 interface ISVGABitmapDecoderDelegate<T> {
 
+    var timeMillis: Long
+
     fun decodeBitmapFrom(data: T, reqWidth: Int, reqHeight: Int): Bitmap? {
         return BitmapFactory.Options().run {
             // 如果期望的宽高是合法的, 则开启检测尺寸模式
@@ -47,6 +49,7 @@ interface ISVGABitmapDecoderDelegate<T> {
             val imageType: ImageType = getImageType(data)
 
             var userInBitmap = false
+
             /**
              * com.bumptech.glide.load.resource.bitmap.Downsampler.decodeFromWrappedStreams
              */
@@ -92,7 +95,7 @@ interface ISVGABitmapDecoderDelegate<T> {
                 TransformationUtils.getBitmapDrawableLock().lock()
                 try {
                     // 数据加载
-                    log.d(TAG, "onDecode use inBitmap expectedWidth:$expectedWidth expectedHeight:$expectedHeight")
+                    logger("onDecode use inBitmap expectedWidth:$expectedWidth expectedHeight:$expectedHeight")
                     result = onDecode(data, this)
                 } catch (e: IllegalArgumentException) {
                     if (this.inBitmap != null) {
@@ -102,7 +105,6 @@ interface ISVGABitmapDecoderDelegate<T> {
                             // 清理掉 inBitmap 并进行第二次加载
                             this.inBitmap = null
                             // 再次调用进行加载
-                            log.d(TAG, "onDecode not use inBitmap")
                             result = onDecode(data, this)
                         } catch (resetException: IOException) {
                             log.e(TAG, "onDecode error", resetException)
@@ -113,9 +115,15 @@ interface ISVGABitmapDecoderDelegate<T> {
                 }
                 result
             } else {
-                log.d(TAG, "onDecode common")
                 onDecode(data, this)
             }
+        }
+    }
+
+    private fun logger(msg: String) {
+        if (System.currentTimeMillis() - timeMillis > 5000L) {
+            timeMillis = System.currentTimeMillis()
+            log.d(TAG, msg)
         }
     }
 

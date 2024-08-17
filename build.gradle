@@ -3,10 +3,10 @@
 buildscript {
     ext.kotlin_version = '1.7.20'
     repositories {
-        //maven { url "$rootDir/repo" }
-        maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots" }
+        maven { url "$rootDir/repo" }
         google()
         mavenCentral()
+        maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
@@ -24,7 +24,7 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven { url "$rootDir/repo" }
+        maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots" }
     }
     configurations.configureEach {
         // check for updates every build

@@ -1,11 +1,8 @@
 package com.zhouz.plugin
 
-import com.zhouz.plugin.HookParams.ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME
 import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.ACC_FINAL
 import org.objectweb.asm.Opcodes.ACC_PRIVATE
 import org.objectweb.asm.Opcodes.ACONST_NULL
@@ -29,15 +26,6 @@ import org.objectweb.asm.Opcodes.RETURN
  * description：修改SVGAImageViewDrawableTarget的SVGAVideoEntity的 prepare方法调用
  */
 class SVGAImageViewDrawableTargetClassVisitor(api: Int, cv: ClassVisitor) : ClassVisitor(api, cv) {
-    override fun visitField(access: Int, name: String?, descriptor: String?, signature: String?, value: Any?): FieldVisitor {
-        // 匹配 classWriter.visitField(ACC_PRIVATE, "times", "I", null, null);
-        if (name == "times" && access == Opcodes.ACC_PRIVATE && descriptor == "I") {
-            Logger.i("SVGAImageViewDrawableTargetClassVisitor visitField name:${name}")
-            cv.visitInnerClass(ENTITY_SVGA_TARGET_CLASS_PREPARE_2_NAME, null, null, Opcodes.ACC_FINAL or Opcodes.ACC_STATIC)
-        }
-        return super.visitField(access, name, descriptor, signature, value)
-    }
-
     override fun visitMethod(access: Int, name: String?, descriptor: String?, signature: String?, exceptions: Array<out String>?): MethodVisitor? {
         return if (name == HookParams.ENTITY_SVGA_TARGET_METHOD && descriptor == "(Lcom/svga/glide/SVGAResource;Lcom/svga/glide/SVGAAnimationDrawable;)V") {
             Logger.i("SVGAImageViewDrawableTargetClassVisitor visitMethod name:${name}")

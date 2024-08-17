@@ -257,7 +257,7 @@ class SVGAGlideResourceDelegateVisitor(api: Int, cv: ClassVisitor) : ClassVisito
         methodVisitor.visitTypeInsn(NEW, "java/lang/StringBuilder")
         methodVisitor.visitInsn(DUP)
         methodVisitor.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false)
-        methodVisitor.visitLdcInsn("recycle imageMap for plugin")
+        methodVisitor.visitLdcInsn("recycle imageMap for plugin ")
         methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false)
         methodVisitor.visitVarInsn(ALOAD, 0)
         methodVisitor.visitFieldInsn(GETFIELD, "com/svga/glide/SVGAGlideResourceDelegate", "resource", "Lcom/svga/glide/SVGAResource;")

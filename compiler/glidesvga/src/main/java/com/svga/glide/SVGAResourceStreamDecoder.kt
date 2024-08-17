@@ -61,7 +61,7 @@ class SVGAResourceStreamDecoder(
                 requestedHeight, tag
             )
         return SVGAGlideResourceDelegate(
-            SVGAResource(svga, tag, width, height)
+            SVGAResource(svga, options.get(SVGATAG) ?: "", width, height)
         )
     }
 }

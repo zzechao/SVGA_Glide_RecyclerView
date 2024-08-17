@@ -28,4 +28,6 @@ object SVGAGlideBitmapFileDecoderDelegate : ISVGABitmapDecoderDelegate<String> {
             ImageHeaderParserUtils.getType(parsers, it, SVGAGlideEx.arrayPool)
         }
     }
+
+    override var timeMillis: Long = 0L
 }

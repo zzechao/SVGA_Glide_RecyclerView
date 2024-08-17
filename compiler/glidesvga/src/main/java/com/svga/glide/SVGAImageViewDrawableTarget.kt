@@ -3,6 +3,7 @@ package com.svga.glide
 import android.animation.ValueAnimator
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import com.bumptech.glide.request.SingleRequest
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.opensource.svgaplayer.SVGADynamicEntity
@@ -13,6 +14,8 @@ import com.svga.glide.SVGAGlideEx.log
  * Author: zhouzechao
  * Description:
  */
+private val regexModel by lazy { "model=([a-zA-Z0-9://._-]*)?".toRegex() }
+
 open class SVGAImageViewDrawableTarget(
     imageView: ImageView, var times: Int = 0,
     var repeatMode: Int = ValueAnimator.RESTART,
@@ -37,6 +40,9 @@ open class SVGAImageViewDrawableTarget(
         resource: SVGAResource,
         transition: Transition<in SVGAResource>?
     ) {
+        if (resource.model == "") {
+            resource.model = " ${(request as? SingleRequest<*>)?.toString()}"
+        }
         resource.videoItem ?: kotlin.run {
             svgaCallback?.onFailure()
             return

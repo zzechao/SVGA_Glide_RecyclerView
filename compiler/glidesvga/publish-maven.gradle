@@ -1,25 +1,44 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+tasks.register('sourcesJar', Jar) {
+    from android.sourceSets.main.java.source
+    archiveClassifier.set("sources")
+}
+
+tasks.register('javadocJar', Jar) {
+    from tasks.javadoc
+    archiveClassifier.set("javadoc")
+}
+
+//--- 修改配置一 ---
+
 publishing {
     publications {
         release(MavenPublication) {
             println("publish-maven Log-------> PUBLISH_GROUP_ID: $project.group; " +
                     "PUBLISH_ARTIFACT_ID: $project.artifactId; " +
-                    "PUBLISH_VERSION: $project.version; " +
-                    "ossrhUsername:$ossrhUsername; " +
-                    "ossrhPassword:$ossrhPassword ")
+                    "PUBLISH_VERSION: $project.version; ")
+            // The coordinates of the library, being set from variables that
+            // we'll set up in a moment
 
-            groupId = project.group
-            artifactId = project.artifactId
-            version = project.version
+            //配置一传入的参数
+            groupId project.group
+            artifactId project.artifactId
+            version project.version
 
-            //from components.java
+            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
             artifact tasks["sourcesJar"]
-            artifact tasks["javadocJar"]
+            //artifact tasks["javadocJar"]
 
+            // Self-explanatory metadata for the most part
             pom {
-                name = project.artifactId
-                packaging "jar"
+                //--- 修改配置三 ---
+                name = project.getName()
                 description = project.description
-                url = project.url
+                //添加文件描述
+                // If your project has a dedicated site, use its URL here
+                url = project.url //项目github链接
                 licenses {
                     license {
                         //协议类型，一般默认Apache License2.0的话不用改：
@@ -35,19 +54,21 @@ publishing {
                         email = 'zhouzechao10@gmail.com'    //你的sonatype注册邮箱
                     }
                 }
+                // Version control info, if you're using GitHub, follow the format as seen here
                 scm {
-                    url = project.feature
+                    //--- 修改配置五 ---
                     connection = project.scm.connectionUrl
                     developerConnection = project.scm.developerConnectionUrl
+                    //分支地址：
+                    url = project.feature
                 }
-
                 // A slightly hacky fix so that your POM will include any transitive dependencies
                 // that your library builds upon
                 withXml {
                     def dependenciesNode = asNode().appendNode('dependencies')
                     project.configurations.implementation.allDependencies.each {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
                         if (it.group != null) {
-                            def dependencyNode = dependenciesNode.appendNode('dependency')
                             dependencyNode.appendNode('groupId', it.group)
                             dependencyNode.appendNode('artifactId', it.name)
                             dependencyNode.appendNode('version', it.version)
@@ -58,28 +79,28 @@ publishing {
         }
     }
     repositories {
+        // The repository to publish to, Sonatype/MavenCentral
         maven {
-            name = project.name
-            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            // This is an arbitrary name, you may also use "mavencentral" or
+            // any other name that's descriptive for you
+
+            //--- 修改配置六 ---
+            name = project.getName()
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/content/groups/staging/"
             def releasesRepoUrl2 = "https://s01.oss.sonatype.org/content/repositories/releases/"
             def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl2
+            // You only need this if you want to publish snapshots, otherwise just set the URL
+            // to the release repo directly
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+            // The username and password we've fetched earlier
             credentials {
-                username System.getenv('ossrhUsername')
-                password System.getenv('ossrhPassword')
+                username "$ossrhUsername"
+                password "$ossrhPassword"
             }
         }
     }
 }
 signing {
-    sign(publishing.publications)
-}
-
-tasks.configureEach {
-    if (name == "publishPluginMavenPublicationToGlidesvgapluginRepository") {
-        mustRunAfter(tasks.signReleasePublication)
-    }
-    if (name == "publishReleasePublicationToGlidesvgapluginRepository") {
-        mustRunAfter(tasks.signPluginMavenPublication)
-    }
+    sign publishing.publications
 }

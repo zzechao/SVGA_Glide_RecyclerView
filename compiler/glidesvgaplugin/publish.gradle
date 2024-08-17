@@ -1,9 +1,9 @@
 project.description = "Use Glide to load the SVGA gradle plugin"
 project.group = "io.github.zzechao.gradle"
-project.version = "1.0.0"
+project.version = "1.0.0-SNAPSHOT"
 
 project.ext {
-    isLocal = false
+    isLocal = true
     pluginId = "io.github.zzechao.glide-svga"
     pluginId_local = "io.github.zzechao.glide-svga-local"
     artifactId = 'glidesvgaplugin'
@@ -27,15 +27,11 @@ tasks.register('javadocJar', Jar) {
 }
 
 if (project.isLocal) {
-    print("public local")
-
     apply from: './local-publish.gradle'
 } else {
-    print("public remote")
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
 
     apply from: './gradle-publish.gradle'
     apply from: './maven-publish.gradle'
 }
-

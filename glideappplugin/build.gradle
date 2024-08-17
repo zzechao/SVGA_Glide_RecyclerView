@@ -5,7 +5,7 @@ plugins {
 
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.github.zzechao.glide-svga'
+apply plugin: 'io.github.zzechao.glide-svga-local'
 
 //apply plugin: 'com.zhouz.plugin.SVGAGlidePlugin'
 
@@ -41,7 +41,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation(libs.svgaplayer.android)
-    implementation project(':compiler:glidesvga')
+    implementation("io.github.zzechao:libglidesvga:1.0.0-SNAPSHOT")
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation libs.glide

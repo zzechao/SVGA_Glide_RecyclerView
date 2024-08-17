@@ -87,7 +87,6 @@ class TestRecyclerViewDemo : AppCompatActivity() {
             (Glide.with(this@TestRecyclerViewDemo) as GlideRequests).asSVGAResource()
                 .skipMemoryCache(true)
                 .load(url)
-                .setSVGATag(url)
                 .into(SVGAImageViewDrawableTarget(holder.head))
             holder.headsvga.visibility = View.GONE
             holder.head.visibility = View.VISIBLE
