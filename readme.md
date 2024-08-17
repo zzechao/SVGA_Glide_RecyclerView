@@ -1,13 +1,13 @@
 ### Glide加载模式（Glide版本是4.16.0以后，并添加compiler模块）
 
 #### 采用glide对svga的加载进行优化  
- ##### 1、可以应用于recyclerview里，并通过普通imageview进行加载。
- ##### 2、对内部的每一帧小图片图片采用glide.bitmappool进行优化（inBitmap复用内存空间），防止内存抖动。(io.github.zzechao.glide-svga插件提供)。
- ##### 3、第一层：图片的采样率优化（CustomViewTarget监听布局ViewTreeObserver.OnDrawListener后回调到解析器进行解析）, 第二层：inTargetDensity和inDensity使用对于inBitmap内存申请优化。（io.github.zzechao.glide-svga插件提供）。
- ##### 4、SVGAVideoEntity的Glide三级缓存复用优化，对于相同svga资源公用同个解析对象，防止多度下载过度解析。
- ##### 5、普通imageview加载svga的构造（SVGAImageViewDrawableTarget，并对imageview的相同drawable进行复用，以及恢复暂停清除的生命周期控制）。
- ##### 6、采用okio重写解析器SVGAParser，减少io多次Array.copy的内存抖动，并对SVGAVideoEntity进行glide.bitmappool回收处理。
- ##### 7、glide 一般采取okhttp的连用，间接优化svga的下载连接池的复用，减少通道创建。
+  1、可以应用于recyclerview里，并通过普通imageview进行加载。</br>
+  2、对内部的每一帧小图片图片采用glide.bitmappool进行优化（inBitmap复用内存空间），防止内存抖动。(io.github.zzechao.glide-svga插件提供)。</br>
+  3、第一层：图片的采样率优化（CustomViewTarget监听布局ViewTreeObserver.OnDrawListener后回调到解析器进行解析）, 第二层：inTargetDensity和inDensity使用对于inBitmap内存申请优化。（io.github.zzechao.glide-svga插件提供）。</br>
+  4、SVGAVideoEntity的Glide三级缓存复用优化，对于相同svga资源公用同个解析对象，防止多度下载过度解析。</br>
+  5、普通imageview加载svga的构造（SVGAImageViewDrawableTarget，并对imageview的相同drawable进行复用，以及恢复暂停清除的生命周期控制）。</br>
+  6、采用okio重写解析器SVGAParser，减少io多次Array.copy的内存抖动，并对SVGAVideoEntity进行glide.bitmappool回收处理。</br>
+  7、glide 一般采取okhttp的连用，间接优化svga的下载连接池的复用，减少通道创建。</br>
 
 ### 用法 
 #### rootDir#build.gradle
