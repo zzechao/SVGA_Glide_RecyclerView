@@ -6,7 +6,7 @@
   3、第一层：图片的采样率优化（CustomViewTarget监听布局ViewTreeObserver.OnDrawListener后回调到解析器进行解析）, 第二层：inTargetDensity和inDensity使用对于inBitmap内存申请优化。（io.github.zzechao.glide-svga插件提供）。</br>
   4、SVGAVideoEntity的Glide三级缓存复用优化，对于相同svga资源公用同个解析对象，防止多度下载过度解析。</br>
   5、普通imageview加载svga的构造（SVGAImageViewDrawableTarget，并对imageview的相同drawable进行复用，以及恢复暂停清除的生命周期控制）。</br>
-  6、采用okio重写解析器SVGAParser，减少io多次Array.copy的内存抖动，并对SVGAVideoEntity进行glide.bitmappool回收处理。</br>
+  6、采用glide注册svga的解析器，和保存的数据模型SVGAResource，重写解析器SVGAParser，采用glide.arraypool减少io文件读写的内存抖动；数据模型回收时对SVGAVideoEntity进行glide.bitmappool回收处理。(io.github.zzechao.glide-svga插件提供)</br>
   7、glide 一般采取okhttp的连用，间接优化svga的下载连接池的复用，减少通道创建。</br>
 
 ### 用法 
