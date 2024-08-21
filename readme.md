@@ -42,6 +42,17 @@
 ### 思路架构图
 ![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/process.png)
 
+### 和 https://github.com/YvesCheung/SVGAGlidePlugin 进行对比的测试优化结果（场景recyclerview 总数100 Glide加载 7个 不同SVGA链接，上下往返滑动做对比（skipMemoryCache(true)跳过内存缓存）） 
+#### SVGAGlidePlugin
+![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/glidesvgaplugin_low.png)
+![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/glidesvgaplugin_top.png)
+
+#### SVGA_Glide_RecyclerView
+![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/glidesvgame_low.png)
+![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/glidesvgame_top.png)
+
+对比看出最高峰减少了80M，最低峰减少了25M，平均优化在40M左右
+
 ```kotlin
 //自定义class继承AppGlideModule中添加SVGA的Glide解码模块，cachePath是缓存路径，是针对SVGA 1.0版本的文件缓存路径：
 @GlideModule
