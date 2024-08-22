@@ -1,6 +1,13 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
+
+//--- 修改配置一 ---
+println("publish-maven Log-------> PUBLISH_GROUP_ID: $project.group; " +
+        "PUBLISH_ARTIFACT_ID: $project.artifactId; " +
+        "PUBLISH_VERSION: $project.version; " +
+        "isLocal:$project.isLocal")
+
 tasks.register('sourcesJar', Jar) {
     from android.sourceSets.main.java.source
     archiveClassifier.set("sources")
@@ -11,14 +18,9 @@ tasks.register('javadocJar', Jar) {
     archiveClassifier.set("javadoc")
 }
 
-//--- 修改配置一 ---
-
 publishing {
     publications {
         release(MavenPublication) {
-            println("publish-maven Log-------> PUBLISH_GROUP_ID: $project.group; " +
-                    "PUBLISH_ARTIFACT_ID: $project.artifactId; " +
-                    "PUBLISH_VERSION: $project.version; ")
             // The coordinates of the library, being set from variables that
             // we'll set up in a moment
 
@@ -78,25 +80,33 @@ publishing {
             }
         }
     }
-    repositories {
-        // The repository to publish to, Sonatype/MavenCentral
-        maven {
-            // This is an arbitrary name, you may also use "mavencentral" or
-            // any other name that's descriptive for you
+    if (project.isLocal) {
+        repositories {
+            maven {
+                url "$rootDir\\repo\\"
+            }
+        }
+    } else {
+        repositories {
+            // The repository to publish to, Sonatype/MavenCentral
+            maven {
+                // This is an arbitrary name, you may also use "mavencentral" or
+                // any other name that's descriptive for you
 
-            //--- 修改配置六 ---
-            name = project.getName()
-            def releasesRepoUrl = "https://s01.oss.sonatype.org/content/groups/staging/"
-            def releasesRepoUrl2 = "https://s01.oss.sonatype.org/content/repositories/releases/"
-            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            // You only need this if you want to publish snapshots, otherwise just set the URL
-            // to the release repo directly
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl2
+                //--- 修改配置六 ---
+                name = project.getName()
+                def releasesRepoUrl = "https://s01.oss.sonatype.org/content/groups/staging/"
+                def releasesRepoUrl2 = "https://s01.oss.sonatype.org/content/repositories/releases/"
+                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                // You only need this if you want to publish snapshots, otherwise just set the URL
+                // to the release repo directly
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl2
 
-            // The username and password we've fetched earlier
-            credentials {
-                username "$ossrhUsername"
-                password "$ossrhPassword"
+                // The username and password we've fetched earlier
+                credentials {
+                    username "$ossrhUsername"
+                    password "$ossrhPassword"
+                }
             }
         }
     }

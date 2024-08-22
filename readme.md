@@ -32,6 +32,7 @@
         
         // svga
         implementation("com.github.yyued:SVGAPlayer-Android:2.6.1")
+        implementation("com.squareup.wire:wire-runtime:4.4.1")
         
         // glide
         implementation("com.github.bumptech.glide:glide:4.16.0")
@@ -44,10 +45,16 @@
 ![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/glidesvgaplugin_low.png)
 ![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/glidesvgaplugin_top.png)
 
-#### SVGA_Glide_RecyclerView
+#### SVGA_Glide_RecyclerView 没有用gradle 插件数据
 ![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/glidesvgame_low.png)
 ![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/glidesvgame_top.png)
-对比看出最高峰减少了80M，最低峰减少了25M，平均优化在40M左右
+
+#### SVGA_Glide_RecyclerView 使用gradle 插件数据
+![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/glidesvgame_gradle_low.png)
+![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/glidesvgame_gradle_top.png)
+
+对比看出没有使用gradle插件时候比SVGAGlidePlugin最高峰减少了80M，最低峰减少了25M，平均优化在40M左右
+如果使用gradle插件后，优化效果更明显，比SVGAGlidePlugin最高峰减少117M，最低峰少了38M，而且整体的内存抖动更平缓
 
 ### 思路架构图
 ![image](https://github.com/zzechao/svgaplayer-android-glide_feature/blob/master/process.png)

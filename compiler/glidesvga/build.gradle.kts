@@ -51,5 +51,6 @@ project.ext {
             Pair("developerConnectionUrl", "scm:git@github.com:zzechao/svgaplayer-android-glide_feature.git")
         )
     )
+    set("isLocal", true)
 }
 apply(from = "${project.projectDir}/publish-maven.gradle")
