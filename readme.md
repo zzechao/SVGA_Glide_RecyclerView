@@ -42,11 +42,14 @@ dependencies {
 ```
 
 ### 混淆
+
+```ignorelang
 -keep class com.squareup.wire.** { *; }
 
-没有使用插件io.github.zzechao.glide-svga，要额外添加混淆
+#没有使用插件io.github.zzechao.glide-svga，要额外添加混淆
 -keep class com.opensource.svgaplayer.** { *; }
 -keep class com.svga.glide.** { *; }
+```
 
 ### 和 https://github.com/YvesCheung/SVGAGlidePlugin 进行对比的测试优化结果（场景recyclerview 总数100 Glide加载 7个 不同SVGA链接，上下往返滑动做对比（skipMemoryCache(true)跳过内存缓存））
 #### SVGAGlidePlugin
