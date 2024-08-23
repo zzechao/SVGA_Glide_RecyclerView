@@ -24,20 +24,20 @@
 #### app#build.gradle
 ```groovy
     apply plugin: 'io.github.zzechao.glide-svga' // 应用插件
-apply plugin: 'kotlin-kapt'
+    apply plugin: 'kotlin-kapt'
 
 dependencies {
   // glide svga
-  implementation("io.github.zzechao:libglidesvga:1.0.1") {
-    exclude group: 'com.squareup.wire', module: 'wire-runtime'
-  }
-
-  // svga
-  implementation("com.github.yyued:SVGAPlayer-Android:2.6.1")
-
-  // glide
-  implementation("com.github.bumptech.glide:glide:4.16.0")
-  kapt("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("io.github.zzechao:libglidesvga:1.0.1") {
+        exclude group: 'com.squareup.wire', module: 'wire-runtime'
+    }
+  
+    // svga
+    implementation("com.github.yyued:SVGAPlayer-Android:2.6.1")
+  
+    // glide
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
 }
 ```
 
