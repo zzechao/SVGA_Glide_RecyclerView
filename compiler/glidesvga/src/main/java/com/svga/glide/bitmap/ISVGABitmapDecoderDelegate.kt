@@ -6,6 +6,7 @@ import android.os.Build
 import com.bumptech.glide.load.ImageHeaderParser.ImageType
 import com.bumptech.glide.load.resource.bitmap.TransformationUtils
 import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
+import com.svga.glide.SVGAGlideEx
 import com.svga.glide.SVGAGlideEx.bitmapPool
 import com.svga.glide.SVGAGlideEx.log
 import java.io.IOException
@@ -100,7 +101,7 @@ interface ISVGABitmapDecoderDelegate<T> {
                 } catch (e: IllegalArgumentException) {
                     if (this.inBitmap != null) {
                         try {
-                            // 输入流重置
+                            reset(data)
                             bitmapPool.put(this.inBitmap)
                             // 清理掉 inBitmap 并进行第二次加载
                             this.inBitmap = null
@@ -113,12 +114,18 @@ interface ISVGABitmapDecoderDelegate<T> {
                 } finally {
                     TransformationUtils.getBitmapDrawableLock().unlock()
                 }
+                // 输入流重置
+                if (this.inJustDecodeBounds) {
+                    reset(data)
+                }
                 result
             } else {
                 onDecode(data, this)
             }
         }
     }
+
+    fun reset(data: T)
 
     private fun logger(msg: String) {
         if (System.currentTimeMillis() - timeMillis > 5000L) {
@@ -230,12 +237,15 @@ interface ISVGABitmapDecoderDelegate<T> {
         )
     }
 
+    val isUseBitmap: Boolean get() = false
+
     /**
      * com.bumptech.glide.load.resource.bitmap.Downsampler.setInBitmap
      */
     private fun setInBitmap(
         options: BitmapFactory.Options, width: Int, height: Int
     ): Boolean {
+        if (!isUseBitmap) return false
         try {
             var expectedConfig: Bitmap.Config? = null
             // Avoid short circuiting, it appears to break on some devices.

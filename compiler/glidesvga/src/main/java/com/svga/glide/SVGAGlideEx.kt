@@ -12,7 +12,6 @@ import java.io.InputStream
 object SVGAGlideEx {
     var log: ILog = DefaultLog()
 
-
     lateinit var bitmapPool: BitmapPool
     lateinit var arrayPool: ArrayPool
     lateinit var parsers: List<ImageHeaderParser>

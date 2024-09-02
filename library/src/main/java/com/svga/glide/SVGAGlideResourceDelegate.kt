@@ -61,12 +61,12 @@ class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<S
         try {
             val map = resource.videoItem?.imageMap
             log.d(TAG, "recycle imageMap ${resource.model} size:${map?.size}")
-            map?.forEach { bitmapPool.put(it.value) }
+            map?.forEach { it.value.recycle() }
         } catch (_: Throwable) {
             try {
                 val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
                 log.d(TAG, "recycle imageMapField ${resource.model} size:${map?.size}")
-                map?.forEach { bitmapPool.put(it.value) }
+                map?.forEach { it.value.recycle() }
             } catch (_: Throwable) {
             }
         }

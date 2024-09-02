@@ -22,4 +22,8 @@ object SVGAGlideBitmapByteDecoderDelegate : ISVGABitmapDecoderDelegate<ByteArray
     }
 
     override var timeMillis: Long = 0L
+
+    override fun reset(data: ByteArray) {
+
+    }
 }

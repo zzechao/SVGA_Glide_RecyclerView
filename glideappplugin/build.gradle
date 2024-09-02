@@ -41,7 +41,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation(libs.svgaplayer.android)
-    implementation("io.github.zzechao:libglidesvga:1.0.1")
+    implementation("io.github.zzechao:libglidesvga:1.0.1") {
+        exclude group: 'com.squareup.wire', module: 'wire-runtime'
+    }
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation(libs.glide)

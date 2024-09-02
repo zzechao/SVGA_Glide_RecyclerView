@@ -34,7 +34,12 @@ class SVGAGlideResourceDelegate(private val resource: SVGAResource) : Resource<S
     }
 
     private fun recycleImage() {
-        log.d(TAG, "recycle ${resource.model}")
+        try {
+            val map = resource.imageMapField?.get<HashMap<String, Bitmap>>()
+            log.d(TAG, "recycle ${resource.model} size:${map?.size}")
+            map?.forEach { bitmapPool.put(it.value) }
+        } catch (_: Throwable) {
+        }
     }
 
     override fun getSize(): Int {
