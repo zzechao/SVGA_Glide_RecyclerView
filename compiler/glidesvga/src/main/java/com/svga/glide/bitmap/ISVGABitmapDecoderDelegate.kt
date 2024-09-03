@@ -47,81 +47,78 @@ interface ISVGABitmapDecoderDelegate<T> {
             // Decode bitmap with inSampleSize set
             inJustDecodeBounds = false
 
-            val imageType: ImageType = getImageType(data)
+            onDecode(data, this)
 
-            var userInBitmap = false
-
-            /**
-             * com.bumptech.glide.load.resource.bitmap.Downsampler.decodeFromWrappedStreams
-             */
-            val isKitKatOrGreater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
-            var expectedWidth = 0
-            var expectedHeight = 0
-            if ((inSampleSize == 1 || isKitKatOrGreater) && shouldUsePool(imageType)) {
-
-                val targetWidth = if (reqWidth == SIZE_ORIGINAL || reqWidth == 0) {
-                    sourceWidth
-                } else reqWidth
-                val targetHeight = if (reqHeight == SIZE_ORIGINAL || reqHeight == 0) {
-                    sourceHeight
-                } else reqHeight
-
-                val adjustedScaleFactor: Float = getScaleFactor(sourceWidth, sourceHeight, targetWidth, targetHeight)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    this.inTargetDensity = adjustTargetDensityForError(adjustedScaleFactor)
-                    this.inDensity = getDensityMultiplier(adjustedScaleFactor)
-                }
-                if (isScaling(this)) {
-                    this.inScaled = true
-                } else {
-                    this.inTargetDensity = 0
-                    this.inDensity = this.inTargetDensity
-                }
-                val densityMultiplier =
-                    if (isScaling(this)) inTargetDensity * 1f / inDensity else 1f
-                val sampleSize = inSampleSize
-                val downSampledWidth = ceil(sourceWidth / sampleSize.toFloat())
-                val downSampledHeight = ceil(sourceHeight / sampleSize.toFloat());
-                expectedWidth = Math.round(downSampledWidth * densityMultiplier)
-                expectedHeight = Math.round(downSampledHeight.times(densityMultiplier))
-
-                // If this isn't an image, or BitmapFactory was unable to parse the size, width and height
-                // will be -1 here.
-                if (expectedWidth > 0 && expectedHeight > 0) {
-                    userInBitmap = setInBitmap(this, expectedWidth, expectedHeight)
-                }
-            }
-            if (userInBitmap) {
-                var result: Bitmap? = null
-                TransformationUtils.getBitmapDrawableLock().lock()
-                try {
-                    // 数据加载
-                    logger("onDecode use inBitmap expectedWidth:$expectedWidth expectedHeight:$expectedHeight")
-                    result = onDecode(data, this)
-                } catch (e: IllegalArgumentException) {
-                    if (this.inBitmap != null) {
-                        try {
-                            reset(data)
-                            bitmapPool.put(this.inBitmap)
-                            // 清理掉 inBitmap 并进行第二次加载
-                            this.inBitmap = null
-                            // 再次调用进行加载
-                            result = onDecode(data, this)
-                        } catch (resetException: IOException) {
-                            log.e(TAG, "onDecode error", resetException)
-                        }
-                    }
-                } finally {
-                    TransformationUtils.getBitmapDrawableLock().unlock()
-                }
-                // 输入流重置
-                if (this.inJustDecodeBounds) {
-                    reset(data)
-                }
-                result
-            } else {
-                onDecode(data, this)
-            }
+//            val imageType: ImageType = getImageType(data)
+//
+//            var userInBitmap = false
+//
+//            /**
+//             * com.bumptech.glide.load.resource.bitmap.Downsampler.decodeFromWrappedStreams
+//             */
+//            val isKitKatOrGreater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+//            var expectedWidth = 0
+//            var expectedHeight = 0
+//            if ((inSampleSize == 1 || isKitKatOrGreater) && shouldUsePool(imageType)) {
+//
+//                val targetWidth = if (reqWidth == SIZE_ORIGINAL || reqWidth == 0) {
+//                    sourceWidth
+//                } else reqWidth
+//                val targetHeight = if (reqHeight == SIZE_ORIGINAL || reqHeight == 0) {
+//                    sourceHeight
+//                } else reqHeight
+//
+//                val adjustedScaleFactor: Float = getScaleFactor(sourceWidth, sourceHeight, targetWidth, targetHeight)
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                    this.inTargetDensity = adjustTargetDensityForError(adjustedScaleFactor)
+//                    this.inDensity = getDensityMultiplier(adjustedScaleFactor)
+//                }
+//                if (isScaling(this)) {
+//                    this.inScaled = true
+//                } else {
+//                    this.inTargetDensity = 0
+//                    this.inDensity = this.inTargetDensity
+//                }
+//                val densityMultiplier =
+//                    if (isScaling(this)) inTargetDensity * 1f / inDensity else 1f
+//                val sampleSize = inSampleSize
+//                val downSampledWidth = ceil(sourceWidth / sampleSize.toFloat())
+//                val downSampledHeight = ceil(sourceHeight / sampleSize.toFloat());
+//                expectedWidth = Math.round(downSampledWidth * densityMultiplier)
+//                expectedHeight = Math.round(downSampledHeight.times(densityMultiplier))
+//
+//                // If this isn't an image, or BitmapFactory was unable to parse the size, width and height
+//                // will be -1 here.
+//                if (expectedWidth > 0 && expectedHeight > 0) {
+//                    userInBitmap = setInBitmap(this, expectedWidth, expectedHeight)
+//                }
+//            }
+//            if (userInBitmap) {
+//                var result: Bitmap? = null
+//                TransformationUtils.getBitmapDrawableLock().lock()
+//                try {
+//                    // 数据加载
+//                    logger("onDecode use inBitmap expectedWidth:$expectedWidth expectedHeight:$expectedHeight")
+//                    result = onDecode(data, this)
+//                } catch (e: IllegalArgumentException) {
+//                    if (this.inBitmap != null) {
+//                        try {
+//                            bitmapPool.put(this.inBitmap)
+//                            // 清理掉 inBitmap 并进行第二次加载
+//                            this.inBitmap = null
+//                            // 再次调用进行加载
+//                            result = onDecode(data, this)
+//                        } catch (resetException: IOException) {
+//                            log.e(TAG, "onDecode error", resetException)
+//                        }
+//                    }
+//                } finally {
+//                    TransformationUtils.getBitmapDrawableLock().unlock()
+//                }
+//                result
+//            } else {
+//                onDecode(data, this)
+//            }
         }
     }
 

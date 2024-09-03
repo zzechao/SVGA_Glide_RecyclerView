@@ -30,7 +30,4 @@ object SVGAGlideBitmapFileDecoderDelegate : ISVGABitmapDecoderDelegate<String> {
     }
 
     override var timeMillis: Long = 0L
-    override fun reset(data: String) {
-        FileInputStream(data).reset()
-    }
 }
