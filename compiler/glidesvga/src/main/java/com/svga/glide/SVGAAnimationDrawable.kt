@@ -196,16 +196,10 @@ class SVGAAnimationDrawable(
             } else {
                 if (repeatCount == -1) {
                     start()
-                } else if (repeatCount - (mAnimator?.repeatCount ?: Int.MAX_VALUE) > 0) {
-                    repeatCount -= (mAnimator?.repeatCount ?: 0)
-                    start()
                 }
             }
         } else {
             if (repeatCount == -1) {
-                start()
-            } else if (repeatCount - (mAnimator?.repeatCount ?: Int.MAX_VALUE) > 0) {
-                repeatCount -= (mAnimator?.repeatCount ?: 0)
                 start()
             }
         }
