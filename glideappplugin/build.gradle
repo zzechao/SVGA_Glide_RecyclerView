@@ -5,9 +5,9 @@ plugins {
 
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-//apply plugin: 'io.github.zzechao.glide-svga-local'
+apply plugin: 'io.github.zzechao.glide-svga-local'
 
-apply plugin: 'io.github.zzechao.glide-svga' // 应用插件
+//apply plugin: 'io.github.zzechao.glide-svga' // 应用插件
 
 android {
     namespace = "com.example.glideappplugin"
@@ -41,7 +41,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation(libs.svgaplayer.android)
-    implementation("io.github.zzechao:libglidesvga:1.0.1") {
+    implementation("io.github.zzechao:libglidesvga:1.0.2") {
         exclude group: 'com.squareup.wire', module: 'wire-runtime'
     }
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

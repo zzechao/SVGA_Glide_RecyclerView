@@ -18,7 +18,7 @@
     }
 
     dependencies {
-        classpath "io.github.zzechao.gradle:glidesvgaplugin:1.0.1" // 导入插件和对应版本
+        classpath "io.github.zzechao.gradle:glidesvgaplugin:1.0.2" // 导入插件和对应版本
     }
 ```
 #### app#build.gradle
@@ -28,7 +28,7 @@
 
 dependencies {
   // glide svga
-    implementation("io.github.zzechao:libglidesvga:1.0.1") {
+    implementation("io.github.zzechao:libglidesvga:1.0.2") {
         exclude group: 'com.squareup.wire', module: 'wire-runtime'
     }
   

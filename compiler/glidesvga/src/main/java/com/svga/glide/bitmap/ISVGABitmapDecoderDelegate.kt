@@ -122,8 +122,6 @@ interface ISVGABitmapDecoderDelegate<T> {
         }
     }
 
-    fun reset(data: T)
-
     private fun logger(msg: String) {
         if (System.currentTimeMillis() - timeMillis > 5000L) {
             timeMillis = System.currentTimeMillis()
